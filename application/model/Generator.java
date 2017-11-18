@@ -1,3 +1,5 @@
+package application.model;
+
 import java.util.*;
 
 public class Generator {

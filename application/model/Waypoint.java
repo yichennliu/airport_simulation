@@ -1,3 +1,4 @@
+package application.model;
 
 public enum Waypoint {
 
