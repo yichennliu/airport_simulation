@@ -1,5 +1,4 @@
-
-
+import java.util.*;
 
 public class Generator {
 	private ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
