@@ -1,4 +1,6 @@
 
+
+
 public class Generator {
 	private ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
 	private double chance;
@@ -11,7 +13,7 @@ public class Generator {
 	
 	public Plane execute() { 
 		if( chance<=Math.random()) {
-			return new Plane(this.waypoints, Plane.gettime());
+			return new Plane(this.waypoints, Flughafen.getTime());
 		} else{
 			return null; 
 		}

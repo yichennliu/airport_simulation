@@ -1,20 +1,21 @@
+
 import java.util.*;
 
-public class Model {
+public class Flughafen {
 	private int maxplanes = 0;
 	private ArrayList<Plane> planes = new ArrayList<Plane>();
 	private ArrayList<Generator> generators = new ArrayList<Generator>();
 	private Map<String, Node> nodes = new TreeMap<String, Node>();
-	private int timer = 0;
+	private static int time = 0;
 	
-	public Model(int maxplanes, ArrayList<Plane> planes, ArrayList<Generator> generators, Map<String, Node> nodes) {
+	public Flughafen(int maxplanes, ArrayList<Plane> planes, ArrayList<Generator> generators, Map<String, Node> nodes) {
 		this.maxplanes = maxplanes;
 		this.planes = planes;
 		this.generators = generators;
 		this.nodes = nodes;
 	}
 	
-	public Model() {}
+	public Flughafen() {}
 	
 	public int getMaxplanes() {
 		return maxplanes;
@@ -53,11 +54,11 @@ public class Model {
 		this.nodes.put(name, node);
 	}
 	
-	public int getTimer() {
-		return this.timer;
+	public static int getTime() {
+		return time;
 	}
 	
-	public void increaseTimer() {
-		this.timer++;
+	public static void increaseTime() {
+		time++;
 	}
 }

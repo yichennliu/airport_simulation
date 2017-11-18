@@ -8,7 +8,7 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
 	  
-    Model model = new Model(screenWidth, screenHeight -30);
+    Flughafen model = new Flughafen(screenWidth, screenHeight -30);
     View view = new View(model, primaryStage,screenWidth, screenHeight-30);
     new Controller(model, view);
 	
