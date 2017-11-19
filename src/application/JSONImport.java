@@ -23,13 +23,13 @@ public class JSONImport {
 			JSONArray jsonPlanes = json.getJSONArray("planes");
 			
 			for (int i = 0; i < jsonPlanes.length(); i++) {
-				JSONObject jsonPlane = (JSONObject) jsonPlanes.get(i);
+				JSONObject jsonPlane = jsonPlanes.getJSONObject(i);
 				
 				/* import wayoints */
 				JSONArray jsonWaypoints = jsonPlane.getJSONArray("waypoints");
 				List<Targettype> waypoints = new ArrayList<Targettype>();
 				for (int j = 0; j < jsonWaypoints.length(); j++) {
-					waypoints.add(Targettype.valueOf((String) jsonWaypoints.get(j)));
+					waypoints.add(Targettype.valueOf(jsonWaypoints.getString(j)));
 				}
 				
 				/* Import inittime */
@@ -46,7 +46,7 @@ public class JSONImport {
 			JSONArray jsonGenerators = json.getJSONArray("generators");
 			
 			for (int i = 0; i < jsonGenerators.length(); i++) {
-				JSONObject jsonGenerator = (JSONObject) jsonGenerators.get(i);
+				JSONObject jsonGenerator = jsonGenerators.getJSONObject(i);
 				
 				/* import wayoints */
 				JSONArray jsonWaypoints = jsonGenerator.getJSONArray("waypoints");
@@ -68,7 +68,7 @@ public class JSONImport {
 		JSONArray jsonNodes = json.getJSONArray("nodes");
 		
 		for (int i = 0; i < jsonNodes.length(); i++) {
-			JSONObject jsonNode = (JSONObject) jsonNodes.get(i);
+			JSONObject jsonNode = jsonNodes.getJSONObject(i);
 			
 			/* import coordinates */
 			double x = jsonNode.getDouble("x");
@@ -101,7 +101,7 @@ public class JSONImport {
 		
 		/* fill "to"/"conflicts" connections after above loop created all nodes */
 		for (int i = 0; i < jsonNodes.length(); i++) {
-			JSONObject jsonNode = (JSONObject) jsonNodes.get(i);
+			JSONObject jsonNode = jsonNodes.getJSONObject(i);
 			Node node = nodes.get(jsonNode.getString("name"));
 			
 			/* import to */
