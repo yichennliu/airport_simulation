@@ -69,9 +69,18 @@ public class FlughafenView {
 		double radius = 5;
 		double x = (node.getX()*this.zoomFactor)+offsetX;
 		double y = (node.getY()*this.zoomFactor)+offsetY;
-		
+		Kind kind = node.getKind();
 		this.gc.setStroke(Color.DARKGREY);
 		this.gc.setFill(Color.GREY);
+		switch(kind) {
+			case air: {
+				this.gc.setStroke(Color.BLUE);
+				this.gc.setFill(Color.BLUE.darker());
+				break;
+			}
+			
+		}
+
 		
 		for(Node children: node.getTo()) {
 			gc.strokeLine(x, y, (children.getX()*zoomFactor)+offsetX, (children.getY()*zoomFactor)+offsetY);
@@ -102,9 +111,12 @@ public class FlughafenView {
 			}
 			maxX = maxX -minX;
 			maxY = maxY -minY;
-			if(maxY>maxX) this.zoomFactor = (this.HEIGHT/maxY);
-			else if(maxX>maxY) this.zoomFactor = (this.WIDTH/maxX);
-			else this.zoomFactor = (Math.max(this.HEIGHT,this.WIDTH)/maxX);
+			
+			if(maxY*((double) this.WIDTH/this.HEIGHT)<=maxX) { // passt den Flughafen in die Bildschirmmaße ein.
+				this.zoomFactor = this.WIDTH/maxX;
+			}
+			else this.zoomFactor = this.HEIGHT/maxY;
+
 			this.offsetX = 0 - minX*this.zoomFactor;
 			this.offsetY = 0 - minY*this.zoomFactor;
 		}
