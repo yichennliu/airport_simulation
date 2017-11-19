@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import javafx.scene.transform.Scale;
+import javafx.scene.transform.Translate;
+import com.sun.javafx.geom.Point2D;
 
 public class FlughafenView {
 	private Flughafen model;
@@ -59,8 +62,6 @@ public class FlughafenView {
 		drawNodes(nodes);
 	}
 	
-
-	
 	private void drawNodes(Collection <Node> nodes) {
 		for(Node node:nodes) drawNode(node);
 	}
@@ -82,7 +83,6 @@ public class FlughafenView {
 			
 		}
 
-		
 		for(Node children: node.getTo()) {
 			gc.strokeLine(x, y, (children.getX()*zoomFactor)+offsetX, (children.getY()*zoomFactor)+offsetY);
 		}
@@ -91,14 +91,13 @@ public class FlughafenView {
 	
 	}
 	
-	
 	private void setInitialZoomAndOffset(Collection <Node> nodes) { // setzt den initialen Faktor und Verschiebung, sodass alles auf das canvas passt; 
 		Iterator <Node> it = nodes.iterator();
 		if(it.hasNext()) {
 			double minY, minX,maxX,maxY,widthFlughafen,heightFlughafen;
 			Node firstNode = it.next();
-			minY = firstNode.getX();
-			minX = firstNode.getY();
+			minX = firstNode.getX();
+			minY = firstNode.getY();
 			maxY = minY;
 			maxX = minX;
 			while(it.hasNext()) {
@@ -111,9 +110,9 @@ public class FlughafenView {
 				if (currentY>maxY) maxY = currentY;
 			}
 			maxX = maxX -minX; //maxX ist jetzt die breite des Flughafens
-			maxY = maxY -minY; // maxY ist jetzt die Höhe des Flughafens
+			maxY = maxY -minY; // maxY ist jetzt die Hï¿½he des Flughafens
 			
-			if(maxY*((double) this.WIDTH/this.HEIGHT)<=maxX) { // passt den Flughafen in die Bildschirmmaße ein (orientiert an X)
+			if(maxY*((double) this.WIDTH/this.HEIGHT)<=maxX) { // passt den Flughafen in die Bildschirmmaï¿½e ein (orientiert an X)
 				this.zoomFactor = this.WIDTH/maxX;
 			}
 			else this.zoomFactor = this.HEIGHT/maxY;
@@ -133,4 +132,8 @@ public class FlughafenView {
 	public void setZoomFactor(double factor) {
 		this.zoomFactor = factor;
 	}
+	
+	
+		
+	
 }
