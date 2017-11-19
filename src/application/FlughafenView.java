@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Translate;
-import com.sun.javafx.geom.Point2D;
 
 public class FlughafenView {
 	private Flughafen model;
