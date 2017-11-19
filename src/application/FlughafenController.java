@@ -12,9 +12,9 @@ public class FlughafenController {
 		this.view = view;
 		this.view.drawCanvas();
 		this.view.getCanvas().addEventHandler(ScrollEvent.SCROLL, e->{
-			if (e.getDeltaY()>0) this.view.setZoomFactor(this.view.getZoomFactor()+0.1);
-			else this.view.setZoomFactor(this.view.getZoomFactor()-0.1);
-			this.view.drawCanvas(); // das kann später raus, wenn der Controller ohnehin in jedem Tick die drawCanvas()-Methode aufruft
+			if (e.getDeltaY()>0) this.view.setZoomFactor(this.view.getZoomFactor()+3.0);
+			else this.view.setZoomFactor(this.view.getZoomFactor()-3.0);
+			this.view.drawCanvas(); // das kann spï¿½ter raus, wenn der Controller ohnehin in jedem Tick die drawCanvas()-Methode aufruft
 		});
 	}
 	
