@@ -5,12 +5,25 @@ import java.util.List;
 
 public class Plane {
 
-	private List<Waypoint>waypoints = new ArrayList<Waypoint>();
+	private List<Targettype> waypoints = new ArrayList<Targettype>();
 	private int inittime;
+	private Node lastNode = null;
 	
-	public Plane(List<Waypoint> waypoints, int inittime) {
+	public Plane(List<Targettype> waypoints, int inittime) {
 		this.waypoints = waypoints;
 		this.inittime = inittime;
+	}
+	
+	public List<Targettype> getWaypoints() {
+		return this.waypoints;
+	}
+	
+	public int getInittime() {
+		return this.inittime;
+	}
+	
+	public Node getLastNode() {
+		return this.getLastNode();
 	}
 	
 }

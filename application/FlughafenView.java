@@ -10,6 +10,7 @@ public class FlughafenView {
 	public FlughafenView(Flughafen model, Stage stage) {
 		this.model = model;
 		this.stage = stage;
+		
 	}
 	
 	public Stage getStage() {
