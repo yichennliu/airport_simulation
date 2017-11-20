@@ -11,8 +11,6 @@ import javafx.stage.Stage;
 public class FlughafenController {
 	private FlughafenView view;
 	private Flughafen model;
-	private static final double MAX_SCALE=3.0;
-	private static final double MIN_SCALE=1.0;
 	private double translateArray[] = new double[4]; // [mousePressStartX, mousePressStartY, oldOffsetX, oldOffsetY] (für das Verschieben benötigt)
 
 	
@@ -21,7 +19,6 @@ public class FlughafenController {
 		this.view = view;
 		Canvas canvas = this.view.getCanvas();
 		Stage stage= this.view.getStage();
-		this.view.drawCanvas();
 		
 		canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, event->{
 			translateArray[0] = event.getX();		// speichert die Startposition des Draggings
@@ -37,14 +34,22 @@ public class FlughafenController {
 			view.setOffsetY(view.getOffsetY()-translateArray[3]+yOffset);
 			translateArray[2] = xOffset; // die neue Verschiebung (relativ zum Startpunkt des DragEvents) wird gespeichert
 			translateArray[3] = yOffset;
-			this.view.drawCanvas();
+			this.view.drawCanvas(); // kann spaeter raus
 		});
 		
 		canvas.addEventHandler(ScrollEvent.SCROLL, e->{
 			view.zoomTo(e.getDeltaY(), e.getX(), e.getY(),3.0);
-			view.drawCanvas();
-	});
-			
+			view.drawCanvas(); // kann spaeter raus
+		});
+		
+		stage.widthProperty().addListener((observableValue, oldWidth, newWidth) -> { // bei Skalierung des Fensters skaliert das Canvas mit
+			this.view.resize(newWidth.doubleValue(),canvas.getHeight());
+		});
+		stage.heightProperty().addListener((observableValue, oldHeight, newHeight) -> {
+			this.view.resize(canvas.getWidth(),newHeight.doubleValue());
+		});
+		
+		this.view.drawCanvas();		// kann spaeter raus	
 }
 
 	public static double compare(double value, double min, double max){

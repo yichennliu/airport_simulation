@@ -19,8 +19,8 @@ public class FlughafenView {
 	
 	private Canvas canvas;
 	private GraphicsContext gc;
-	private final int HEIGHT = 600;
-	private final int WIDTH = 800;
+	private int height = 600;
+	private int width = 800;
 	
 	private double zoomFactor = 1.0;
 	private double offsetX = 0.0; // absoluter XOffset (verschiebt die Zeichnung auf dem Canvas)
@@ -31,7 +31,7 @@ public class FlughafenView {
 		this.stage = stage;
 		
 		Group root = new Group();
-		this.canvas = new Canvas(WIDTH,HEIGHT);
+		this.canvas = new Canvas(width,height);
 		this.gc = canvas.getGraphicsContext2D();
 		
 		root.getChildren().add(canvas);
@@ -53,7 +53,7 @@ public class FlughafenView {
 	}
 	
 	public void drawCanvas(){
-		gc.clearRect(0, 0, this.WIDTH, this.HEIGHT);
+		gc.clearRect(0, 0, this.width, this.height);
 		Collection<Node> nodes = model.getNodes();
 		List<Plane> planes = model.getPlanes();
 		drawNodes(nodes);
@@ -108,16 +108,16 @@ public class FlughafenView {
 			maxX = maxX -minX; //maxX ist jetzt die breite des Flughafens (!)
 			maxY = maxY -minY; // maxY ist jetzt die Hoehe des Flughafens
 			
-			if(maxY*((double) this.WIDTH/this.HEIGHT)<=maxX) { // passt den Flughafen in die Bildschirmmasse ein (orientiert an breite)
-				this.zoomFactor = this.WIDTH/maxX;
+			if(maxY*((double) this.width/this.height)<=maxX) { // passt den Flughafen in die Bildschirmmasse ein (orientiert an breite)
+				this.zoomFactor = this.width/maxX;
 			}
-			else this.zoomFactor = this.HEIGHT/maxY;
+			else this.zoomFactor = this.height/maxY;
 			
 			widthFlughafen = maxX*this.zoomFactor; // absolute Breite des Flughafens (die relative steht ja schon im maxX)
 			heightFlughafen = maxY*this.zoomFactor;
 			
-			this.offsetX = (0 - minX*this.zoomFactor)+(this.WIDTH-(widthFlughafen))*0.5; // horizontalAlign des Flughafens
-			this.offsetY = (0 - minY*this.zoomFactor)+(this.HEIGHT-(heightFlughafen))*0.5; // verticalAlign
+			this.offsetX = (0 - minX*this.zoomFactor)+(this.width-(widthFlughafen))*0.5; // horizontalAlign des Flughafens
+			this.offsetY = (0 - minY*this.zoomFactor)+(this.height-(heightFlughafen))*0.5; // verticalAlign
 		}
 	}
 
@@ -127,7 +127,7 @@ public class FlughafenView {
 		double relX = (absoluteX-this.offsetX)/this.zoomFactor;	// die relative "Model X-Koordinate", auf die der Mauszeiger zeigt
 		double relY = (absoluteY-this.offsetY)/this.zoomFactor; // ''
 		
-		this.offsetX = absoluteX - (relX*zoomFactorNeu); // offsetX wird genau so verschoben, dass die relative Koordinate am Mauszeiger nach dem Zoom immer noch genau an der absoluten Position ist
+		this.offsetX = absoluteX - (relX*zoomFactorNeu); // offsetX wird genau so verschoben, dass die relative Koordinate des Mauszeigers nach dem Zoom immer noch genau an der absoluten Position ist
 		this.offsetY = absoluteY - (relY*zoomFactorNeu);
 		this.zoomFactor = zoomFactorNeu;
 	}
@@ -139,6 +139,15 @@ public class FlughafenView {
 	public void setZoomFactor(double factor) {
 		this.zoomFactor = factor;
 	}
+	
+	public void resize(double width, double height) {
+		this.width = (int) width;
+		this.height = (int) height;
+		canvas.setWidth(width);
+		canvas.setHeight(height);
+		this.drawCanvas();
+	}
+	
 	public void setOffsetX(double offsetX) {
 		this.offsetX = offsetX;
 	}
