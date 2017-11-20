@@ -23,7 +23,7 @@ public class FlughafenView {
 	private final int WIDTH = 800;
 	
 	private double zoomFactor = 1.0;
-	private double offsetX = 0.0; // absoluter XOffset
+	private double offsetX = 0.0; // absoluter XOffset (verschiebt die Zeichnung auf dem Canvas)
 	private double offsetY = 0.0; // absoluter YOffset
 
 	public FlughafenView(Flughafen model, Stage stage) {
@@ -105,7 +105,7 @@ public class FlughafenView {
 				if (currentX>maxX) maxX = currentX;
 				if (currentY>maxY) maxY = currentY;
 			}
-			maxX = maxX -minX; //maxX ist jetzt die breite des Flughafens
+			maxX = maxX -minX; //maxX ist jetzt die breite des Flughafens (!)
 			maxY = maxY -minY; // maxY ist jetzt die Hoehe des Flughafens
 			
 			if(maxY*((double) this.WIDTH/this.HEIGHT)<=maxX) { // passt den Flughafen in die Bildschirmmasse ein (orientiert an breite)
@@ -113,12 +113,11 @@ public class FlughafenView {
 			}
 			else this.zoomFactor = this.HEIGHT/maxY;
 			
-			widthFlughafen = maxX*this.zoomFactor; 
+			widthFlughafen = maxX*this.zoomFactor; // absolute Breite des Flughafens (die relative steht ja schon im maxX)
 			heightFlughafen = maxY*this.zoomFactor;
 			
-			this.offsetX = (0 - minX*this.zoomFactor)+(this.WIDTH-(widthFlughafen))*0.5; // horizontalAlign
+			this.offsetX = (0 - minX*this.zoomFactor)+(this.WIDTH-(widthFlughafen))*0.5; // horizontalAlign des Flughafens
 			this.offsetY = (0 - minY*this.zoomFactor)+(this.HEIGHT-(heightFlughafen))*0.5; // verticalAlign
-			System.out.println(offsetX +" offsetX, " +offsetY + " offsetY");
 		}
 	}
 
@@ -128,7 +127,7 @@ public class FlughafenView {
 		double relX = (absoluteX-this.offsetX)/this.zoomFactor;	// die relative "Model X-Koordinate", auf die der Mauszeiger zeigt
 		double relY = (absoluteY-this.offsetY)/this.zoomFactor; // ''
 		
-		this.offsetX = absoluteX - (relX*zoomFactorNeu);
+		this.offsetX = absoluteX - (relX*zoomFactorNeu); // offsetX wird genau so verschoben, dass die relative Koordinate am Mauszeiger nach dem Zoom immer noch genau an der absoluten Position ist
 		this.offsetY = absoluteY - (relY*zoomFactorNeu);
 		this.zoomFactor = zoomFactorNeu;
 	}
