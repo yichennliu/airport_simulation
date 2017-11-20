@@ -8,7 +8,7 @@ public class Main extends Application {
 
   @Override
   public void start(Stage primaryStage) throws Exception {
-    Flughafen model = JSONImport.createFlughafen("application/json/small.json");
+    Flughafen model = JSONImport.createFlughafen("application/json/big.json");
     FlughafenView view = new FlughafenView(model, primaryStage);
     new FlughafenController(model, view);
   }

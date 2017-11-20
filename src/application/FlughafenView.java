@@ -23,8 +23,8 @@ public class FlughafenView {
 	private final int WIDTH = 800;
 	
 	private double zoomFactor = 1.0;
-	private double offsetX = 0.0;
-	private double offsetY = 0.0;
+	private double offsetX = 0.0; // absoluter XOffset
+	private double offsetY = 0.0; // absoluter YOffset
 
 	public FlughafenView(Flughafen model, Stage stage) {
 		this.model = model;
@@ -76,8 +76,7 @@ public class FlughafenView {
 				this.gc.setLineWidth(0.2);
 				this.gc.setFill(Color.BLUE.darker());
 				break;
-			}
-			
+			}	
 		}
 
 		for(Node children: node.getTo()) {
@@ -107,9 +106,9 @@ public class FlughafenView {
 				if (currentY>maxY) maxY = currentY;
 			}
 			maxX = maxX -minX; //maxX ist jetzt die breite des Flughafens
-			maxY = maxY -minY; // maxY ist jetzt die H�he des Flughafens
+			maxY = maxY -minY; // maxY ist jetzt die Hoehe des Flughafens
 			
-			if(maxY*((double) this.WIDTH/this.HEIGHT)<=maxX) { // passt den Flughafen in die Bildschirmma�e ein (orientiert an X)
+			if(maxY*((double) this.WIDTH/this.HEIGHT)<=maxX) { // passt den Flughafen in die Bildschirmmasse ein (orientiert an breite)
 				this.zoomFactor = this.WIDTH/maxX;
 			}
 			else this.zoomFactor = this.HEIGHT/maxY;
@@ -119,9 +118,21 @@ public class FlughafenView {
 			
 			this.offsetX = (0 - minX*this.zoomFactor)+(this.WIDTH-(widthFlughafen))*0.5; // horizontalAlign
 			this.offsetY = (0 - minY*this.zoomFactor)+(this.HEIGHT-(heightFlughafen))*0.5; // verticalAlign
+			System.out.println(offsetX +" offsetX, " +offsetY + " offsetY");
 		}
 	}
 
+	public void zoomTo(double deltaY, double absoluteX, double absoluteY, double zoomAmount) {
+		if(deltaY<0) zoomAmount = -zoomAmount;					
+		double zoomFactorNeu = zoomAmount + this.zoomFactor;		
+		double relX = (absoluteX-this.offsetX)/this.zoomFactor;	// die relative "Model X-Koordinate", auf die der Mauszeiger zeigt
+		double relY = (absoluteY-this.offsetY)/this.zoomFactor; // ''
+		
+		this.offsetX = absoluteX - (relX*zoomFactorNeu);
+		this.offsetY = absoluteY - (relY*zoomFactorNeu);
+		this.zoomFactor = zoomFactorNeu;
+	}
+	
 	public double getZoomFactor() {
 		return this.zoomFactor;
 	}
@@ -129,8 +140,18 @@ public class FlughafenView {
 	public void setZoomFactor(double factor) {
 		this.zoomFactor = factor;
 	}
-	
-	
+	public void setOffsetX(double offsetX) {
+		this.offsetX = offsetX;
+	}
+	public void setOffsetY(double offsetY) {
+		this.offsetY = offsetY;
+	}
+	public double getOffsetX() {
+		return this.offsetX;
+	}
+	public double getOffsetY() {
+		return this.offsetY;
+	}
 		
 	
 }

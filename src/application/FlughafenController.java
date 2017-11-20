@@ -13,6 +13,8 @@ public class FlughafenController {
 	private Flughafen model;
 	private static final double MAX_SCALE=3.0;
 	private static final double MIN_SCALE=1.0;
+	private double translateArray[] = new double[4]; // [mousePressStartX, mousePressStartY, oldOffsetX, oldOffsetY] (für das Verschieben benötigt)
+
 	
 	public FlughafenController(Flughafen model, FlughafenView view) {
 		this.model = model;
@@ -20,29 +22,27 @@ public class FlughafenController {
 		Canvas canvas = this.view.getCanvas();
 		Stage stage= this.view.getStage();
 		this.view.drawCanvas();
-		canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, event->{
-			canvas.setTranslateX(event.getSceneX());
-			canvas.setTranslateY(event.getSceneY());
+		
+		canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, event->{
+			translateArray[0] = event.getX();
+			translateArray[1] = event.getY();
+			translateArray[2] = 0;
+			translateArray[3] = 0;
 		});
 		
-		stage.addEventHandler(ScrollEvent.SCROLL, e->{
-			double delta =1.5;
-			double scale = canvas.getScaleY();
-			double oldscale =scale;
-			if (e.getDeltaY()<0) {
-				scale= scale/delta;
-				}
-			else {
-				scale= scale*delta;
-			}
-			scale=compare(scale, MIN_SCALE,MAX_SCALE);
-			double fac=scale-oldscale;
-			double dx=(e.getSceneX()-(canvas.getBoundsInParent().getWidth()/2+canvas.getBoundsInParent().getMinX()));
-			double dy=(e.getSceneY()-(canvas.getBoundsInParent().getHeight()/2+canvas.getBoundsInParent().getMinY()));
-			canvas.setScaleY(scale);
-			canvas.setTranslateX(canvas.getTranslateX()-fac*dx);
-			canvas.setTranslateY(canvas.getTranslateY()-fac*dy);
+		canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, event ->{		
+			double xOffset = event.getX()-translateArray[0];
+			double yOffset = event.getY()-translateArray[1];
+			view.setOffsetX(view.getOffsetX()-translateArray[2]+xOffset);
+			view.setOffsetY(view.getOffsetY()-translateArray[3]+yOffset);
+			translateArray[2] = xOffset;
+			translateArray[3] = yOffset;
+			this.view.drawCanvas();
+		});
 		
+		canvas.addEventHandler(ScrollEvent.SCROLL, e->{
+			view.zoomTo(e.getDeltaY(), e.getX(), e.getY(),3.0);
+			view.drawCanvas();
 	});
 			
 }
