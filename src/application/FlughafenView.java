@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -85,6 +86,10 @@ public class FlughafenView {
 		
 		this.gc.fillOval(x-radius,y-radius,radius*2,radius*2);
 	
+	}
+	
+	private void drawPlane(Plane plane) {
+		Image planeImage = new Image("resources/plane.png");
 	}
 	
 	private void setInitialZoomAndOffset(Collection <Node> nodes) { // setzt den initialen Faktor und Verschiebung, sodass alles auf das canvas passt; 
