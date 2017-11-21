@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 public class FlughafenController {
 	private FlughafenView view;
 	private Flughafen model;
-	private double translateArray[] = new double[4]; // [mousePressStartX, mousePressStartY, oldOffsetX, oldOffsetY] (für das Verschieben benötigt)
+	private double translateArray[] = new double[4]; // [mousePressStartX, mousePressStartY, oldOffsetX, oldOffsetY] (fï¿½r das Verschieben benï¿½tigt)
 
 	
 	public FlughafenController(Flughafen model, FlughafenView view) {
@@ -22,12 +22,14 @@ public class FlughafenController {
 		Stage stage= this.view.getStage();
 		
 		canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, event->{
+			canvas.setCursor(Cursor.HAND);
 			translateArray[0] = event.getX();		// speichert die Startposition des Draggings
 			translateArray[1] = event.getY();
 			translateArray[2] = 0;					// die seither vergangene Verschiebung (0, es wurde ja gerade erst geklickt)
 			translateArray[3] = 0;
 		});
 		
+
 		canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, event ->{
 			double xOffset = event.getX()-translateArray[0]; // die Verschiebung relativ zur Startposition des DragEvents
 			double yOffset = event.getY()-translateArray[1];
@@ -36,6 +38,10 @@ public class FlughafenController {
 			translateArray[2] = xOffset; // die neue Verschiebung (relativ zum Startpunkt des DragEvents) wird gespeichert
 			translateArray[3] = yOffset;
 			this.view.drawCanvas(); // kann spaeter raus
+		});
+		
+		canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, event ->{
+			canvas.setCursor(Cursor.DEFAULT);
 		});
 		
 		canvas.addEventHandler(ScrollEvent.SCROLL, e->{
@@ -53,15 +59,6 @@ public class FlughafenController {
 		this.view.drawCanvas();		// kann spaeter raus	
 }
 
-	public static double compare(double value, double min, double max){
-		if(Double.compare(value, min)<0){
-			return min;
-		}
-		if(Double.compare(value, max)>0){
-			return max;
-		}
-		return value;
-	}
 	
 }
 	
