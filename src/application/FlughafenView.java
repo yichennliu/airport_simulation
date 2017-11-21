@@ -38,7 +38,12 @@ public class FlughafenView {
 		this.gc = canvas.getGraphicsContext2D();
 		root.getChildren().add(canvas);
 		this.setInitialZoomAndOffset(model.getNodes());
-		root.setStyle("-fx-border-color:red"); ///////////////////A: um border zu sehen 
+		
+		flugzeugBilder.add(new Image("/application/source/Images/flugzeugrechts.png"));
+		flugzeugBilder.add(new Image("/application/source/Images/flugzeugYamailinks.png"));
+		flugzeugBilder.add(new Image("/application/source/Images/flugzeugYamaioben.png"));
+		flugzeugBilder.add(new Image("/application/source/Images/flugzeugYamaiunten.png"));
+
 		this.scene = new Scene(root);
 		this.stage.setScene(scene);
 		this.stage.setTitle("Flughafen");
@@ -135,8 +140,7 @@ public class FlughafenView {
 	}
 
 	public void zoomTo(double deltaY, double absoluteX, double absoluteY, double zoomAmount) {
-		if (deltaY < 0)
-			zoomAmount = -zoomAmount;
+		if (deltaY < 0)	zoomAmount = -zoomAmount;
 		double zoomFactorNeu = zoomAmount + this.zoomFactor;
 		double relX = (absoluteX - this.offsetX) / this.zoomFactor; // die relative "Model X-Koordinate", auf die der
 																	// Mauszeiger zeigt
@@ -183,42 +187,14 @@ public class FlughafenView {
 
 	public void flugzeugBild() {
 
-			double breite =60.5; 
-			double hoehe=60.5;
-		flugzeugBilder.add(new Image("/application/source/Images/flugzeugrechts.png"));
-		flugzeugBilder.add(new Image("/application/source/Images/flugzeugYamailinks.png"));
-		flugzeugBilder.add(new Image("/application/source/Images/flugzeugYamaioben.png"));
-		flugzeugBilder.add(new Image("/application/source/Images/flugzeugYamaiunten.png"));
-
-		Image flugzeugrechts = flugzeugBilder.get(0);
-		Image flugzeugYamailinks= flugzeugBilder.get(1);
-		Image flugzeugYamaioben = flugzeugBilder.get(2);
-		Image flugzeugYamaiunten = flugzeugBilder.get(3);
-		
-		/*Image image = new Image("/application/source/Images/flugzeugrechts.png",60,60,false, false);
-		ImageView imageView = new ImageView(image);*/
-		//root.getChildren().addAll(new ImageView(flugzeugYamaiunten ),new ImageView(flugzeugYamailinks));
-		
-		
-		this.gc.drawImage(flugzeugYamaiunten ,  1*this.zoomFactor+this.offsetY, 1*this.zoomFactor+this.offsetY,
-				breite,
-				hoehe);
-		
-		/** also: das klappt doch schon mal ganz gut ;) Die Sache ist, dass alles andere �ber das Canvas generiert wird.
-		das bedeutet, dass alles �ber die Funktionen den GraphicsContext, der hier als this.gc ansprechbar ist, gemalt wird.
-		Und Konkret hei�t das: Alles, was gemalt wird, wird �ber die Funktionen von this.gc gemalt, f�r Bilder gibt es die Funktion
-		
-		Image planeImage = new Image("/application/source/Images/flugzeugrechts.png");
-		this.gc.drawImage(planeImage,
-						  x*this.zoomFactor+this.offsetY,   (
-						  y*this.zoomFactor+this.offsetY,
-						  <breite>,
-						  <hoehe>);
-		
-		schau mal ob es so klappt! Achso: das Bild w�rde ich gleihc am anfang, wenn der Konstruktor aufgerufen wird,
-		in eine ArrayList<Image> laden, dann muss es incht in jedem Rechenschritt neu geladen werden
-		**/
+			double breite = 60.5; 
+			double hoehe = 60.5;
 	
+			this.gc.drawImage(flugzeugBilder.get(0) ,  
+					1*this.zoomFactor+this.offsetX, 
+					1*this.zoomFactor+this.offsetY,
+					breite,
+					hoehe);
 	}
 
 }
