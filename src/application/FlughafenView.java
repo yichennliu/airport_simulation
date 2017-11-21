@@ -28,8 +28,9 @@ public class FlughafenView {
 	private double zoomFactor = 1.0;
 	private double offsetX = 0.0; // absoluter XOffset (verschiebt die Zeichnung auf dem Canvas)
 	private double offsetY = 0.0; // absoluter YOffset
-	Group root = new Group(); ///////////////////A: group auf stackpane geÃ¤ndert 
-
+	Group root = new Group(); 
+	ArrayList<Image> flugzeugBilder = new ArrayList<Image>();
+	
 	public FlughafenView(Flughafen model, Stage stage) {
 		this.model = model;
 		this.stage = stage;
@@ -182,14 +183,30 @@ public class FlughafenView {
 
 	public void flugzeugBild() {
 
+			double breite =60.5; 
+			double hoehe=60.5;
+		flugzeugBilder.add(new Image("/application/source/Images/flugzeugrechts.png"));
+		flugzeugBilder.add(new Image("/application/source/Images/flugzeugYamailinks.png"));
+		flugzeugBilder.add(new Image("/application/source/Images/flugzeugYamaioben.png"));
+		flugzeugBilder.add(new Image("/application/source/Images/flugzeugYamaiunten.png"));
+
+		Image flugzeugrechts = flugzeugBilder.get(0);
+		Image flugzeugYamailinks= flugzeugBilder.get(1);
+		Image flugzeugYamaioben = flugzeugBilder.get(2);
+		Image flugzeugYamaiunten = flugzeugBilder.get(3);
 		
-		Image image = new Image("/application/source/Images/flugzeugrechts.png",60,60,false, false);
-		ImageView imageView = new ImageView(image);
-		root.getChildren().add(imageView);
+		/*Image image = new Image("/application/source/Images/flugzeugrechts.png",60,60,false, false);
+		ImageView imageView = new ImageView(image);*/
+		//root.getChildren().addAll(new ImageView(flugzeugYamaiunten ),new ImageView(flugzeugYamailinks));
 		
-		/** also: das klappt doch schon mal ganz gut ;) Die Sache ist, dass alles andere über das Canvas generiert wird.
-		das bedeutet, dass alles über die Funktionen den GraphicsContext, der hier als this.gc ansprechbar ist, gemalt wird.
-		Und Konkret heißt das: Alles, was gemalt wird, wird über die Funktionen von this.gc gemalt, für Bilder gibt es die Funktion
+		
+		this.gc.drawImage(flugzeugYamaiunten ,  1*this.zoomFactor+this.offsetY, 1*this.zoomFactor+this.offsetY,
+				breite,
+				hoehe);
+		
+		/** also: das klappt doch schon mal ganz gut ;) Die Sache ist, dass alles andere ï¿½ber das Canvas generiert wird.
+		das bedeutet, dass alles ï¿½ber die Funktionen den GraphicsContext, der hier als this.gc ansprechbar ist, gemalt wird.
+		Und Konkret heiï¿½t das: Alles, was gemalt wird, wird ï¿½ber die Funktionen von this.gc gemalt, fï¿½r Bilder gibt es die Funktion
 		
 		Image planeImage = new Image("/application/source/Images/flugzeugrechts.png");
 		this.gc.drawImage(planeImage,
@@ -198,7 +215,7 @@ public class FlughafenView {
 						  <breite>,
 						  <hoehe>);
 		
-		schau mal ob es so klappt! Achso: das Bild würde ich gleihc am anfang, wenn der Konstruktor aufgerufen wird,
+		schau mal ob es so klappt! Achso: das Bild wï¿½rde ich gleihc am anfang, wenn der Konstruktor aufgerufen wird,
 		in eine ArrayList<Image> laden, dann muss es incht in jedem Rechenschritt neu geladen werden
 		**/
 	
