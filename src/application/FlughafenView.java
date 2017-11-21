@@ -28,12 +28,13 @@ public class FlughafenView {
 	private double zoomFactor = 1.0;
 	private double offsetX = 0.0; // absoluter XOffset (verschiebt die Zeichnung auf dem Canvas)
 	private double offsetY = 0.0; // absoluter YOffset
-
+	Group root = new Group();
+	
 	public FlughafenView(Flughafen model, Stage stage) {
 		this.model = model;
 		this.stage = stage;
 		
-		Group root = new Group();
+		
 		this.canvas = new Canvas(width,height);
 		this.gc = canvas.getGraphicsContext2D();
 		
@@ -60,6 +61,7 @@ public class FlughafenView {
 		Collection<Node> nodes = model.getNodes();
 		List<Plane> planes = model.getPlanes();
 		drawNodes(nodes);
+		flugzeugBild();
 	}
 	
 	private void drawNodes(Collection <Node> nodes) {
@@ -165,6 +167,14 @@ public class FlughafenView {
 	}
 	
 	
+	public void flugzeugBild() {
+		
+	//	Group root1= new Group();
+		
+		  ImageView image = new ImageView("/application/source/Images/flugzeugrechts.png");
+		
+			root.getChildren().addAll(image);
+	}
 	
 	
 	
