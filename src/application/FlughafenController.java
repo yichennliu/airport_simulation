@@ -22,6 +22,7 @@ public class FlughafenController {
 		Stage stage= this.view.getStage();
 		
 		canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, event->{
+			canvas.setCursor(Cursor.HAND);
 			translateArray[0] = event.getX();		// speichert die Startposition des Draggings
 			translateArray[1] = event.getY();
 			translateArray[2] = 0;					// die seither vergangene Verschiebung (0, es wurde ja gerade erst geklickt)
@@ -29,7 +30,7 @@ public class FlughafenController {
 		});
 		
 		canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, event ->{	
-			canvas.setCursor(Cursor.HAND);
+			canvas.setCursor(Cursor.CLOSED_HAND);
 			double xOffset = event.getX()-translateArray[0]; // die Verschiebung relativ zur Startposition des DragEvents
 			double yOffset = event.getY()-translateArray[1];
 			view.setOffsetX(view.getOffsetX()-translateArray[2]+xOffset); // um richtig zu verschieben, muss vom alten Offset die alte Verschiebung wieder weggenommen werden, bevor die neue addiert wird
