@@ -1,6 +1,7 @@
 package application;
 
 import application.model.*;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -27,7 +28,7 @@ public class FlughafenController {
 			translateArray[3] = 0;
 		});
 		
-		canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, event ->{		
+		canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, event ->{
 			double xOffset = event.getX()-translateArray[0]; // die Verschiebung relativ zur Startposition des DragEvents
 			double yOffset = event.getY()-translateArray[1];
 			view.setOffsetX(view.getOffsetX()-translateArray[2]+xOffset); // um richtig zu verschieben, muss vom alten Offset die alte Verschiebung wieder weggenommen werden, bevor die neue addiert wird

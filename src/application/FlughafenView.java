@@ -147,7 +147,7 @@ public class FlughafenView {
 		canvas.setHeight(height);
 		this.drawCanvas();
 	}
-	
+
 	public void setOffsetX(double offsetX) {
 		this.offsetX = offsetX;
 	}
