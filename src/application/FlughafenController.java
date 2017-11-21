@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 public class FlughafenController {
 	private FlughafenView view;
 	private Flughafen model;
-	private double translateArray[] = new double[4]; // [mousePressStartX, mousePressStartY, oldOffsetX, oldOffsetY] (für das Verschieben benötigt)
+	private double translateArray[] = new double[4]; // [mousePressStartX, mousePressStartY, oldOffsetX, oldOffsetY] (fï¿½r das Verschieben benï¿½tigt)
 
 	
 	public FlughafenController(Flughafen model, FlughafenView view) {
@@ -35,11 +35,13 @@ public class FlughafenController {
 			translateArray[2] = xOffset; // die neue Verschiebung (relativ zum Startpunkt des DragEvents) wird gespeichert
 			translateArray[3] = yOffset;
 			this.view.drawCanvas(); // kann spaeter raus
+			
 		});
 		
 		canvas.addEventHandler(ScrollEvent.SCROLL, e->{
 			view.zoomTo(e.getDeltaY(), e.getX(), e.getY(),3.0);
 			view.drawCanvas(); // kann spaeter raus
+			
 		});
 		
 		stage.widthProperty().addListener((observableValue, oldWidth, newWidth) -> { // bei Skalierung des Fensters skaliert das Canvas mit
