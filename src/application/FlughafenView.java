@@ -185,15 +185,22 @@ public class FlughafenView {
 		
 		Image image = new Image("/application/source/Images/flugzeugrechts.png",60,60,false, false);
 		ImageView imageView = new ImageView(image);
-	
-		
-	//	imageView .fitWidthProperty().bind(scene.widthProperty());
-	
-	//	imageView .setPreserveRatio(true);
-
-		
 		root.getChildren().add(imageView);
-	
+		
+		/** also: das klappt doch schon mal ganz gut ;) Die Sache ist, dass alles andere über das Canvas generiert wird.
+		das bedeutet, dass alles über die Funktionen den GraphicsContext, der hier als this.gc ansprechbar ist, gemalt wird.
+		Und Konkret heißt das: Alles, was gemalt wird, wird über die Funktionen von this.gc gemalt, für Bilder gibt es die Funktion
+		
+		Image planeImage = new Image("/application/source/Images/flugzeugrechts.png");
+		this.gc.drawImage(planeImage,
+						  x*this.zoomFactor+this.offsetY,   (
+						  y*this.zoomFactor+this.offsetY,
+						  <breite>,
+						  <hoehe>);
+		
+		schau mal ob es so klappt! Achso: das Bild würde ich gleihc am anfang, wenn der Konstruktor aufgerufen wird,
+		in eine ArrayList<Image> laden, dann muss es incht in jedem Rechenschritt neu geladen werden
+		**/
 	
 	}
 
