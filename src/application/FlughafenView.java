@@ -48,7 +48,6 @@ public class FlughafenView {
 		this.stage.setScene(scene);
 		this.stage.setTitle("Flughafen");
 		this.stage.show();
-		
 	}
 
 	public Stage getStage() {
@@ -187,14 +186,14 @@ public class FlughafenView {
 
 	public void flugzeugBild() {
 
-			double breite = 60.5; 
-			double hoehe = 60.5;
+			double breite = 2; 
+			double hoehe = 2;
 	
 			this.gc.drawImage(flugzeugBilder.get(0) ,  
 					1*this.zoomFactor+this.offsetX, 
 					1*this.zoomFactor+this.offsetY,
-					breite,
-					hoehe);
+					breite*this.zoomFactor,
+					hoehe*this.zoomFactor);
 	}
 
 }
