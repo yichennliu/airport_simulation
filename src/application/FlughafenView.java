@@ -40,9 +40,6 @@ public class FlughafenView {
 		this.setInitialZoomAndOffset(model.getNodes());
 		
 		flugzeugBilder.add(new Image("/application/source/Images/flugzeugrechts.png"));
-		flugzeugBilder.add(new Image("/application/source/Images/flugzeugYamailinks.png"));
-		flugzeugBilder.add(new Image("/application/source/Images/flugzeugYamaioben.png"));
-		flugzeugBilder.add(new Image("/application/source/Images/flugzeugYamaiunten.png"));
 
 		this.scene = new Scene(root);
 		this.stage.setScene(scene);
@@ -185,15 +182,23 @@ public class FlughafenView {
 	}
 
 	public void flugzeugBild() {
-
+		/* wenn ein Planeobjekt hier übergeben werden würde und man weiß, von welchem zu welchem Node das Flugzeug gerade fliegt (A zu B),
+		 * lässt sich der Drehwinkel folgendermaßen berechnen:
+		 * Ax = x-Koordinate Punkt A, Ay = y-Koordinate von Punkt A, Bx = ....
+		 * double winkel = Math.aSin( (By - Ay) / Math.sqrt(Math.pow( (Bx-Ax),2) ) + Math.pow( (By-Ay),2 ) ));
+		 */
 			double breite = 2; 
 			double hoehe = 2;
-	
+			double x =3*this.zoomFactor+this.offsetX; // bei rotation muesste hier breite/2 und
+			double y = 3*this.zoomFactor+this.offsetY;// hier hoehe/2 gerechnet werden
+			this.gc.translate(x, y);
+			this.gc.rotate(90);
 			this.gc.drawImage(flugzeugBilder.get(0) ,  
-					1*this.zoomFactor+this.offsetX, 
-					1*this.zoomFactor+this.offsetY,
+					0,0,
 					breite*this.zoomFactor,
 					hoehe*this.zoomFactor);
+			this.gc.rotate(-90);
+			this.gc.translate(-x,-y);
 	}
 
 }
