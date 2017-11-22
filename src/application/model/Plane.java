@@ -23,7 +23,7 @@ public class Plane {
 	}
 	
 	public Node getLastNode() {
-		return this.getLastNode();
+		return this.lastNode;
 	}
 	
 }
