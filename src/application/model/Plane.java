@@ -1,11 +1,14 @@
 package application.model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Plane {
 
 	private List<Targettype> waypoints = new ArrayList<Targettype>();
+	private List<Node> path = new LinkedList<Node>(); 
+	
 	private int inittime;
 	private Node lastNode = null;
 	
