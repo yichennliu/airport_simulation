@@ -3,6 +3,7 @@ package application;
 import application.model.*;
 import application.model.Node;
 import javafx.stage.Stage;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -29,6 +30,7 @@ public class FlughafenView {
 	private double offsetX = 0.0; // absoluter XOffset (verschiebt die Zeichnung auf dem Canvas)
 	private double offsetY = 0.0; // absoluter YOffset
 	Group root = new Group(); 
+	StackPane layout= new StackPane();
 	ArrayList<Image> flugzeugBilder = new ArrayList<Image>();
 	
 	public FlughafenView(Flughafen model, Stage stage) {
@@ -36,7 +38,7 @@ public class FlughafenView {
 		this.stage = stage;
 		this.canvas = new Canvas(width, height);
 		this.gc = canvas.getGraphicsContext2D();
-		root.getChildren().add(canvas);
+		root.getChildren().addAll(canvas,layout);
 		this.setInitialZoomAndOffset(model.getNodes());
 		
 		flugzeugBilder.add(new Image("/application/source/Images/flugzeugrechts.png"));
@@ -60,7 +62,8 @@ public class FlughafenView {
 		Collection<Node> nodes = model.getNodes();
 		List<Plane> planes = model.getPlanes();
 		drawNodes(nodes);
-		flugzeugBild();
+	//	flugzeugBild();
+		flugzeugBildaida();
 	}
 
 	private void drawNodes(Collection<Node> nodes) {
@@ -181,24 +184,63 @@ public class FlughafenView {
 		return this.offsetY;
 	}
 
-	public void flugzeugBild() {
-		/* wenn ein Planeobjekt hier übergeben werden würde und man weiß, von welchem zu welchem Node das Flugzeug gerade fliegt (A zu B),
-		 * lässt sich der Drehwinkel folgendermaßen berechnen:
-		 * Ax = x-Koordinate Punkt A, Ay = y-Koordinate von Punkt A, Bx = ....
-		 * double winkel = Math.aSin( (By - Ay) / Math.sqrt(Math.pow( (Bx-Ax),2) ) + Math.pow( (By-Ay),2 ) ));
-		 */
-			double breite = 2; 
-			double hoehe = 2;
-			double x =3*this.zoomFactor+this.offsetX; // bei rotation muesste hier breite/2 und
-			double y = 3*this.zoomFactor+this.offsetY;// hier hoehe/2 gerechnet werden
-			this.gc.translate(x, y);
-			this.gc.rotate(90);
-			this.gc.drawImage(flugzeugBilder.get(0) ,  
-					0,0,
-					breite*this.zoomFactor,
-					hoehe*this.zoomFactor);
-			this.gc.rotate(-90);
-			this.gc.translate(-x,-y);
+//	public void flugzeugBild() {
+//		/* wenn ein Planeobjekt hier ï¿½bergeben werden wï¿½rde und man weiï¿½, von welchem zu welchem Node das Flugzeug gerade fliegt (A zu B),
+//		 * lï¿½sst sich der Drehwinkel folgendermaï¿½en berechnen:
+//		 * Ax = x-Koordinate Punkt A, Ay = y-Koordinate von Punkt A, Bx = ....
+//		 * double winkel = Math.aSin( (By - Ay) / Math.sqrt(Math.pow( (Bx-Ax),2) ) + Math.pow( (By-Ay),2 ) ));
+//		 */
+//			double breite = 2; 
+//			double hoehe = 2;
+//			double x =3*this.zoomFactor+this.offsetX; // bei rotation muesste hier breite/2 und
+//			double y = 3*this.zoomFactor+this.offsetY;// hier hoehe/2 gerechnet werden
+//			this.gc.translate(x, y);
+//			this.gc.rotate(90);
+//			this.gc.drawImage(flugzeugBilder.get(0) ,  
+//					0,0,
+//					breite*this.zoomFactor,
+//					hoehe*this.zoomFactor);
+//			this.gc.rotate(-90);
+//			this.gc.translate(-x,-y);
+//	}
+//	
+	
+	public void flugzeugBildaida() {
+
+		double breite = 5;
+		double hoehe = 5;
+		double x = 3 * this.zoomFactor + this.offsetX; // bei rotation muesste hier breite/2 und
+		double y = 3 * this.zoomFactor + this.offsetY;// hier hoehe/2 gerechnet werden
+		Image image = new Image("/application/source/Images/flugzeugrechts.png");
+		ImageView iv1 = new ImageView();
+		iv1.setImage(image);
+		 iv1.setFitWidth(breite * this.zoomFactor);
+		 iv1.setFitHeight(hoehe * this.zoomFactor );
+         iv1.setPreserveRatio(true);
+         iv1.setSmooth(true);
+         Rectangle2D viewportRect = new Rectangle2D(331, 3335, 0, 10);
+         iv1.setViewport(viewportRect);
+     	iv1.setRotate(90);
+		layout.getChildren().add(iv1);
+	
+		
+		
 	}
+
+	
+	// funktion get beide nodes fÃ¼r plane IN PLANE --> dann winkle zwischen a und b in view berechnen 
+	//
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }
