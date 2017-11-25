@@ -3,6 +3,9 @@ package application;
 import application.model.*;
 import application.model.Node;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import javafx.animation.PathTransition;
+import javafx.animation.Timeline;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
@@ -15,7 +18,13 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+
 import javafx.scene.shape.Rectangle;
+
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +62,7 @@ public class FlughafenView {
 		this.stage.setScene(scene);
 		this.stage.setTitle("Flughafen");
 		this.stage.show();
+		flugtest();
 	}
 
 	public Stage getStage() {
@@ -68,8 +78,10 @@ public class FlughafenView {
 		Collection<Node> nodes = model.getNodes();
 		List<Plane> planes = model.getPlanes();
 		drawNodes(nodes);
-		 // flugzeugBild();
+	 // flugzeugBild();
 		flugzeugBildaida();
+
+//		flugzeugBildaida();
 	}
 
 	private void drawNodes(Collection<Node> nodes) {
@@ -240,6 +252,52 @@ public class FlughafenView {
 //	 this.gc.rotate(-90);
 //	 this.gc.translate(-x,-y);
 //	 }
+
+	private void flugtest() {
+		ImageView imageV = new ImageView(flugzeugBilder.get(0));
+		root.getChildren().add(imageV);
+		imageV.setFitWidth(5 * this.zoomFactor);
+		imageV.setFitHeight(5 * this.zoomFactor );
+		Path path = new Path();
+		path.getElements().add(new MoveTo(0,0));
+		path.getElements().add(new LineTo(canvas.getWidth(),canvas.getHeight()));
+		path.getElements().add(new LineTo(0,0));
+		PathTransition pt = new PathTransition();
+		pt.setDuration(Duration.millis(2000));
+		pt.setCycleCount(Timeline.INDEFINITE);
+		pt.setPath(path);
+		pt.setNode(imageV);
+		pt.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
+		pt.play();
+	}
+	
+//	public void flugzeugBildaida() {
+//		// okay - damit sprengst du den speicher - immer wenn gezoomt wird, etc., wird diese Funktion aufgerufen - das hat zur Folge, dass
+//		// immer ein neues Image + ImageView erstellt wird, die dann angezeigt werden muessen. Oben muss als private Variable eine List rein, die die Planes enthaelt. 
+//		// und nur alle Flugzeuge, die da drin sind, werden gemalt (!) Bei mir ist nach 10 sekunden scrollen der Speicher voll ;) 
+//		double breite = 5;
+//		double hoehe = 5;
+//		double x = 3 * this.zoomFactor + this.offsetX; // bei rotation muesste hier breite/2 und
+//		double y = 3 * this.zoomFactor + this.offsetY;// hier hoehe/2 gerechnet werden
+//		Image image = new Image("/application/source/Images/flugzeugrechts.png");
+//		ImageView iv1 = new ImageView();
+//		iv1.setImage(image);
+//		iv1.setFitWidth(breite * this.zoomFactor);
+//		iv1.setFitHeight(hoehe * this.zoomFactor );
+//        iv1.setPreserveRatio(true);
+//        iv1.setSmooth(true);
+//        Rectangle2D viewportRect = new Rectangle2D(331, 3335, 0, 10);
+//        iv1.setViewport(viewportRect);
+//     	iv1.setRotate(90);
+//		layout.getChildren().add(iv1);
+//	
+//		
+//		
+//	}
+
+	
+	// funktion get beide nodes f�r plane IN PLANE --> dann winkle zwischen a und b in view berechnen 
+
 	//
 	//
 	 public void flugzeugBildaida() {
