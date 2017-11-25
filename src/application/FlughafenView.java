@@ -73,10 +73,9 @@ public class FlughafenView {
 		Collection<Node> nodes = model.getNodes();
 		List<Plane> planes = model.getPlanes();
 		drawNodes(nodes);
-
 		flugzeugBildaida();
 	
-
+	}
 	private void drawNodes(Collection<Node> nodes) {
 		for (Node node : nodes)
 			drawNode(node);
@@ -285,35 +284,11 @@ public class FlughafenView {
 		layout.getChildren().add(iv1);
 	
 		
-		
 	}
 
 	
 	// funktion get beide nodes f�r plane IN PLANE --> dann winkle zwischen a und b in view berechnen 
-	//
-	 public void flugzeugBildaida() {
-	 double breite = 5;
-	 double hoehe = 5;
-	 double x = 3 * this.zoomFactor + this.offsetX; // bei rotation muesste hier breite/2 und
-	 double y = 3 * this.zoomFactor + this.offsetY;// hier hoehe/2 gerechnet werden
-	 Image image = new Image("/application/source/Images/flugzeugrechts.png");
-	 ImageView iv1 = new ImageView();
-	 iv1.setImage(image);
-	 iv1.setFitWidth(breite * this.zoomFactor);
-	 iv1.setFitHeight(hoehe * this.zoomFactor );
-	 iv1.autosize();
-	 iv1.setPreserveRatio(true);
-	 iv1.setSmooth(true);
-	 // Rectangle2D viewportRect = new Rectangle2D(35, 35, 0, 10);
-	 // iv1.setViewport(viewportRect);
-	 iv1.setRotate(190);
-	 layout.getChildren().add(iv1);
-	 iv1.setFitWidth(breite * this.zoomFactor);
-	 iv1.setFitHeight(hoehe * this.zoomFactor );
 	
-	
-	 }
-//
 //	public void flugzeugBildaida() {
 //
 //		double startX = 600;
