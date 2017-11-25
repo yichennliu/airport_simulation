@@ -4,7 +4,10 @@ import application.model.*;
 import application.model.Node;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.animation.Animation;
+import javafx.animation.ParallelTransition;
 import javafx.animation.PathTransition;
+import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.*;
@@ -43,6 +46,7 @@ public class FlughafenView {
 	Group root = new Group();
 	StackPane layout = new StackPane();
 	ArrayList<Image> flugzeugBilder = new ArrayList<Image>();
+	private Object target;
 
 	public FlughafenView(Flughafen model, Stage stage) {
 		this.model = model;
@@ -245,22 +249,34 @@ public class FlughafenView {
 //	 this.gc.translate(-x,-y);
 //	 }
 	//
-	private void flugtest() {
+	private void flugtest(Collection<Node> nodes) {
 		ImageView imageV = new ImageView(flugzeugBilder.get(0));
 		root.getChildren().add(imageV);
 		imageV.setFitWidth(5 * this.zoomFactor);
-		imageV.setFitHeight(5 * this.zoomFactor );
-		Path path = new Path();
-		path.getElements().add(new MoveTo(0,0));
-		path.getElements().add(new LineTo(canvas.getWidth(),canvas.getHeight()));
-		path.getElements().add(new LineTo(0,0));
+		imageV.setFitHeight(5 * this.zoomFactor);
+		Iterator<Node> targets= nodes.iterator();
 		PathTransition pt = new PathTransition();
-		pt.setDuration(Duration.millis(2000));
-		pt.setCycleCount(Timeline.INDEFINITE);
-		pt.setPath(path);
-		pt.setNode(imageV);
-		pt.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
-		pt.play();
+		while(targets.hasNext()){
+			Node targ= targets.next();	
+			Path path = new Path();
+			path.getElements().add(new MoveTo(targ.getX(),targ.getY()));
+//			path.getElements().add(new LineTo(targ.getX()+0.2,targ.getY()+0.2));
+//			path.getElements().add(new LineTo(0,0));
+			pt.setDuration(Duration.millis(2000));
+			pt.setCycleCount(Animation.INDEFINITE);
+			pt.setPath(path);
+			pt.setNode(imageV);
+			pt.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
+			
+		}
+		
+		RotateTransition rotate = new RotateTransition(); 
+		rotate.setByAngle(360);
+		rotate.setCycleCount(2);
+		
+		ParallelTransition pl= new ParallelTransition(imageV,pt,rotate);
+		pl.play();
+		
 	}
 	
 	public void flugzeugBildaida() {
