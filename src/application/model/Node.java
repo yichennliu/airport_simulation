@@ -2,9 +2,6 @@ package application.model;
 
 import java.util.*;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
-
 public class Node {
 
 	private double x;
@@ -15,10 +12,10 @@ public class Node {
 	private Map<String, Node> conflicts;
 	private Targettype targettype = null;
 	private int waittime;
-	private List<Integer> reserved = new ArrayList<Integer>();
+	private Map<Integer,Plane> reserved = new HashMap<Integer,Plane>();
 	
-	public Node(double x, double y, String name, Kind kind, @NotNull Map<String, Node> to, 
-			@NotNull Map<String, Node> conflicts, @Nullable Targettype targettype, int waittime) {	
+	public Node(double x, double y, String name, Kind kind, Map<String, Node> to, 
+			 Map<String, Node> conflicts,  Targettype targettype, int waittime) {	
 		this.x = x;
 		this.y = y;
 		this.name = name;
@@ -45,7 +42,6 @@ public class Node {
 		return this.kind;
 	}
 	
-	@NotNull
 	public Collection<Node> getTo() {
 		return this.to.values();
 	}
@@ -57,7 +53,6 @@ public class Node {
 		this.to.put(node.getName(), node);
 	}
 
-	@NotNull
 	public Collection<Node> getConflicts() {
 		return this.conflicts.values();
 	}
@@ -69,7 +64,6 @@ public class Node {
 		this.conflicts.put(conflict.getName(), conflict);
 	}
 
-	@Nullable
 	public Targettype getTargettype() {
 		return this.targettype;
 	}
@@ -78,8 +72,13 @@ public class Node {
 		return this.waittime;
 	}
 	
-	public List<Integer> getReserved() {
+	
+	public Map<Integer,Plane> getReserved() {
 		return this.reserved;
+	}
+	
+	public void putReserved(Integer time,Plane plane) {
+		this.reserved.put(time, plane);
 	}
 	
 }

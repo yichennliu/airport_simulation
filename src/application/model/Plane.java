@@ -7,7 +7,7 @@ import java.util.List;
 public class Plane {
 
 	private List<Targettype> waypoints = new ArrayList<Targettype>();
-	private List<Node> path = new LinkedList<Node>(); 
+	private Tuple<Node> currentNodes;
 	
 	private int inittime;
 	private Node lastNode = null;
