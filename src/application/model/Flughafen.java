@@ -2,8 +2,6 @@ package application.model;
 
 import java.util.*;
 
-import com.sun.istack.internal.NotNull;
-
 public class Flughafen {
 	private int maxplanes;
 	private List<Plane> planes;
@@ -11,7 +9,7 @@ public class Flughafen {
 	private Map<String, Node> nodes;
 	private static int time = 0;
 	
-	public Flughafen(int maxplanes, @NotNull List<Plane> planes, @NotNull List<Generator> generators, @NotNull Map<String, Node> nodes) {
+	public Flughafen(int maxplanes, List<Plane> planes, List<Generator> generators, Map<String, Node> nodes) {
 		this.maxplanes = maxplanes;
 		this.planes = planes;
 		this.generators = generators;
