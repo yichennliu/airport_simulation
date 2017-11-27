@@ -13,26 +13,26 @@ import java.util.Deque;
 
 public class PathFinder {
 	
-	/*
+	/**
 	 * @param nodes Die zu durchsuchenden Nodes
 	 * @param start Der Startpunkt der Suche
 	 * @param end Der Endpunkt der Suche
-	 * @param plane Das Fluzeug, für das die Suche durchegführt werden soll
+	 * @param plane Das Fluzeug, fï¿½r das die Suche durchegfï¿½hrt werden soll
 	 * @param starttime Die Zeit im Modell, bei der die Suche losgehen soll
 	*/
-
 	public static void startSearch(Collection<Node> nodes, Node start, Node end, Plane plane,int starttime) {
-		Map<Node,Breadcrum> nodesStatus = new HashMap<Node,Breadcrum>(); // verknüpft Nodes mit der Information, ob und Wie sie besucht wurden
+		Map<Node,Breadcrum> nodesStatus = new HashMap<Node,Breadcrum>(); // verknï¿½pft Nodes mit der Information, ob und Wie sie besucht wurden
 		for(Node node:nodes) {
 			nodesStatus.put(node, new Breadcrum()); // alle Nodes in die Map schreiben (als UNKNOWN)
-			if(node==start) nodesStatus.get(node).setTime(starttime); // für den Startnode wird angefangen zu zählen
+			if(node==start) nodesStatus.get(node).setTime(starttime); // fï¿½r den Startnode wird angefangen zu zï¿½hlen
 		}
 		if(find(start,end, start,plane,nodesStatus,new ArrayDeque<Node>(Arrays.asList(start))))
 			System.out.println("Es wurde ein Weg gefunden!");
 		else System.out.println("Es wurde kein Weg gefunden :(");
 	}
-	/*
-	 * @return gibt true zurück, falls ein Weg gefunden wurde, andernfalls false
+	
+	/**
+	 * @return gibt true zurï¿½ck, falls ein Weg gefunden wurde, andernfalls false
 	 */
 	private static boolean find(Node start, Node end, 
 		Node current, Plane plane, Map<Node,Breadcrum>nodesStatus, 
@@ -46,17 +46,17 @@ public class PathFinder {
 		for(Node child: current.getTo()) {
 			if(
 				nodesStatus.get(child).getStatus()==Status.UNKNOWN && // falls Knoten noch nicht entdeckt und
-				child.getReserved().get(currentTime+1)==null && 	  // zur Zeit für zwei Ticks nicht reserviert
-				child.getReserved().get(currentTime+2)==null 		  // <toDo: auf Conflicts checken (über Methode hasConflicts(Node,time)>
+				child.getReserved().get(currentTime+1)==null && 	  // zur Zeit fï¿½r zwei Ticks nicht reserviert
+				child.getReserved().get(currentTime+2)==null 		  // <toDo: auf Conflicts checken (ï¿½ber Methode hasConflicts(Node,time)>
 				) {
 					deq.addLast(child);
-					nodesStatus.get(child).setStatus(Status.SPOTTED);	// Status auf entdeckt ändern
+					nodesStatus.get(child).setStatus(Status.SPOTTED);	// Status auf entdeckt ï¿½ndern
 					nodesStatus.get(child).setTime(currentTime+1); 		// der Zeitpunkt, an dem der Node erreicht wird
 					nodesStatus.get(child).setFrom(current);			// From ist der jetzige Knoten (da er ihn entdeckt hat)
 				}
 		}
 		nodesStatus.get(current).setStatus(Status.DONE);				// alle Kinder-Knoten sind entdeckt, der Knoten kann 
-		deq.removeFirst();												// auf "DONE" gesetzt und aus der Warteschlange gelöscht werden
+		deq.removeFirst();												// auf "DONE" gesetzt und aus der Warteschlange gelï¿½scht werden
 		
 		if(deq.size()==0) return false;										// return false, wenn kein Weg gefunden werden kann
 		else return find(start,end,deq.peekFirst(),plane,nodesStatus,deq);  // die Breitensuche fortsetzen
