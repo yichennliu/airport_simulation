@@ -12,55 +12,65 @@ import java.util.Deque;
 
 
 public class PathFinder {
+	
+	/*
+	 * @param nodes Die zu durchsuchenden Nodes
+	 * @param start Der Startpunkt der Suche
+	 * @param end Der Endpunkt der Suche
+	 * @param plane Das Fluzeug, für das die Suche durchegführt werden soll
+	 * @param starttime Die Zeit im Modell, bei der die Suche losgehen soll
+	*/
 
 	public static void startSearch(Collection<Node> nodes, Node start, Node end, Plane plane,int starttime) {
-		Map<Node,Status> nodesStatus = new HashMap<Node,Status>(); // verknüpft Nodes mit der Information, ob und Wie sie besucht wurden
+		Map<Node,Breadcrum> nodesStatus = new HashMap<Node,Breadcrum>(); // verknüpft Nodes mit der Information, ob und Wie sie besucht wurden
 		for(Node node:nodes) {
-			nodesStatus.put(node, Status.UNKNOWN); // alle Nodes in die Map schreiben (als UNKNOWN)
+			nodesStatus.put(node, new Breadcrum()); // alle Nodes in die Map schreiben (als UNKNOWN)
 			if(node==start) nodesStatus.get(node).setTime(starttime); // für den Startnode wird angefangen zu zählen
 		}
-		find(start,end,null,start,plane,nodesStatus,new ArrayDeque<Node>(Arrays.asList(start)));
+		if(find(start,end, start,plane,nodesStatus,new ArrayDeque<Node>(Arrays.asList(start))))
+			System.out.println("Es wurde ein Weg gefunden!");
+		else System.out.println("Es wurde kein Weg gefunden :(");
 	}
-	
-	private static void savePath(Node node, Plane plane,Map<Node,Status>nodesStatus) {
-		int time;
-		while(node!=null) {
-			time = nodesStatus.get(node).time();
-			System.out.println("Node "+node.getName() +", Time: " + time);
-			node = nodesStatus.get(node).from();
-			
-		}
-
-	}
-	
-	private static void find(Node start, Node end, Node from, Node current, Plane plane, Map<Node,Status>nodesStatus, Deque<Node> deq) {
-		int currentTime = nodesStatus.get(current).time(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
-		if(current == end) {								//Todo: bis in alle Ewigkeit reservieren. UNd BEdingung: falls end nihct belegt ist
-			System.out.println("Node "+current.toString() +", Time: " + currentTime + " From: "+nodesStatus.get(current).from().toString());
-//			savePath(current,plane,nodesStatus);
-			return;
+	/*
+	 * @return gibt true zurück, falls ein Weg gefunden wurde, andernfalls false
+	 */
+	private static boolean find(Node start, Node end, 
+		Node current, Plane plane, Map<Node,Breadcrum>nodesStatus, 
+								Deque<Node> deq) 
+	{
+		int currentTime = nodesStatus.get(current).getTime(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
+		if(current == end) {									//<ToDo: bis in alle Ewigkeit reservieren. UNd BEdingung: falls end nicht belegt ist>
+			savePath(current,plane,nodesStatus);				
+			return true;
 		}	
 		for(Node child: current.getTo()) {
 			if(
-				nodesStatus.get(child)==Status.UNKNOWN && // falls Knoten noch nicht entdeckt und
-				child.getReserved().get(currentTime+1)==null && // zur Zeit für zwei Ticks nicht reserviert
-				child.getReserved().get(currentTime+2)==null // toDo: auf Conflicts checken (über MEthode hasConflicts(Node,time)
+				nodesStatus.get(child).getStatus()==Status.UNKNOWN && // falls Knoten noch nicht entdeckt und
+				child.getReserved().get(currentTime+1)==null && 	  // zur Zeit für zwei Ticks nicht reserviert
+				child.getReserved().get(currentTime+2)==null 		  // <toDo: auf Conflicts checken (über Methode hasConflicts(Node,time)>
 				) {
 					deq.addLast(child);
-					nodesStatus.put(child, Status.SPOTTED);
-					nodesStatus.get(child).setTime(currentTime+1); // der Zeitpunkt, an dem der Node erreicht wird
-					nodesStatus.get(child).setFrom(current);
-					
+					nodesStatus.get(child).setStatus(Status.SPOTTED);	// Status auf entdeckt ändern
+					nodesStatus.get(child).setTime(currentTime+1); 		// der Zeitpunkt, an dem der Node erreicht wird
+					nodesStatus.get(child).setFrom(current);			// From ist der jetzige Knoten (da er ihn entdeckt hat)
 				}
+		}
+		nodesStatus.get(current).setStatus(Status.DONE);				// alle Kinder-Knoten sind entdeckt, der Knoten kann 
+		deq.removeFirst();												// auf "DONE" gesetzt und aus der Warteschlange gelöscht werden
+		
+		if(deq.size()==0) return false;										// return false, wenn kein Weg gefunden werden kann
+		else return find(start,end,deq.peekFirst(),plane,nodesStatus,deq);  // die Breitensuche fortsetzen
+
+	}
+	
+	private static void savePath(Node node, Plane plane,Map<Node,Breadcrum>nodesStatus) {
+		int time;
+		while(node!=null) {
+			time = nodesStatus.get(node).getTime();
+			System.out.println("Node "+node.getName() +", Time: " + time);
+			node = nodesStatus.get(node).getFrom();
 			
 		}
-		
-		Node tempFrom = nodesStatus.get(current).from();
-		nodesStatus.put(current,Status.DONE);
-		nodesStatus.get(current).setFrom(from);
-		nodesStatus.get(current).setTime(currentTime);
-		deq.removeFirst();
-		find(start,end,current,deq.peekFirst(),plane,nodesStatus,deq);
 
 	}
 }
