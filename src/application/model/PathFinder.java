@@ -22,33 +22,45 @@ public class PathFinder {
 		find(start,end,null,start,plane,nodesStatus,new ArrayDeque<Node>(Arrays.asList(start)));
 	}
 	
-	private static boolean find(Node start, Node end, Node from, Node current, Plane plane, Map<Node,Status>nodesStatus, Deque<Node> deq) {
+	private static void savePath(Node node, Plane plane,Map<Node,Status>nodesStatus) {
+		int time;
+		while(node!=null) {
+			time = nodesStatus.get(node).time();
+			System.out.println("Node "+node.getName() +", Time: " + time);
+			node = nodesStatus.get(node).from();
+			
+		}
+
+	}
+	
+	private static void find(Node start, Node end, Node from, Node current, Plane plane, Map<Node,Status>nodesStatus, Deque<Node> deq) {
 		int currentTime = nodesStatus.get(current).time(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
 		if(current == end) {								//Todo: bis in alle Ewigkeit reservieren. UNd BEdingung: falls end nihct belegt ist
-			current.putReserved(currentTime, plane);
-			return true;
+			System.out.println("Node "+current.toString() +", Time: " + currentTime + " From: "+nodesStatus.get(current).from().toString());
+//			savePath(current,plane,nodesStatus);
+			return;
 		}	
 		for(Node child: current.getTo()) {
 			if(
 				nodesStatus.get(child)==Status.UNKNOWN && // falls Knoten noch nicht entdeckt und
 				child.getReserved().get(currentTime+1)==null && // zur Zeit für zwei Ticks nicht reserviert
 				child.getReserved().get(currentTime+2)==null // toDo: auf Conflicts checken (über MEthode hasConflicts(Node,time)
-			) {
-				deq.addLast(child);
-				nodesStatus.put(child, Status.SPOTTED);
-				nodesStatus.get(child).setTime(currentTime+1); // der Zeitpunkt, an dem der Node erreicht wird
-			}
+				) {
+					deq.addLast(child);
+					nodesStatus.put(child, Status.SPOTTED);
+					nodesStatus.get(child).setTime(currentTime+1); // der Zeitpunkt, an dem der Node erreicht wird
+					nodesStatus.get(child).setFrom(current);
+					
+				}
+			
 		}
 		
+		Node tempFrom = nodesStatus.get(current).from();
 		nodesStatus.put(current,Status.DONE);
+		nodesStatus.get(current).setFrom(from);
 		nodesStatus.get(current).setTime(currentTime);
 		deq.removeFirst();
-		
-		if(find(start,end,current,deq.peekFirst(),plane,nodesStatus,deq)) {
-			current.putReserved(currentTime, plane);
-			System.out.println("Node "+current.getName() +", Time: " + currentTime);
-			return true;
-		}
-		else return false;
+		find(start,end,current,deq.peekFirst(),plane,nodesStatus,deq);
+
 	}
 }
