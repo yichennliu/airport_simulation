@@ -123,11 +123,8 @@ public class FlughafenView {
 			break;
 
 		}
-		
-		
-		
-		
 		}
+		this.gc.fillText(node.getName(), x+5, y);
 
 		for (Node children : node.getTo()) {
 			gc.strokeLine(x, y, (children.getX() * zoomFactor) + offsetX, (children.getY() * zoomFactor) + offsetY);
