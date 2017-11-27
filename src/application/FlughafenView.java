@@ -3,13 +3,28 @@ package application;
 import application.model.*;
 import application.model.Node;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import javafx.animation.Animation;
+import javafx.animation.ParallelTransition;
+import javafx.animation.PathTransition;
+import javafx.animation.RotateTransition;
+import javafx.animation.Timeline;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,17 +43,19 @@ public class FlughafenView {
 	private double zoomFactor = 1.0;
 	private double offsetX = 0.0; // absoluter XOffset (verschiebt die Zeichnung auf dem Canvas)
 	private double offsetY = 0.0; // absoluter YOffset
-	Group root = new Group(); 
+	Group root = new Group();
+	StackPane layout = new StackPane();
 	ArrayList<Image> flugzeugBilder = new ArrayList<Image>();
-	
+	private Object target;
+
 	public FlughafenView(Flughafen model, Stage stage) {
 		this.model = model;
 		this.stage = stage;
 		this.canvas = new Canvas(width, height);
 		this.gc = canvas.getGraphicsContext2D();
-		root.getChildren().add(canvas);
+		root.getChildren().addAll(canvas, layout);
 		this.setInitialZoomAndOffset(model.getNodes());
-		
+
 		flugzeugBilder.add(new Image("/application/source/Images/flugzeugrechts.png"));
 
 		this.scene = new Scene(root);
@@ -60,9 +77,9 @@ public class FlughafenView {
 		Collection<Node> nodes = model.getNodes();
 		List<Plane> planes = model.getPlanes();
 		drawNodes(nodes);
-		flugzeugBild();
+		flugzeugBildaida();
+	
 	}
-
 	private void drawNodes(Collection<Node> nodes) {
 		for (Node node : nodes)
 			drawNode(node);
@@ -83,6 +100,33 @@ public class FlughafenView {
 			this.gc.setFill(Color.BLUE.darker());
 			break;
 		}
+
+		case concrete: {
+			this.gc.setStroke(Color.grayRgb(10, 1));
+			this.gc.setLineWidth(0.3);
+			this.gc.setFill(Color.grayRgb(10, 1));
+			break;
+
+		}
+		
+		case hangar: {
+			this.gc.setStroke(Color.DARKGREEN);
+			this.gc.setLineWidth(0.6);
+			this.gc.setFill(Color.DARKGREEN);
+			break;
+
+		}
+		case runway: {
+			this.gc.setStroke(Color.BLACK);
+			this.gc.setLineWidth(0.4);
+			this.gc.setFill(Color.BLACK);
+			break;
+
+		}
+		
+		
+		
+		
 		}
 
 		for (Node children : node.getTo()) {
@@ -136,7 +180,8 @@ public class FlughafenView {
 	}
 
 	public void zoomTo(double deltaY, double absoluteX, double absoluteY, double zoomAmount) {
-		if (deltaY < 0)	zoomAmount = -zoomAmount;
+		if (deltaY < 0)
+			zoomAmount = -zoomAmount;
 		double zoomFactorNeu = zoomAmount + this.zoomFactor;
 		double relX = (absoluteX - this.offsetX) / this.zoomFactor; // die relative "Model X-Koordinate", auf die der
 																	// Mauszeiger zeigt
@@ -181,24 +226,121 @@ public class FlughafenView {
 		return this.offsetY;
 	}
 
-	public void flugzeugBild() {
-		/* wenn ein Planeobjekt hier übergeben werden würde und man weiß, von welchem zu welchem Node das Flugzeug gerade fliegt (A zu B),
-		 * lässt sich der Drehwinkel folgendermaßen berechnen:
-		 * Ax = x-Koordinate Punkt A, Ay = y-Koordinate von Punkt A, Bx = ....
-		 * double winkel = Math.aSin( (By - Ay) / Math.sqrt(Math.pow( (Bx-Ax),2) ) + Math.pow( (By-Ay),2 ) ));
-		 */
-			double breite = 2; 
-			double hoehe = 2;
-			double x =3*this.zoomFactor+this.offsetX; // bei rotation muesste hier breite/2 und
-			double y = 3*this.zoomFactor+this.offsetY;// hier hoehe/2 gerechnet werden
-			this.gc.translate(x, y);
-			this.gc.rotate(90);
-			this.gc.drawImage(flugzeugBilder.get(0) ,  
-					0,0,
-					breite*this.zoomFactor,
-					hoehe*this.zoomFactor);
-			this.gc.rotate(-90);
-			this.gc.translate(-x,-y);
+//	 public void flugzeugBild() {
+//	 /* wenn ein Planeobjekt hier ï¿½bergeben werden wï¿½rde und man weiï¿½, von welchem
+//	 zu welchem Node das Flugzeug gerade fliegt (A zu B),
+//	 * lï¿½sst sich der Drehwinkel folgendermaï¿½en berechnen:
+//	 * Ax = x-Koordinate Punkt A, Ay = y-Koordinate von Punkt A, Bx = ....
+//	 * double winkel = Math.aSin( (By - Ay) / Math.sqrt(Math.pow( (Bx-Ax),2) ) +
+//	 Math.pow( (By-Ay),2 ) ));
+//	 */
+//	 double breite = 2;
+//	 double hoehe = 2;
+//	 double x =3*this.zoomFactor+this.offsetX; // bei rotation muesste hier
+//	// breite/2 und
+//	 double y = 3*this.zoomFactor+this.offsetY;// hier hoehe/2 gerechnet werden
+//	 this.gc.translate(x, y);
+//	 this.gc.rotate(90);
+//	 this.gc.drawImage(flugzeugBilder.get(0) ,
+//	 0,0,
+//	 breite*this.zoomFactor,
+//	 hoehe*this.zoomFactor);
+//	 this.gc.rotate(-90);
+//	 this.gc.translate(-x,-y);
+//	 }
+	//
+	private void flugtest(Collection<Node> nodes) {
+		ImageView imageV = new ImageView(flugzeugBilder.get(0));
+		root.getChildren().add(imageV);
+		imageV.setFitWidth(5 * this.zoomFactor);
+		imageV.setFitHeight(5 * this.zoomFactor);
+		Iterator<Node> targets= nodes.iterator();
+		PathTransition pt = new PathTransition();
+		while(targets.hasNext()){
+			Node targ= targets.next();	
+			Path path = new Path();
+			path.getElements().add(new MoveTo(targ.getX(),targ.getY()));
+//			path.getElements().add(new LineTo(targ.getX()+0.2,targ.getY()+0.2));
+//			path.getElements().add(new LineTo(0,0));
+			pt.setDuration(Duration.millis(2000));
+			pt.setCycleCount(Animation.INDEFINITE);
+			pt.setPath(path);
+			pt.setNode(imageV);
+			pt.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
+			
+		}
+		
+		RotateTransition rotate = new RotateTransition(); 
+		rotate.setByAngle(360);
+		rotate.setCycleCount(2);
+		
+		ParallelTransition pl= new ParallelTransition(imageV,pt,rotate);
+		pl.play();
+		
 	}
+	
+	public void flugzeugBildaida() {
+		// okay - damit sprengst du den speicher - immer wenn gezoomt wird, etc., wird diese Funktion aufgerufen - das hat zur Folge, dass
+		// immer ein neues Image + ImageView erstellt wird, die dann angezeigt werden muessen. Oben muss als private Variable eine List rein, die die Planes enthaelt. 
+		// und nur alle Flugzeuge, die da drin sind, werden gemalt (!) Bei mir ist nach 10 sekunden scrollen der Speicher voll ;) 
+		double breite = 5;
+		double hoehe = 5;
+		double x = 3 * this.zoomFactor + this.offsetX; // bei rotation muesste hier breite/2 und
+		double y = 3 * this.zoomFactor + this.offsetY;// hier hoehe/2 gerechnet werden
+		Image image = new Image("/application/source/Images/flugzeugrechts.png");
+		ImageView iv1 = new ImageView();
+		iv1.setImage(image);
+		iv1.setFitWidth(breite * this.zoomFactor);
+		iv1.setFitHeight(hoehe * this.zoomFactor );
+        iv1.setPreserveRatio(true);
+        iv1.setSmooth(true);
+        Rectangle2D viewportRect = new Rectangle2D(331, 3335, 0, 10);
+        iv1.setViewport(viewportRect);
+     	iv1.setRotate(90);
+		layout.getChildren().add(iv1);
+	
+		
+	}
+
+	
+	// funktion get beide nodes fï¿½r plane IN PLANE --> dann winkle zwischen a und b in view berechnen 
+	
+//	public void flugzeugBildaida() {
+//
+//		double startX = 600;
+//		double endX = 500;
+//		double startY = 400;
+//		double endY = 350;
+//
+//		DropShadow ds = new DropShadow();
+//		ds.setOffsetY(3.0);
+//		ds.setColor(Color.color(0.4, 0.4, 0.4));
+//
+//		Group rootzeug = new Group();
+//		ColorPicker picker = new ColorPicker();
+//
+//		Rectangle rect = new Rectangle(100, 180, 500, 40);
+//		// rect.setWidth(110);
+//		// rect.setHeight(100);
+//		rect.fillProperty().bind(picker.valueProperty());
+//		rect.setArcHeight(15);
+//		rect.setArcWidth(55);
+//		rect.setEffect(ds);
+//
+//		Rectangle rectflugel = new Rectangle(450, 0, 40, 400);
+//		// rect.setWidth(110);
+//		// rect.setHeight(100);
+//		rectflugel.fillProperty().bind(picker.valueProperty());
+//		rectflugel.setArcHeight(15);
+//		rectflugel.setArcWidth(385);
+//		rectflugel.setEffect(ds);
+//
+//		root.getChildren().addAll(picker, rect, rectflugel);
+//
+//	}
+//
+//	// funktion get beide nodes fÃ¼r plane IN PLANE --> dann winkle zwischen a und b
+//	// in view berechnen
+//	//
 
 }
