@@ -86,4 +86,23 @@ public class Node {
 		this.reserved.put(time, plane);
 	}
 	
+	/**
+	 * Check whether the current node is free (neither it nor its conflict nodes are reserved)
+	 * 
+	 * @param time Time to check for
+	 * @return true if a plane can land on this node on the given time, false otherwise
+	 */
+	public boolean isFree(int time) {
+		if (this.getReserved().get(time) != null) {
+			return false;
+		} else {
+			for (Node conflictNode: this.getConflicts()) {
+				if (conflictNode.getReserved().get(time) != null) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+	
 }

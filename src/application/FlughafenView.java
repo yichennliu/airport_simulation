@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class FlughafenView {
 	private Flughafen model;
@@ -47,8 +48,8 @@ public class FlughafenView {
 	private double offsetY = 0.0; // absoluter YOffset
 	Group root = new Group();
 	StackPane layout = new StackPane();
-	ArrayList<Image> flugzeugBilder = new ArrayList<Image>();
 	Map<Plane,ImageView> planes = new HashMap<Plane,ImageView>();
+	ArrayList<PlaneType> flugzeugBilder = new ArrayList<PlaneType>();
 	private Object target;
 
 	public FlughafenView(Flughafen model, Stage stage) {
@@ -59,7 +60,9 @@ public class FlughafenView {
 		root.getChildren().addAll(canvas, layout);
 		this.setInitialZoomAndOffset(model.getNodes());
 
-		flugzeugBilder.add(new Image("/application/source/Images/flugzeugrechts.png"));
+		flugzeugBilder.add(PlaneType.AIRBUS);
+		flugzeugBilder.add(PlaneType.BOEING);
+		flugzeugBilder.add(PlaneType.ECLIPSE_AVIATION);	
 
 		this.scene = new Scene(root);
 		this.stage.setScene(scene);
@@ -245,7 +248,8 @@ public class FlughafenView {
 	}
 
 	private void flugtest(Collection<Node> nodes) {
-		ImageView imageV = new ImageView(flugzeugBilder.get(0));
+	  Image image = new Image("/application/source/Images/flugzeugrechts.png");
+		ImageView imageV = new ImageView(image);
 		root.getChildren().add(imageV);
 		imageV.setFitWidth(5 * this.zoomFactor);
 		imageV.setFitHeight(5 * this.zoomFactor);
@@ -281,10 +285,14 @@ public class FlughafenView {
 		double breite = 5;
 		double hoehe = 5;
 		double x = 3 * this.zoomFactor + this.offsetX; // bei rotation muesste hier breite/2 und
-		double y = 3 * this.zoomFactor + this.offsetY;// hier hoehe/2 gerechnet werden
-		Image image = new Image("/application/source/Images/flugzeugrechts.png");
-		ImageView iv1 = new ImageView();
-		iv1.setImage(image);
+		double y = 3 * this.zoomFactor + this.offsetY;// hier hoehe/2 gerechnet werden	
+		
+		Random random = new Random();
+		int size =  flugzeugBilder.size();
+		PlaneType randomPlane =  flugzeugBilder.get(random.nextInt(size));
+		
+		
+		ImageView iv1= PlaneType.choosePlane(randomPlane);
 		iv1.setFitWidth(breite * this.zoomFactor);
 		iv1.setFitHeight(hoehe * this.zoomFactor );
         iv1.setPreserveRatio(true);
@@ -292,17 +300,10 @@ public class FlughafenView {
         Rectangle2D viewportRect = new Rectangle2D(331, 3335, 0, 10);
         iv1.setViewport(viewportRect);
      	iv1.setRotate(90);
+     	
+     	
 		layout.getChildren().add(iv1);
 	
 		
-	}
+	}}
 
-	
-	// funktion get beide nodes f�r plane IN PLANE --> dann winkle zwischen a und b in view berechnen 
-
-//
-//	// funktion get beide nodes für plane IN PLANE --> dann winkle zwischen a und b
-//	// in view berechnen
-//	//
-
-}
