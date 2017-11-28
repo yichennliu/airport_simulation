@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class FlughafenView {
 	private Flughafen model;
@@ -45,7 +46,7 @@ public class FlughafenView {
 	private double offsetY = 0.0; // absoluter YOffset
 	Group root = new Group();
 	StackPane layout = new StackPane();
-	ArrayList<Image> flugzeugBilder = new ArrayList<Image>();
+	ArrayList<PlaneType> flugzeugBilder = new ArrayList<PlaneType>();
 	private Object target;
 
 	public FlughafenView(Flughafen model, Stage stage) {
@@ -56,7 +57,9 @@ public class FlughafenView {
 		root.getChildren().addAll(canvas, layout);
 		this.setInitialZoomAndOffset(model.getNodes());
 
-		flugzeugBilder.add(new Image("/application/source/Images/flugzeugrechts.png"));
+		flugzeugBilder.add(PlaneType.AIRBUS);
+		flugzeugBilder.add(PlaneType.BOEING);
+		flugzeugBilder.add(PlaneType.ECLIPSE_AVIATION);	
 
 		this.scene = new Scene(root);
 		this.stage.setScene(scene);
@@ -78,6 +81,7 @@ public class FlughafenView {
 		List<Plane> planes = model.getPlanes();
 		drawNodes(nodes);
 		flugzeugBildaida();
+
 	
 	}
 	private void drawNodes(Collection<Node> nodes) {
@@ -223,31 +227,9 @@ public class FlughafenView {
 		return this.offsetY;
 	}
 
-//	 public void flugzeugBild() {
-//	 /* wenn ein Planeobjekt hier �bergeben werden w�rde und man wei�, von welchem
-//	 zu welchem Node das Flugzeug gerade fliegt (A zu B),
-//	 * l�sst sich der Drehwinkel folgenderma�en berechnen:
-//	 * Ax = x-Koordinate Punkt A, Ay = y-Koordinate von Punkt A, Bx = ....
-//	 * double winkel = Math.aSin( (By - Ay) / Math.sqrt(Math.pow( (Bx-Ax),2) ) +
-//	 Math.pow( (By-Ay),2 ) ));
-//	 */
-//	 double breite = 2;
-//	 double hoehe = 2;
-//	 double x =3*this.zoomFactor+this.offsetX; // bei rotation muesste hier
-//	// breite/2 und
-//	 double y = 3*this.zoomFactor+this.offsetY;// hier hoehe/2 gerechnet werden
-//	 this.gc.translate(x, y);
-//	 this.gc.rotate(90);
-//	 this.gc.drawImage(flugzeugBilder.get(0) ,
-//	 0,0,
-//	 breite*this.zoomFactor,
-//	 hoehe*this.zoomFactor);
-//	 this.gc.rotate(-90);
-//	 this.gc.translate(-x,-y);
-//	 }
-	//
 	private void flugtest(Collection<Node> nodes) {
-		ImageView imageV = new ImageView(flugzeugBilder.get(0));
+	  Image image = new Image("/application/source/Images/flugzeugrechts.png");
+		ImageView imageV = new ImageView(image);
 		root.getChildren().add(imageV);
 		imageV.setFitWidth(5 * this.zoomFactor);
 		imageV.setFitHeight(5 * this.zoomFactor);
@@ -283,10 +265,14 @@ public class FlughafenView {
 		double breite = 5;
 		double hoehe = 5;
 		double x = 3 * this.zoomFactor + this.offsetX; // bei rotation muesste hier breite/2 und
-		double y = 3 * this.zoomFactor + this.offsetY;// hier hoehe/2 gerechnet werden
-		Image image = new Image("/application/source/Images/flugzeugrechts.png");
-		ImageView iv1 = new ImageView();
-		iv1.setImage(image);
+		double y = 3 * this.zoomFactor + this.offsetY;// hier hoehe/2 gerechnet werden	
+		
+		Random random = new Random();
+		int size =  flugzeugBilder.size();
+		PlaneType randomPlane =  flugzeugBilder.get(random.nextInt(size));
+		
+		
+		ImageView iv1= PlaneType.choosePlane(randomPlane);
 		iv1.setFitWidth(breite * this.zoomFactor);
 		iv1.setFitHeight(hoehe * this.zoomFactor );
         iv1.setPreserveRatio(true);
@@ -294,50 +280,10 @@ public class FlughafenView {
         Rectangle2D viewportRect = new Rectangle2D(331, 3335, 0, 10);
         iv1.setViewport(viewportRect);
      	iv1.setRotate(90);
+     	
+     	
 		layout.getChildren().add(iv1);
 	
 		
-	}
+	}}
 
-	
-	// funktion get beide nodes f�r plane IN PLANE --> dann winkle zwischen a und b in view berechnen 
-	
-//	public void flugzeugBildaida() {
-//
-//		double startX = 600;
-//		double endX = 500;
-//		double startY = 400;
-//		double endY = 350;
-//
-//		DropShadow ds = new DropShadow();
-//		ds.setOffsetY(3.0);
-//		ds.setColor(Color.color(0.4, 0.4, 0.4));
-//
-//		Group rootzeug = new Group();
-//		ColorPicker picker = new ColorPicker();
-//
-//		Rectangle rect = new Rectangle(100, 180, 500, 40);
-//		// rect.setWidth(110);
-//		// rect.setHeight(100);
-//		rect.fillProperty().bind(picker.valueProperty());
-//		rect.setArcHeight(15);
-//		rect.setArcWidth(55);
-//		rect.setEffect(ds);
-//
-//		Rectangle rectflugel = new Rectangle(450, 0, 40, 400);
-//		// rect.setWidth(110);
-//		// rect.setHeight(100);
-//		rectflugel.fillProperty().bind(picker.valueProperty());
-//		rectflugel.setArcHeight(15);
-//		rectflugel.setArcWidth(385);
-//		rectflugel.setEffect(ds);
-//
-//		root.getChildren().addAll(picker, rect, rectflugel);
-//
-//	}
-//
-//	// funktion get beide nodes für plane IN PLANE --> dann winkle zwischen a und b
-//	// in view berechnen
-//	//
-
-}
