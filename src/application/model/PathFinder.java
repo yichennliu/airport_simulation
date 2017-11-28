@@ -45,9 +45,8 @@ public class PathFinder {
 		}	
 		for(Node child: current.getTo()) {
 			if(
-				nodesStatus.get(child).getStatus()==Status.UNKNOWN && // falls Knoten noch nicht entdeckt und
-				child.getReserved().get(currentTime+1)==null && 	  // zur Zeit f�r zwei Ticks nicht reserviert
-				child.getReserved().get(currentTime+2)==null 		  // <toDo: auf Conflicts checken (�ber Methode hasConflicts(Node,time)>
+				nodesStatus.get(child).getStatus()==Status.UNKNOWN &&         // falls Knoten noch nicht entdeckt und
+				child.isFree(currentTime+1) && child.isFree(currentTime+2) 	  // zur Zeit für zwei Ticks nicht reserviert
 				) {
 					deq.addLast(child);
 					nodesStatus.get(child).setStatus(Status.SPOTTED);	// Status auf entdeckt �ndern
