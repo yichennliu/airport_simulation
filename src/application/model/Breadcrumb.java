@@ -1,6 +1,6 @@
 package application.model;
 
-public class Breadcrum {
+public class Breadcrumb {
 	private Status status = Status.UNKNOWN;
 	private Node from = null;
 	private int time = 0;

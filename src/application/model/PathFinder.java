@@ -21,9 +21,9 @@ public class PathFinder {
 	 * @param starttime Die Zeit im Modell, bei der die Suche losgehen soll
 	*/
 	public static void startSearch(Collection<Node> nodes, Node start, Node end, Plane plane,int starttime) {
-		Map<Node,Breadcrum> nodesStatus = new HashMap<Node,Breadcrum>(); // verkn�pft Nodes mit der Information, ob und Wie sie besucht wurden
+		Map<Node,Breadcrumb> nodesStatus = new HashMap<Node,Breadcrumb>(); // verkn�pft Nodes mit der Information, ob und Wie sie besucht wurden
 		for(Node node:nodes) {
-			nodesStatus.put(node, new Breadcrum()); // alle Nodes in die Map schreiben (als UNKNOWN)
+			nodesStatus.put(node, new Breadcrumb()); // alle Nodes in die Map schreiben (als UNKNOWN)
 			if(node==start) nodesStatus.get(node).setTime(starttime); // f�r den Startnode wird angefangen zu z�hlen
 		}
 		if(find(start,end, start,plane,nodesStatus,new ArrayDeque<Node>(Arrays.asList(start))))
@@ -35,7 +35,7 @@ public class PathFinder {
 	 * @return gibt true zur�ck, falls ein Weg gefunden wurde, andernfalls false
 	 */
 	private static boolean find(Node start, Node end, 
-		Node current, Plane plane, Map<Node,Breadcrum>nodesStatus, 
+		Node current, Plane plane, Map<Node,Breadcrumb>nodesStatus, 
 								Deque<Node> deq) 
 	{
 		int currentTime = nodesStatus.get(current).getTime(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
@@ -62,7 +62,7 @@ public class PathFinder {
 
 	}
 	
-	private static void savePath(Node node, Plane plane,Map<Node,Breadcrum>nodesStatus) {
+	private static void savePath(Node node, Plane plane,Map<Node,Breadcrumb>nodesStatus) {
 		int time;
 		while(node!=null) {
 			time = nodesStatus.get(node).getTime();
