@@ -1,10 +1,10 @@
 package application.model;
 
-public class Tuple <T> {
+public class Tuple <T,T2> {
 	private T fst;
-	private T snd;
+	private T2 snd;
 	
-	public Tuple(T fst, T snd) {
+	public Tuple(T fst, T2 snd) {
 		this.fst = fst;
 		this.snd = snd;
 	}
@@ -13,7 +13,7 @@ public class Tuple <T> {
 		return this.fst;
 	}
 	
-	public T snd() {
+	public T2 snd() {
 		return this.snd;
 	}
 	
@@ -21,7 +21,7 @@ public class Tuple <T> {
 		this.fst = fst;
 	}
 	
-	public void setSnd(T snd) {
+	public void setSnd(T2 snd) {
 		this.snd = snd;
 	}
 }

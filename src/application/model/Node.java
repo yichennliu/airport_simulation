@@ -57,6 +57,11 @@ public class Node {
 		return this.conflicts.values();
 	}
 	
+//	public boolean hasConflicts(Integer time) {
+//		this.hasConflicts(time, this);
+//	}
+	
+	
 	/**
 	 * Only for import
 	 */
