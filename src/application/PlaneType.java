@@ -5,35 +5,23 @@ import javafx.scene.image.ImageView;
 
 public enum PlaneType {
 
-	AIRBUS, BOEING, ECLIPSE_AVIATION;
+	AIRBUS(new Image("/application/source/Images/flugzeugrechts.png"),1), 
+	BOEING(new Image("/application/source/Images/flugzeugYamaiunten.png"),0.8), 
+	ECLIPSE_AVIATION(new Image("/application/source/Images/flugzeugYamai.png"),0.5);
 
-	private static Image airbus = new Image("/application/source/Images/flugzeugrechts.png");
-	private static Image boeing = new Image("/application/source/Images/flugzeugYamaiunten.png");
-	private static Image eclipse_aviation = new Image("/application/source/Images/flugzeugYamai.png");
+	private final Image img;
+	private final double size;
 	
-	public static ImageView getImageView(PlaneType plane) {
-		ImageView iv1 = null;
-		
-		switch (plane) {
-			case AIRBUS:
-				iv1 = new ImageView(PlaneType.airbus);
-				System.out.println("das ist ein Airbus");
-				break;
-		
-			case BOEING:
-				iv1 = new ImageView(PlaneType.boeing);
-				System.out.println("das ist eine Boeing");
-				break;
+	private PlaneType(Image img, double size) {
+		this.img = img;
+		this.size = size;
+	}
 	
-			case ECLIPSE_AVIATION:
-				iv1 = new ImageView(PlaneType.eclipse_aviation);
-				System.out.println("das ist eine Eclipse-Aviation");
-				break;
-				
-			default:
-				System.out.println("kein bild gefunden");
-				break;
-		}
-		return iv1;
+	public double getSize(){
+		return this.size;
+	}
+	
+	public ImageView getImageView() {
+		return new ImageView(this.img);
 	}
 }

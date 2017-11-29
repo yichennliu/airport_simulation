@@ -20,7 +20,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
+import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
@@ -49,8 +49,6 @@ public class FlughafenView {
 	Group root = new Group();
 	StackPane layout = new StackPane();
 	Map<Plane,ImageView> planes = new HashMap<Plane,ImageView>();
-	ArrayList<PlaneType> flugzeugBilder = new ArrayList<PlaneType>();
-	private Object target;
 
 	public FlughafenView(Flughafen model, Stage stage) {
 		this.model = model;
@@ -59,15 +57,11 @@ public class FlughafenView {
 		this.gc = canvas.getGraphicsContext2D();
 		root.getChildren().addAll(canvas, layout);
 		this.setInitialZoomAndOffset(model.getNodes());
-
-		flugzeugBilder.add(PlaneType.AIRBUS);
-		flugzeugBilder.add(PlaneType.BOEING);
-		flugzeugBilder.add(PlaneType.ECLIPSE_AVIATION);	
-
 		this.scene = new Scene(root);
 		this.stage.setScene(scene);
 		this.stage.setTitle("Flughafen");
 		this.stage.show();
+		this.flugtest();
 	}
 
 	public Stage getStage() {
@@ -78,29 +72,26 @@ public class FlughafenView {
 		return this.canvas;
 	}
 
-	public void drawCanvas() {
-		gc.clearRect(0, 0, this.width, this.height);
-		Collection<Node> nodes = model.getNodes();
-		drawNodes(nodes);
+	public void update() {
+		drawCanvas();
+		drawPlanes();
 	}
 	
-	private void drawPlanes(List<Plane> planes) {
-		//
-		for(Plane plane: planes) {
-			if(!this.planes.containsKey(plane)) {
-				Image img = this.flugzeugBilder.get(0);
-				ImageView imgV = new ImageView(img);
-				this.planes.put(plane, imgV);
-				root.getChildren().add(imgV);
-			}
-			ImageView imgV = this.planes.get(plane);
-			Node node = plane.getNextNode();
-			double x = node.getX()*this.zoomFactor+this.offsetX; // (-2.5)
-			double y = node.getY()*this.zoomFactor+this.offsetY; // (2.5)
-			imgV.setX(x);
-			imgV.setY(y);
-			imgV.setFitWidth(5 * this.zoomFactor);
-			imgV.setFitHeight(5 * this.zoomFactor);
+	private void drawCanvas() {
+		Collection<Node> nodes = model.getNodes();
+		if(!nodes.isEmpty()) {
+			gc.clearRect(0, 0, this.width, this.height);
+			drawNodes(nodes);
+		}
+
+	}
+	
+	private void drawPlanes() {
+		List<Plane> planes = model.getPlanes();
+		if(!planes.isEmpty()) {
+			for(Plane plane: planes) {
+				drawPlane(plane);
+			}		
 		}
 	}
 	
@@ -158,8 +149,26 @@ public class FlughafenView {
 
 	}
 
-	private void setInitialZoomAndOffset(Collection<Node> nodes) { // setzt den initialen Faktor und Verschiebung,
-																	// sodass alles auf das canvas passt;
+	private void drawPlane(Plane plane) {
+		if(!this.planes.containsKey(plane)) {
+			ImageView imgV = PlaneType.AIRBUS.getImageView(); // hier spaeter PLaneType aus dem Plane holen
+			this.planes.put(plane, imgV);
+			root.getChildren().add(imgV);
+		}
+		ImageView imgV = this.planes.get(plane);
+		Node node = plane.getNextNode();
+		if(node!=null) {
+			double x = node.getX()*this.zoomFactor+this.offsetX-1; 
+			double y = node.getY()*this.zoomFactor+this.offsetY-1; 
+			imgV.setX(x);
+			imgV.setY(y);
+		}
+		imgV.setFitWidth(PlaneType.AIRBUS.getSize() * this.zoomFactor);
+		imgV.setFitHeight(PlaneType.AIRBUS.getSize() * this.zoomFactor);
+	}
+	
+	private void setInitialZoomAndOffset(Collection<Node> nodes) { // setzt den initialen Faktor und Verschiebung, sodass alles auf das canvas passt;
+																	
 		Iterator<Node> it = nodes.iterator();
 		if (it.hasNext()) {
 			double minY, minX, maxX, maxY, widthFlughafen, heightFlughafen;
@@ -184,35 +193,28 @@ public class FlughafenView {
 			maxX = maxX - minX; // maxX ist jetzt die breite des Flughafens (!)
 			maxY = maxY - minY; // maxY ist jetzt die Hoehe des Flughafens
 
-			if (maxY * ((double) this.width / this.height) <= maxX) { // passt den Flughafen in die Bildschirmmasse ein
-																		// (orientiert an breite)
+			if (maxY * ((double) this.width / this.height) <= maxX)  // passt den Flughafen in die Bildschirmmasse ein														// (orientiert an breite)
 				this.zoomFactor = this.width / maxX;
-			} else
+			else
 				this.zoomFactor = this.height / maxY;
 
-			widthFlughafen = maxX * this.zoomFactor; // absolute Breite des Flughafens (die relative steht ja schon im
-														// maxX)
+			widthFlughafen = maxX * this.zoomFactor; // absolute Breite des Flughafens (die relative steht ja schon in maxX)											
 			heightFlughafen = maxY * this.zoomFactor;
 
-			this.offsetX = (0 - minX * this.zoomFactor) + (this.width - (widthFlughafen)) * 0.5; // horizontalAlign des
-																									// Flughafens
+			this.offsetX = (0 - minX * this.zoomFactor) + (this.width - (widthFlughafen)) * 0.5;   // horizontalAlign des Flughafens
 			this.offsetY = (0 - minY * this.zoomFactor) + (this.height - (heightFlughafen)) * 0.5; // verticalAlign
 		}
 	}
 
 	public void zoomTo(double deltaY, double absoluteX, double absoluteY, double zoomAmount) {
-		if (deltaY < 0)
-			zoomAmount = -zoomAmount;
+		if (deltaY < 0) zoomAmount = -zoomAmount;
 		double zoomFactorNeu = zoomAmount + this.zoomFactor;
-		double relX = (absoluteX - this.offsetX) / this.zoomFactor; // die relative "Model X-Koordinate", auf die der
-																	// Mauszeiger zeigt
+		double relX = (absoluteX - this.offsetX) / this.zoomFactor; // die relative "Model X-Koordinate", auf die der Mauszeiger zeigt															
 		double relY = (absoluteY - this.offsetY) / this.zoomFactor; // ''
 
 		this.offsetX = absoluteX - (relX * zoomFactorNeu); // offsetX wird genau so verschoben, dass die relative
-															// Koordinate des Mauszeigers nach dem Zoom immer noch genau
-															// an der absoluten Position ist
-		this.offsetY = absoluteY - (relY * zoomFactorNeu);
-		this.zoomFactor = zoomFactorNeu;
+		this.offsetY = absoluteY - (relY * zoomFactorNeu); // Koordinate des Mauszeigers nach dem Zoom immer noch genau
+		this.zoomFactor = zoomFactorNeu;  				   // an der absoluten Position ist	
 	}
 
 	public double getZoomFactor() {
@@ -247,63 +249,40 @@ public class FlughafenView {
 		return this.offsetY;
 	}
 
-	private void flugtest(Collection<Node> nodes) {
-	  Image image = new Image("/application/source/Images/flugzeugrechts.png");
+	private void flugtest() {
+		Image image = new Image("/application/source/Images/flugzeugrechts.png");
 		ImageView imageV = new ImageView(image);
 		root.getChildren().add(imageV);
-		imageV.setFitWidth(5 * this.zoomFactor);
-		imageV.setFitHeight(5 * this.zoomFactor);
-		Iterator<Node> targets= nodes.iterator();
+		imageV.setFitWidth(2 * this.zoomFactor);
+		imageV.setFitHeight(2 * this.zoomFactor);
 		PathTransition pt = new PathTransition();
-		while(targets.hasNext()){
-			Node targ= targets.next();	
-			Path path = new Path();
-			path.getElements().add(new MoveTo(targ.getX(),targ.getY()));
-//			path.getElements().add(new LineTo(targ.getX()+0.2,targ.getY()+0.2));
-//			path.getElements().add(new LineTo(0,0));
-			pt.setDuration(Duration.millis(2000));
-			pt.setCycleCount(Animation.INDEFINITE);
-			pt.setPath(path);
-			pt.setNode(imageV);
-			pt.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
-			
-		}
+		Path path = new Path();
 		
-		RotateTransition rotate = new RotateTransition(); 
-		rotate.setByAngle(360);
-		rotate.setCycleCount(2);
+		MoveTo moveTo = new MoveTo();
+		moveTo.setX(0);
+		moveTo.setY(0);
 		
-		ParallelTransition pl= new ParallelTransition(imageV,pt,rotate);
+		ArcTo arcTo = new ArcTo();
+		arcTo.setX(400);  //center - radiusX-1
+		arcTo.setY(300); //center - radiusY
+		arcTo.setRadiusX(50); // sweepFlag auf false, largeFlag auf true
+		arcTo.setRadiusY(50); // setXAxisRotation(rotate)
+		arcTo.setSweepFlag(false);
+		arcTo.setLargeArcFlag(true);
+		
+		
+		path.getElements().add(moveTo);
+		path.getElements().add(arcTo);
+		
+		pt.setDuration(Duration.millis(2000));
+		pt.setCycleCount(Animation.INDEFINITE);
+		pt.setPath(path);
+		pt.setNode(imageV);
+		pt.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
+		
+		ParallelTransition pl= new ParallelTransition(imageV,pt);
 		pl.play();
 		
 	}
-	
-	public void flugzeugBildaida() {
-		// okay - damit sprengst du den speicher - immer wenn gezoomt wird, etc., wird diese Funktion aufgerufen - das hat zur Folge, dass
-		// immer ein neues Image + ImageView erstellt wird, die dann angezeigt werden muessen. Oben muss als private Variable eine List rein, die die Planes enthaelt. 
-		// und nur alle Flugzeuge, die da drin sind, werden gemalt (!) Bei mir ist nach 10 sekunden scrollen der Speicher voll ;) 
-		double breite = 5;
-		double hoehe = 5;
-		double x = 3 * this.zoomFactor + this.offsetX; // bei rotation muesste hier breite/2 und
-		double y = 3 * this.zoomFactor + this.offsetY;// hier hoehe/2 gerechnet werden	
-		
-		Random random = new Random();
-		int size =  flugzeugBilder.size();
-		PlaneType randomPlane =  flugzeugBilder.get(random.nextInt(size));
-		
-		
-		ImageView iv1= PlaneType.choosePlane(randomPlane);
-		iv1.setFitWidth(breite * this.zoomFactor);
-		iv1.setFitHeight(hoehe * this.zoomFactor );
-        iv1.setPreserveRatio(true);
-        iv1.setSmooth(true);
-        Rectangle2D viewportRect = new Rectangle2D(331, 3335, 0, 10);
-        iv1.setViewport(viewportRect);
-     	iv1.setRotate(90);
-     	
-     	
-		layout.getChildren().add(iv1);
-	
-		
-	}}
+}
 

@@ -37,7 +37,7 @@ public class FlughafenController {
 			view.setOffsetY(view.getOffsetY()-translateArray[3]+yOffset);
 			translateArray[2] = xOffset; // die neue Verschiebung (relativ zum Startpunkt des DragEvents) wird gespeichert
 			translateArray[3] = yOffset;
-			this.view.drawCanvas(); // kann spaeter raus
+			this.view.update(); 
 			
 		});
 		
@@ -47,18 +47,18 @@ public class FlughafenController {
 		
 		canvas.addEventHandler(ScrollEvent.SCROLL, e->{
 			view.zoomTo(e.getDeltaY(), e.getX(), e.getY(),3.0);
-			view.drawCanvas(); // kann spaeter raus
-			
+			view.update(); 	
 		});
 		
 		stage.widthProperty().addListener((observableValue, oldWidth, newWidth) -> { // bei Skalierung des Fensters skaliert das Canvas mit
 			this.view.resize(newWidth.doubleValue(),canvas.getHeight());
 		});
+		
 		stage.heightProperty().addListener((observableValue, oldHeight, newHeight) -> {
 			this.view.resize(canvas.getWidth(),newHeight.doubleValue());
 		});
 		
-		this.view.drawCanvas();		// kann spaeter raus	
+		this.view.update();		
 }
 
 	
