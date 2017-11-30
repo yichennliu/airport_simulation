@@ -9,6 +9,7 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.PathTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
@@ -16,6 +17,8 @@ import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
@@ -51,11 +54,13 @@ public class FlughafenView {
 	private double offsetX = 0.0; // absoluter XOffset (verschiebt die Zeichnung auf dem Canvas)
 	private double offsetY = 0.0; // absoluter YOffset
 	Group root = new Group();
-	
 	private Button zoomButton = new Button("");
+	 ToggleButton nameButton = new ToggleButton("show me the Node-names");
+	 final StringProperty btnText = nameButton.textProperty();
 
 	Map<Plane, ImageView> planes = new HashMap<Plane, ImageView>();
-
+//pair oder tupel statt imageview wo path und imageview rein kommt damit man beim zoomen (während der animation) 
+	
 	public FlughafenView(Flughafen model, Stage stage) {
 		this.model = model;
 		this.stage = stage;
@@ -70,7 +75,7 @@ public class FlughafenView {
 		this.flugtest();
 		Image buttonImage = new Image("/application/source/Images/zoomout.png");
 		zoomButton.setGraphic(new ImageView(buttonImage));
-		root.getChildren().add(zoomButton);
+		root.getChildren().addAll(zoomButton,nameButton);
 	}
 
 	public Stage getStage() {
@@ -84,7 +89,7 @@ public class FlughafenView {
 	public void update() {
 		drawCanvas();
 		drawPlanes();
-	
+
 	}
 
 	private void drawCanvas() {
@@ -95,22 +100,21 @@ public class FlughafenView {
 
 		}
 	}
-	
+
 	public void drawPlanes() {
 		List<Plane> planes = model.getPlanes();
-		if(!planes.isEmpty()) {
-			for(Plane plane: planes) {
+		if (!planes.isEmpty()) {
+			for (Plane plane : planes) {
 				drawPlane(plane);
-			}		
+			}
 
 		}
 	}
 
-	
-
 	private void drawNodes(Collection<Node> nodes) {
 		for (Node node : nodes)
 			drawNode(node);
+			
 	}
 
 	private void drawNode(Node node) {
@@ -152,7 +156,7 @@ public class FlughafenView {
 
 		}
 		}
-		this.gc.fillText(node.getName(), x + 5, y);
+	
 
 		for (Node children : node.getTo()) {
 			gc.strokeLine(x, y, (children.getX() * zoomFactor) + offsetX, (children.getY() * zoomFactor) + offsetY);
@@ -164,9 +168,7 @@ public class FlughafenView {
 
 	private void drawPlane(Plane plane) {
 
-	
-
-		if(!this.planes.containsKey(plane)) {
+		if (!this.planes.containsKey(plane)) {
 			ImageView imgV = PlaneType.BOEING.getImageView(); // hier spaeter PLaneType aus dem Plane holen plane.getType()
 
 			this.planes.put(plane, imgV);
@@ -231,13 +233,17 @@ public class FlughafenView {
 		if (deltaY < 0)
 			zoomAmount = -zoomAmount;
 		double zoomFactorNeu = zoomAmount + this.zoomFactor;
-		double relX = (absoluteX - this.offsetX) / this.zoomFactor; // die relative "Model X-Koordinate", auf die der
-																	// Mauszeiger zeigt
-		double relY = (absoluteY - this.offsetY) / this.zoomFactor; // ''
+		if (zoomFactorNeu > 0) {
+			double relX = (absoluteX - this.offsetX) / this.zoomFactor; // die relative "Model X-Koordinate", auf die der  Mauszeiger zeigt
+																	
+			double relY = (absoluteY - this.offsetY) / this.zoomFactor; // ''
 
-		this.offsetX = absoluteX - (relX * zoomFactorNeu); // offsetX wird genau so verschoben, dass die relative
-		this.offsetY = absoluteY - (relY * zoomFactorNeu); // Koordinate des Mauszeigers nach dem Zoom immer noch genau
-		this.zoomFactor = zoomFactorNeu; // an der absoluten Position ist
+			this.offsetX = absoluteX - (relX * zoomFactorNeu); // offsetX wird genau so verschoben, dass die relative
+			this.offsetY = absoluteY - (relY * zoomFactorNeu); // Koordinate des Mauszeigers nach dem Zoom immer noch genau														
+			this.zoomFactor = zoomFactorNeu; // an der absoluten Position ist
+			
+
+		}
 	}
 
 	public double getZoomFactor() {
@@ -308,6 +314,14 @@ public class FlughafenView {
 	}
 
 	public Button getZoomOutButton() {
+		zoomButton.setStyle(
+			    "-fx-border-color: lightblue; "
+			    + "-fx-font-size: 20;"
+			    + "-fx-border-insets: -5; "
+			    + "-fx-border-radius: 5;"
+			    + "-fx-border-style: dotted;"
+			    + "-fx-border-width: 2;"
+			);
 
 		return this.zoomButton;
 
@@ -320,5 +334,16 @@ public class FlughafenView {
 		update();
 
 	}
+
+
+	
+	public void showName(Collection<Node> nodes) {
+		for (Node node : nodes) {
+		double x = (node.getX() * this.zoomFactor) + offsetX;
+		double y = (node.getY() * this.zoomFactor) + offsetY;
+		this.gc.fillText(node.getName(), x + 5, y);
+	}}
+	
+	
 
 }
