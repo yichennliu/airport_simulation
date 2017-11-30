@@ -14,7 +14,7 @@ public class Flughafen {
 		this.planes = planes;
 		this.generators = generators;
 		this.nodes = nodes;
-		PathFinder.startSearch(nodes.values(), nodes.get("air1"), nodes.get("air0"), planes.get(0), 0);
+		PathFinder.startSearch(nodes.values(), planes.get(0), 0);
 	}
 	
 	public int getMaxplanes() {
