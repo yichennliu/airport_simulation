@@ -69,31 +69,26 @@ public class FlughafenController {
 		
 
 		this.view.getZoomOutButton().addEventHandler(MouseEvent.MOUSE_PRESSED, event ->{
-		this.view.zoomOut(this.model.getNodes()) ;   
+			this.view.zoomOut(this.model.getNodes()) ;   
 		});
 
 		
 		this.view.getNameButton().setOnAction((ActionEvent event)-> {
 			
-			 ToggleButton source = (ToggleButton) event.getSource();
-			  if (source.isSelected()) {
-			this.view.btnText.set("hide Nodename");
-			this.view.showName(this.model.getNodes());
-			    
-			  } else {
-				this.view. btnText.set("show Nodenames");
-				 this.view.nameshown=false;
-			    this.view.update();
-			   
-				}
-			  
-			});
-//		
-//		
-
+			ToggleButton source = (ToggleButton) event.getSource();
+			 if (source.isSelected()) {
+				 this.view.btnText.set("hide Nodename");
+				 this.view.showName(this.model.getNodes());
+			 } 
+			 else {
+				 this.view. btnText.set("show Nodenames");
+				 this.view.hideName(this.model.getNodes());
+				 this.view.update();			   
+			}  
+		});
 		
 		this.view.update();		
-}
+	}
 
 	
 }

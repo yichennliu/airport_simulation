@@ -329,21 +329,20 @@ public class FlughafenView {
 
 	
 	public ToggleButton getNameButton() {
-		return this.nameButton;}
+		return this.nameButton;
+	}
+	
 	public void zoomOut(Collection<Node> nodes) {
-
 		setInitialZoomAndOffset(nodes);
-
 		update();
-
 	}
 
 
 	
 	public void showName(Collection<Node> nodes) {
 		for (Node node : nodes) {
-		double x = (node.getX() * this.zoomFactor) + offsetX;
-		double y = (node.getY() * this.zoomFactor) + offsetY;
+			double x = (node.getX() * this.zoomFactor) + offsetX;
+			double y = (node.getY() * this.zoomFactor) + offsetY;
 		this.gc.fillText(node.getName(), x + 5, y);
 	}}
 	

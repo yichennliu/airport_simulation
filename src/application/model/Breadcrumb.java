@@ -1,9 +1,13 @@
 package application.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Breadcrumb {
 	private Status status = Status.UNKNOWN;
 	private Node from = null;
 	private int time = 0;
+	private Map<Integer, Status> statusMap = new HashMap<Integer,Status>();
 	
 	
 	public void setTime(int time) {
