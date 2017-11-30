@@ -1,6 +1,10 @@
 package application;
 
 import application.model.*;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -8,6 +12,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class FlughafenController {
 	private FlughafenView view;
@@ -57,6 +62,18 @@ public class FlughafenController {
 		stage.heightProperty().addListener((observableValue, oldHeight, newHeight) -> {
 			this.view.resize(canvas.getWidth(),newHeight.doubleValue());
 		});
+		
+		EventHandler <ActionEvent> performActions  = e -> {
+			// Hier die performTick() des Models
+			// Hier die updatePlanes()-Methode der View
+			System.out.println("tick");
+		};
+		KeyFrame keyframe = new KeyFrame(Duration.seconds(1),performActions);
+		
+		Timeline tl = new Timeline();
+		tl.getKeyFrames().addAll(keyframe);
+		tl.setCycleCount(Timeline.INDEFINITE);
+		tl.play();
 		
 		this.view.update();		
 }

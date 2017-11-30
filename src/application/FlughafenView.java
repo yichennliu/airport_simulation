@@ -85,7 +85,7 @@ public class FlughafenView {
 		}
 	}
 	
-	private void drawPlanes() {
+	public void drawPlanes() {
 		List<Plane> planes = model.getPlanes();
 		if(!planes.isEmpty()) {
 			for(Plane plane: planes) {
@@ -150,7 +150,7 @@ public class FlughafenView {
 
 	private void drawPlane(Plane plane) {
 		if(!this.planes.containsKey(plane)) {
-			ImageView imgV = PlaneType.AIRBUS.getImageView(); // hier spaeter PLaneType aus dem Plane holen
+			ImageView imgV = PlaneType.AIRBUS.getImageView(); // hier spaeter PLaneType aus dem Plane holen plane.getType()
 			this.planes.put(plane, imgV);
 			root.getChildren().add(imgV);
 		}
