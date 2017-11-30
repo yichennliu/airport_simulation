@@ -1,6 +1,10 @@
 package application;
 
+import java.util.Collection;
+
 import application.model.*;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -58,6 +62,12 @@ public class FlughafenController {
 			this.view.resize(canvas.getWidth(),newHeight.doubleValue());
 		});
 		
+		
+
+		this.view.getZoomOutButton().addEventHandler(MouseEvent.MOUSE_PRESSED, event ->{
+		this.view.zoomOut(this.model.getNodes()) ;
+		   
+		});
 		this.view.update();		
 }
 

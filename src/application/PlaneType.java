@@ -6,7 +6,7 @@ import javafx.scene.image.ImageView;
 public enum PlaneType {
 
 	AIRBUS(new Image("/application/source/Images/flugzeugrechts.png"),1), 
-	BOEING(new Image("/application/source/Images/flugzeugYamaiunten.png"),0.8), 
+	BOEING(new Image("/application/source/Images/pink.jpg"),0.8), 
 	ECLIPSE_AVIATION(new Image("/application/source/Images/flugzeugYamai.png"),0.5);
 
 	private final Image img;
