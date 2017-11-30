@@ -1,5 +1,7 @@
 package application;
 
+import java.util.Random;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -25,10 +27,11 @@ public enum PlaneType {
 		return new ImageView(this.img);
 	}
 	
-//	public static PlaneType getRandomType() {
-//		PlaneType[] types = PlaneType.values();
-//		int randIndex = (int) Math.random()*types.length; 
-//	}
+	public static PlaneType getRandomType() {
+		Random generator = new Random();
+		PlaneType[] types = PlaneType.values();
+		return types[generator.nextInt(types.length)];
+	}
 	
 	
 }

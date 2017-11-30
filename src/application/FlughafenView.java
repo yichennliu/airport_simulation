@@ -92,17 +92,21 @@ public class FlughafenView {
 		if (!nodes.isEmpty()) {
 			gc.clearRect(0, 0, this.width, this.height);
 			drawNodes(nodes);
+
+		}
+	}
+	
+	public void drawPlanes() {
+		List<Plane> planes = model.getPlanes();
+		if(!planes.isEmpty()) {
+			for(Plane plane: planes) {
+				drawPlane(plane);
+			}		
+
 		}
 	}
 
-	private void drawPlanes() {
-		List<Plane> planes = model.getPlanes();
-		if (!planes.isEmpty()) {
-			for (Plane plane : planes) {
-				drawPlane(plane);
-			}
-		}
-	}
+	
 
 	private void drawNodes(Collection<Node> nodes) {
 		for (Node node : nodes)
@@ -159,8 +163,12 @@ public class FlughafenView {
 	}
 
 	private void drawPlane(Plane plane) {
-		if (!this.planes.containsKey(plane)) {
-			ImageView imgV = PlaneType.BOEING.getImageView(); // hier spaeter PLaneType aus dem Plane holen
+
+	
+
+		if(!this.planes.containsKey(plane)) {
+			ImageView imgV = PlaneType.BOEING.getImageView(); // hier spaeter PLaneType aus dem Plane holen plane.getType()
+
 			this.planes.put(plane, imgV);
 			root.getChildren().add(imgV);
 		}
