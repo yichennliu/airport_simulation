@@ -1,13 +1,14 @@
 package application.model;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+
+import javafx.util.Pair;
 
 public class Plane {
 
 	private List<Targettype> waypoints = new ArrayList<Targettype>();
-	private Tuple<Node,Node> currentNodes = new Tuple(null,null); // links = last
+	private Pair<Node,Node> currentNodes = new Pair<Node, Node>(null, null); // links = last
 	
 	private int inittime;
 	
@@ -25,10 +26,10 @@ public class Plane {
 	}
 	
 	public Node getLastNode() {
-		return this.currentNodes.fst();
+		return this.currentNodes.getKey();
 	}
 	public Node getNextNode() {
-		return this.currentNodes.snd();
+		return this.currentNodes.getValue();
 	}
 	
 }
