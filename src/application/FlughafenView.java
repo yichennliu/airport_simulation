@@ -83,7 +83,6 @@ public class FlughafenView {
 			gc.clearRect(0, 0, this.width, this.height);
 			drawNodes(nodes);
 		}
-
 	}
 	
 	private void drawPlanes() {

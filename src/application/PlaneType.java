@@ -24,4 +24,11 @@ public enum PlaneType {
 	public ImageView getImageView() {
 		return new ImageView(this.img);
 	}
+	
+//	public static PlaneType getRandomType() {
+//		PlaneType[] types = PlaneType.values();
+//		int randIndex = (int) Math.random()*types.length; 
+//	}
+	
+	
 }
