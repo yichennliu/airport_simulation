@@ -77,13 +77,14 @@ public class FlughafenController {
 			
 			 ToggleButton source = (ToggleButton) event.getSource();
 			  if (source.isSelected()) {
-			this.view.btnText.set("hide");
+			this.view.btnText.set("hide Nodename");
 			this.view.showName(this.model.getNodes());
 			    
 			  } else {
-				this.view. btnText.set("show");
-				//this.view.hideName(this.model.getNodes());
-				this.view.update();
+				this.view. btnText.set("show Nodenames");
+				 this.view.nameshown=false;
+			    this.view.update();
+			   
 				}
 			  
 			});
