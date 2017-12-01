@@ -2,16 +2,9 @@ package application;
 
 import application.model.*;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -56,6 +49,10 @@ public class FlughafenController {
 		canvas.addEventHandler(ScrollEvent.SCROLL, e->{
 			view.zoomTo(e.getDeltaY(), e.getX(), e.getY(),3.0);
 			view.update(); 	
+			Label zmLabel= this.view.getZoomLabel();
+			double updateZmFac= Math.round(this.view.getZoomFactor());
+			zmLabel.setText(Double.toString(updateZmFac));
+			
 		});
 		
 		stage.widthProperty().addListener((observableValue, oldWidth, newWidth) -> { // bei Skalierung des Fensters skaliert das Canvas mit
@@ -69,7 +66,9 @@ public class FlughafenController {
 		
 
 		this.view.getZoomOutButton().addEventHandler(MouseEvent.MOUSE_PRESSED, event ->{
-			this.view.zoomOut(this.model.getNodes()) ;   
+			this.view.zoomOut(this.model.getNodes());
+			Label zmLabel= this.view.getZoomLabel();
+			zmLabel.setText("1.0");
 		});
 
 		
@@ -87,7 +86,8 @@ public class FlughafenController {
 			}  
 		});
 		
-		this.view.update();		
+		this.view.update();	
+		
 	}
 
 	

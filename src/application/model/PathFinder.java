@@ -8,7 +8,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Deque;
 
 
 public class PathFinder {
@@ -39,8 +38,6 @@ public class PathFinder {
 				start = startNode;
 			}
 		}
-		
-		
 		
 		Map<Node,Breadcrumb> nodesStatus = new HashMap<Node,Breadcrumb>(); // verknuepft Nodes mit der Information, ob und Wie sie besucht wurden
 		for(Node node:nodes) {
