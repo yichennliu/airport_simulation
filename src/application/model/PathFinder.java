@@ -15,39 +15,38 @@ public class PathFinder {
 	
 	/**
 	 * @param nodes Die zu durchsuchenden Nodes
-	 * @param start Der Startpunkt der Suche
-	 * @param end Der Endpunkt der Suche
 	 * @param plane Das Fluzeug, fuer das die Suche durchefuehrt werden soll
 	 * @param starttime Die Zeit im Modell, bei der die Suche losgehen soll
+	 * @param tTypeStart Der Targettype des Startpunkts der Suche
+	 * @param tTypeEnd Der Targettype des Endpunkts der Suche
 	*/
-	public static void startSearch(Collection<Node> nodes, Plane plane,int starttime) {
-		// find Nodes with the start target type
-		Targettype startType = plane.getWaypoints().get(0);
-		
-		List<Node> startNodes = new ArrayList<>();
-		
+	public static void startSearch(Collection<Node> nodes, Plane plane,int starttime, Targettype tTypeStart, Targettype tTypeEnd) {
+		// find Nodes with the start target type that are free at starttime
+		List<Node> startNodes = new ArrayList<>();	
 		for (Node node: nodes) {
-			if (node.getTargettype() != null && node.getTargettype().equals(startType)) {
+			if (node.getTargettype() != null && node.getTargettype().equals(tTypeStart) && node.isFree(starttime)) {
 				startNodes.add(node);
 			}
 		}
+			
+		Map<Node,Breadcrumb> nodesStatus = createBreadcrumbMap(nodes, startNodes, starttime);
 		
-		// set the first free node with start target type as start node
-		Node start = null;
-		for (Node startNode: startNodes) {
-			if (startNode.isFree(starttime)) {
-				start = startNode;
-			}
-		}
-		
-		
-		
-		Map<Node,Breadcrumb> nodesStatus = new HashMap<Node,Breadcrumb>(); // verknuepft Nodes mit der Information, ob und Wie sie besucht wurden
-		for(Node node:nodes) {
-			nodesStatus.put(node, new Breadcrumb()); // alle Nodes in die Map schreiben (als UNKNOWN)
-			if(node==start) nodesStatus.get(node).setTime(starttime); // fuer den Startnode wird angefangen zu zaehlen
-		}
-		if(find(start,start,plane,nodesStatus,new ArrayDeque<Node>(Arrays.asList(start))))
+		if(find(startNodes.get(0),startNodes.get(0),plane,nodesStatus, tTypeEnd, new ArrayDeque<Node>(startNodes)))
+			System.out.println("Es wurde ein Weg gefunden!");
+		else System.out.println("Es wurde kein Weg gefunden :(");
+	}
+
+	/**
+	 * @param nodes Die zu durchsuchenden Nodes
+	 * @param plane Das Fluzeug, fuer das die Suche durchefuehrt werden soll
+	 * @param starttime Die Zeit im Modell, bei der die Suche losgehen soll
+	 * @param tTypeStart Der Targettype des Startpunkts der Suche
+	 * @param startNode Der Startnode der Suche
+	*/
+	
+	public static void startSearch(Collection<Node> nodes, Plane plane, int starttime, Node startNode, Targettype tTypeEnd) {
+		Map<Node,Breadcrumb> nodesStatus = createBreadcrumbMap(nodes, Arrays.asList(startNode), starttime);
+		if(find(startNode,startNode,plane,nodesStatus, tTypeEnd, new ArrayDeque<Node>(Arrays.asList(startNode))))
 			System.out.println("Es wurde ein Weg gefunden!");
 		else System.out.println("Es wurde kein Weg gefunden :(");
 	}
@@ -55,19 +54,16 @@ public class PathFinder {
 	/**
 	 * @return gibt true zurueck, falls ein Weg gefunden wurde, andernfalls false
 	 */
-	private static boolean find(Node start, 
-		Node current, Plane plane, Map<Node,Breadcrumb>nodesStatus, 
-								Deque<Node> deq) 
+	private static boolean find(Node start, Node current, Plane plane, Map<Node,Breadcrumb>nodesStatus, Targettype tTypeEnd, Deque<Node> deq) 
 	{
 		int currentTime = nodesStatus.get(current).getTime(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
 		
 		// vergleiche ob current der letzte waypoint ist
-		if (current.getTargettype() != null && 
-				current.getTargettype().equals(plane.getWaypoints()
-						.get(plane.getWaypoints().size()-1))) {	//<ToDo: bis in alle Ewigkeit reservieren. UNd BEdingung: falls end nicht belegt ist>
+		if (current.getTargettype() != null &&	current.getTargettype().equals(tTypeEnd)) {	//<ToDo: bis in alle Ewigkeit reservieren
 			savePath(current,plane,nodesStatus);				
-			return true;
-		}	
+			return true; 
+		}
+		
 		for(Node child: current.getTo()) {
 			if(
 				nodesStatus.get(child).getStatus()==Status.UNKNOWN &&         // falls Knoten noch nicht entdeckt und
@@ -80,20 +76,32 @@ public class PathFinder {
 				}
 		}
 		nodesStatus.get(current).setStatus(Status.DONE);				// alle Kinder-Knoten sind entdeckt, der Knoten kann 
-		deq.removeFirst();												// auf "DONE" gesetzt und aus der Warteschlange gel�scht werden
+		deq.removeFirst();												// auf "DONE" gesetzt und aus der Warteschlange geloescht werden
 		
 		if(deq.size()==0) return false;										// return false, wenn kein Weg gefunden werden kann
-		else return find(start,deq.peekFirst(),plane,nodesStatus,deq);  // die Breitensuche fortsetzen
+		else return find(start,deq.peekFirst(),plane,nodesStatus, tTypeEnd, deq);  	// die Breitensuche fortsetzen
 
 	}
 	
 	private static void savePath(Node node, Plane plane,Map<Node,Breadcrumb>nodesStatus) {
-		int time;
-		while(node!=null) {
-			time = nodesStatus.get(node).getTime();
+			int time = nodesStatus.get(node).getTime();
+			node.putReserved(time, plane);
+			node.putReserved(time +1, plane);
+			if(nodesStatus.get(node).getFrom()!=null) {
+				savePath(nodesStatus.get(node).getFrom(),plane,nodesStatus);
+			}
 			System.out.println("Node "+node.getName() +", Time: " + time);
-			node = nodesStatus.get(node).getFrom();	
-		}
+
 	}
 	
+	private static Map<Node,Breadcrumb> createBreadcrumbMap(Collection<Node> nodes, Collection<Node> startNodes, Integer time){
+		Map<Node,Breadcrumb> nodesStatus = new HashMap<Node,Breadcrumb>();
+		
+		for(Node node:nodes) {
+			nodesStatus.put(node, new Breadcrumb()); 									// alle Nodes in die Map schreiben (als UNKNOWN)
+			if(startNodes.contains(node)) nodesStatus.get(node).setTime(time); 			// fuer die Startnodes wird angefangen zu zaehlen
+		}
+		return nodesStatus;
+		
+	}
 }

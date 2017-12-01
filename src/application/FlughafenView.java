@@ -41,6 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class FlughafenView {
 	private Flughafen model;
@@ -55,14 +57,14 @@ public class FlughafenView {
 	private double zoomFactor = 1.0;
 	private double offsetX = 0.0; // absoluter XOffset (verschiebt die Zeichnung auf dem Canvas)
 	private double offsetY = 0.0; // absoluter YOffset
-	Group root = new Group();
+	private Group root = new Group();
 	HBox  buttonHbox= new HBox ();
 	private Button zoomButton = new Button("");
 	private ToggleButton nameButton = new ToggleButton("show me the Node-names");
 	final StringProperty btnText = nameButton.textProperty();
 
 	Map<Plane, ImageView> planes = new HashMap<Plane, ImageView>();
-//pair oder tupel statt imageview wo path und imageview rein kommt damit man beim zoomen (während der animation) 
+	//pair oder tupel statt imageview wo path und imageview rein kommt damit man beim zoomen (während der animation) 
 	
 	public FlughafenView(Flughafen model, Stage stage) {
 		this.model = model;
@@ -75,7 +77,6 @@ public class FlughafenView {
 		this.stage.setScene(scene);
 		this.stage.setTitle("Flughafen");
 		this.stage.show();
-		this.flugtest();
 		Image buttonImage = new Image("/application/source/Images/zoomout.png");
 		zoomButton.setGraphic(new ImageView(buttonImage));
 		setButtonStyle(zoomButton);
@@ -83,6 +84,8 @@ public class FlughafenView {
 		this.setHboyStyle();
 		root.getChildren().addAll(buttonHbox);
 		buttonHbox.getChildren().addAll(zoomButton,nameButton);
+		
+//		this.flugtest();
 	}
 
 	public Stage getStage() {
@@ -103,7 +106,7 @@ public class FlughafenView {
 		Collection<Node> nodes = model.getNodes();
 		if (!nodes.isEmpty()) {
 			gc.clearRect(0, 0, this.width, this.height+heightButtonplatz);
-			drawNodes(nodes);
+			drawNodes(new ArrayList<Node>(nodes));
 
 		}
 	}
@@ -118,9 +121,15 @@ public class FlughafenView {
 		}
 	}
 
-	private void drawNodes(Collection<Node> nodes) {
-		for (Node node : nodes)
+	/*	drawNodes() zeichnet rekursiv (damit die unten liegenden Nodes zuerst gezeichnet werden) */
+	
+	private void drawNodes(ArrayList<Node> nodes) {
+		if(nodes.size()>0) {
+			Node node = nodes.remove(0);
+			drawNodes(nodes);
 			drawNode(node);
+		}
+			
 			
 	}
 
@@ -129,42 +138,38 @@ public class FlughafenView {
 		double x = (node.getX() * this.zoomFactor) + offsetX;
 		double y = (node.getY() * this.zoomFactor) + offsetY;
 		Kind kind = node.getKind();
-		this.gc.setLineWidth(1.0);
-		this.gc.setStroke(Color.DARKGREY);
-		this.gc.setFill(Color.GREY);
+		
+		/*	setStyle: Funktionales Interface, dem man drei Argumente mitgeben kann, damit es die Farben fuer die Nodes 
+			anpasst. */
+		
+		Function<Double,Function<Color,Consumer<Color>>> setStyle = width -> (strokeC -> (fillC -> {
+			this.gc.setLineWidth(width);
+			this.gc.setStroke(strokeC);
+			this.gc.setFill(fillC);
+		}));
+
+		setStyle.apply(1.0).apply(Color.DARKGREY).accept(Color.GREY);
+		
 		switch (kind) {
-		case air: {
-			this.gc.setStroke(Color.BLUE);
-			this.gc.setLineWidth(0.2);
-			this.gc.setFill(Color.BLUE.darker());
-			break;
-		}
-
-		case concrete: {
-			this.gc.setStroke(Color.grayRgb(10, 1));
-			this.gc.setLineWidth(0.3);
-			this.gc.setFill(Color.grayRgb(10, 1));
-			break;
-
-		}
-
-		case hangar: {
-			this.gc.setStroke(Color.DARKGREEN);
-			this.gc.setLineWidth(0.6);
-			this.gc.setFill(Color.DARKGREEN);
-			break;
-
-		}
-		case runway: {
-			this.gc.setStroke(Color.BLACK);
-			this.gc.setLineWidth(0.4);
-			this.gc.setFill(Color.BLACK);
-			break;
-
-		}
+			case air: {
+				setStyle.apply(1.0).apply(Color.BLUE).accept(Color.BLUE.darker());
+				break;
+			}
+			case concrete: {
+				setStyle.apply(0.3).apply(Color.grayRgb(10, 1)).accept(Color.grayRgb(10, 1));
+				break;
+			}
+			case hangar: {
+				setStyle.apply(0.6).apply(Color.DARKGREEN).accept(Color.DARKGREEN);
+				break;
+	
+			}
+			case runway: {
+				setStyle.apply(0.4).apply(Color.BLACK).accept(Color.BLACK);
+				break;
+			}
 		}
 	
-
 		for (Node children : node.getTo()) {
 			gc.strokeLine(x, y, (children.getX() * zoomFactor) + offsetX, (children.getY() * zoomFactor) + offsetY);
 		}
@@ -183,9 +188,10 @@ public class FlughafenView {
 		}
 		ImageView imgV = this.planes.get(plane);
 		Node node = plane.getNextNode();
+				
 		if (node != null) {
-			double x = node.getX() * this.zoomFactor + this.offsetX - 1;
-			double y = node.getY() * this.zoomFactor + this.offsetY - 1;
+			double x = node.getX() * this.zoomFactor + this.offsetX - PlaneType.BOEING.getSize()/2;
+			double y = node.getY() * this.zoomFactor + this.offsetY - PlaneType.BOEING.getSize()/2;
 			imgV.setX(x);
 			imgV.setY(y);
 		}
@@ -195,7 +201,6 @@ public class FlughafenView {
 
 	private void setInitialZoomAndOffset(Collection<Node> nodes) { // setzt den initialen Faktor und Verschiebung,
 																	// sodass alles auf das canvas passt;
-
 		Iterator<Node> it = nodes.iterator();
 		if (it.hasNext()) {
 			double minY, minX, maxX, maxY, widthFlughafen, heightFlughafen;
@@ -208,30 +213,23 @@ public class FlughafenView {
 				Node currentNode = it.next();
 				double currentX = currentNode.getX();
 				double currentY = currentNode.getY();
-				if (currentX < minX)
-					minX = currentX;
-				if (currentY < minY)
-					minY = currentY;
-				if (currentX > maxX)
-					maxX = currentX;
-				if (currentY > maxY)
-					maxY = currentY;
+				if (currentX < minX) minX = currentX;
+				if (currentY < minY) minY = currentY;
+				if (currentX > maxX) maxX = currentX;
+				if (currentY > maxY) maxY = currentY;
 			}
 			maxX = maxX - minX; // maxX ist jetzt die breite des Flughafens (!)
 			maxY = maxY - (minY-1); // maxY ist jetzt die Hoehe des Flughafens
 
-			if (maxY * ((double) this.width / this.height) <= maxX) // passt den Flughafen in die Bildschirmmasse ein //
-																	// (orientiert an breite)
+			if (maxY * ((double) this.width / this.height) <= maxX) // passt den Flughafen in die Bildschirmma�e ein (orientiert an breite)
 				this.zoomFactor = this.width / maxX;
 			else
 				this.zoomFactor = this.height / maxY;
 
-			widthFlughafen = maxX * this.zoomFactor; // absolute Breite des Flughafens (die relative steht ja schon in
-														// maxX)
+			widthFlughafen = maxX * this.zoomFactor; // absolute Breite des Flughafens (die relative steht ja schon in maxX)											
 			heightFlughafen = maxY * this.zoomFactor;
 
-			this.offsetX = (0 - minX * this.zoomFactor) + (this.width - (widthFlughafen)) * 0.5; // horizontalAlign des
-																									// Flughafens
+			this.offsetX = (0 - minX * this.zoomFactor) + (this.width - (widthFlughafen)) * 0.5; // horizontalAlign des Flughafens																					
 			this.offsetY = (heightButtonplatz - minY * this.zoomFactor) + ((this.height) - (heightFlughafen)) * 0.5; // verticalAlign
 		}
 	}
@@ -322,12 +320,9 @@ public class FlughafenView {
 	}
 
 	public Button getZoomOutButton() {
-
 		return this.zoomButton;
-
 	}
 
-	
 	public ToggleButton getNameButton() {
 		return this.nameButton;
 	}
