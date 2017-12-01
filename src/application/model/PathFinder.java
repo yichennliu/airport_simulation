@@ -8,7 +8,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Deque;
 
 
 public class PathFinder {
@@ -30,7 +29,7 @@ public class PathFinder {
 		}
 			
 		Map<Node,Breadcrumb> nodesStatus = createBreadcrumbMap(nodes, startNodes, starttime);
-		
+
 		if(find(startNodes.get(0),startNodes.get(0),plane,nodesStatus, tTypeEnd, new ArrayDeque<Node>(startNodes)))
 			System.out.println("Es wurde ein Weg gefunden!");
 		else System.out.println("Es wurde kein Weg gefunden :(");

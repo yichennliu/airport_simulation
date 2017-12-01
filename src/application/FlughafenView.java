@@ -7,28 +7,20 @@ import javafx.util.Duration;
 import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
 import javafx.animation.PathTransition;
-import javafx.animation.RotateTransition;
-import javafx.animation.Timeline;
 import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
-import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.shape.ArcTo;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -40,9 +32,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
 
 public class FlughafenView {
 	private Flughafen model;
@@ -53,7 +47,6 @@ public class FlughafenView {
 	private GraphicsContext gc;
 	private int height = 600 ;
 	private int width = 800;
-
 	private double zoomFactor = 1.0;
 	private double offsetX = 0.0; // absoluter XOffset (verschiebt die Zeichnung auf dem Canvas)
 	private double offsetY = 0.0; // absoluter YOffset
@@ -61,8 +54,8 @@ public class FlughafenView {
 	HBox  buttonHbox= new HBox ();
 	private Button zoomButton = new Button("");
 	private ToggleButton nameButton = new ToggleButton("show me the Node-names");
+	private Label zoomLabel= new Label();
 	final StringProperty btnText = nameButton.textProperty();
-
 	Map<Plane, ImageView> planes = new HashMap<Plane, ImageView>();
 	//pair oder tupel statt imageview wo path und imageview rein kommt damit man beim zoomen (w√§hrend der animation) 
 	
@@ -82,10 +75,10 @@ public class FlughafenView {
 		setButtonStyle(zoomButton);
 		setButtonStyle(nameButton);
 		this.setHboyStyle();
-		root.getChildren().addAll(buttonHbox);
 		buttonHbox.getChildren().addAll(zoomButton,nameButton);
-		
-//		this.flugtest();
+		this.setZoomLabel(zoomLabel);
+		root.getChildren().addAll(buttonHbox, zoomLabel);
+
 	}
 
 	public Stage getStage() {
@@ -221,7 +214,7 @@ public class FlughafenView {
 			maxX = maxX - minX; // maxX ist jetzt die breite des Flughafens (!)
 			maxY = maxY - (minY-1); // maxY ist jetzt die Hoehe des Flughafens
 
-			if (maxY * ((double) this.width / this.height) <= maxX) // passt den Flughafen in die Bildschirmmaﬂe ein (orientiert an breite)
+			if (maxY * ((double) this.width / this.height) <= maxX) // passt den Flughafen in die BildschirmmaÔøΩe ein (orientiert an breite)
 				this.zoomFactor = this.width / maxX;
 			else
 				this.zoomFactor = this.height / maxY;
@@ -331,8 +324,6 @@ public class FlughafenView {
 		setInitialZoomAndOffset(nodes);
 		update();
 	}
-
-
 	
 	public void showName(Collection<Node> nodes) {
 		for (Node node : nodes) {
@@ -347,7 +338,6 @@ public class FlughafenView {
 		double y = (node.getY() * this.zoomFactor) + offsetY;
 		this.gc.fillText(" ", x + 5, y);
 	}}
-	
 	
 	public void setHboyStyle() {
 		buttonHbox.setStyle("-fx-padding: 10;" + "-fx-border-style: solid inside;"
@@ -371,6 +361,23 @@ public class FlughafenView {
 			    + "-fx-border-width: 2;"
 			    +"-fx-background-color: #ffffcc;"
 			);
+	}
+	
+	public void setZoomLabel(Label zm){
+
+		zm.setTranslateX(740);
+		zm.setTranslateY(this.height-zm.getHeight());
+		zm.setFont(Font.font("Arial",20));
+		zm.setText("1.0");
+		zm.setStyle("-fx-background-color: thistle;"
+					+"-fx-border-color: black;"
+					+"-fx-background-image:url('/application/source/Images/zoomLabel.jpg');"
+					);
+		
+	}
+	
+	public Label getZoomLabel(){
+		return this.zoomLabel;
 	}
 
 }
