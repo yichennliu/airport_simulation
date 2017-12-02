@@ -78,7 +78,6 @@ public class FlughafenView {
 		buttonHbox.getChildren().addAll(zoomButton,nameButton);
 		this.setZoomLabel(zoomLabel);
 		root.getChildren().addAll(buttonHbox, zoomLabel);
-
 	}
 
 	public Stage getStage() {

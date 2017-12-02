@@ -8,7 +8,7 @@ import javafx.util.Pair;
 public class Plane {
 
 	private List<Targettype> waypoints = new ArrayList<Targettype>();
-	private Pair<Node,Node> currentNodes = new Pair<Node, Node>(null, null); // links = last
+	private Tuple<Node,Node> currentNodes = new Tuple<Node, Node>(null, null); // links = last
 	
 	private int inittime;
 	
@@ -26,10 +26,20 @@ public class Plane {
 	}
 	
 	public Node getLastNode() {
-		return this.currentNodes.getKey();
+		return this.currentNodes.fst();
+		
 	}
 	public Node getNextNode() {
-		return this.currentNodes.getValue();
+		return this.currentNodes.snd();
 	}
 	
+	/**
+	 * Sets the next Node in the plane (and moves the current next node to lastNode!)
+	 * @param node to be set
+	*/
+	public void setNextNode(Node node) {
+		Node currentNext = this.currentNodes.snd();
+		this.currentNodes.setSnd(node);
+		this.currentNodes.setFst(currentNext);
+	}
 }

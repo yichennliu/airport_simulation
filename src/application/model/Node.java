@@ -46,6 +46,17 @@ public class Node {
 		return this.to.values();
 	}
 	
+	/* updates the Node and Planes that are at this node by using the current Airport time
+	*/
+	public void update() {
+		Integer time = Flughafen.getTime();
+		Plane plane = reserved.get(time);
+		if((plane!=null && reserved.get(time-1) != plane) || 	// benachrichtige das Flugzeug nur, wenn es ankommt und 
+				plane == reserved.get(time-2)) { 				// wenn es laenger als zwei Ticks bleibt	
+			plane.setNextNode(this);
+		}
+	}
+	
 	/**
 	 * Only for import
 	 */
@@ -56,11 +67,7 @@ public class Node {
 	public Collection<Node> getConflicts() {
 		return this.conflicts.values();
 	}
-	
-//	public boolean hasConflicts(Integer time) {
-//		this.hasConflicts(time, this);
-//	}
-	
+
 	
 	/**
 	 * Only for import
