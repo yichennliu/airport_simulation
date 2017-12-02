@@ -54,7 +54,7 @@ public class FlughafenView {
 	HBox  buttonHbox= new HBox ();
 	private Button zoomButton = new Button("");
 	private ToggleButton nameButton = new ToggleButton("show me the Node-names");
-	private Label zoomLabel= new Label();
+	private Label zoomLabel;
 	final StringProperty btnText = nameButton.textProperty();
 	Map<Plane, ImageView> planes = new HashMap<Plane, ImageView>();
 	//pair oder tupel statt imageview wo path und imageview rein kommt damit man beim zoomen (während der animation) 
@@ -76,7 +76,7 @@ public class FlughafenView {
 		setButtonStyle(nameButton);
 		this.setHboyStyle();
 		buttonHbox.getChildren().addAll(zoomButton,nameButton);
-		this.setZoomLabel(zoomLabel);
+		createZoomLabel();
 		root.getChildren().addAll(buttonHbox, zoomLabel);
 	}
 
@@ -362,17 +362,20 @@ public class FlughafenView {
 			);
 	}
 	
-	public void setZoomLabel(Label zm){
-
-		zm.setTranslateX(740);
-		zm.setTranslateY(this.height-zm.getHeight());
-		zm.setFont(Font.font("Arial",20));
-		zm.setText("1.0");
-		zm.setStyle("-fx-background-color: thistle;"
+	public void createZoomLabel(){
+		this.zoomLabel = new Label();
+		this.zoomLabel.setTranslateX(740);
+		this.zoomLabel.setTranslateY(this.height);
+		this.zoomLabel.setFont(Font.font("Arial",20));
+		this.zoomLabel.setStyle("-fx-background-color: thistle;"
 					+"-fx-border-color: black;"
 					+"-fx-background-image:url('/application/source/Images/zoomLabel.jpg');"
 					);
-		
+		updateLabel();
+	}
+	
+	public void updateLabel() {
+		this.zoomLabel.setText((int) this.zoomFactor - 40 + " %");
 	}
 	
 	public Label getZoomLabel(){

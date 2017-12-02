@@ -28,6 +28,7 @@ public class FlughafenController {
 			translateArray[1] = event.getY();
 			translateArray[2] = 0;					// die seither vergangene Verschiebung (0, es wurde ja gerade erst geklickt)
 			translateArray[3] = 0;
+		
 		});
 		
 
@@ -49,10 +50,7 @@ public class FlughafenController {
 		canvas.addEventHandler(ScrollEvent.SCROLL, e->{
 			view.zoomTo(e.getDeltaY(), e.getX(), e.getY(),3.0);
 			view.update(); 	
-			Label zmLabel= this.view.getZoomLabel();
-			double updateZmFac= Math.round(this.view.getZoomFactor());
-			zmLabel.setText(Double.toString(updateZmFac));
-			
+			view.updateLabel();
 		});
 		
 		stage.widthProperty().addListener((observableValue, oldWidth, newWidth) -> { // bei Skalierung des Fensters skaliert das Canvas mit
@@ -67,8 +65,7 @@ public class FlughafenController {
 
 		this.view.getZoomOutButton().addEventHandler(MouseEvent.MOUSE_PRESSED, event ->{
 			this.view.zoomOut(this.model.getNodes());
-			Label zmLabel= this.view.getZoomLabel();
-			zmLabel.setText("1.0");
+			this.view.updateLabel();
 		});
 
 		
