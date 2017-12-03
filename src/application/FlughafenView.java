@@ -54,6 +54,8 @@ public class FlughafenView {
     private ToggleButton nameButton = new ToggleButton("show me the Node-names");
     private Label zoomLabel;
     final StringProperty btnText = nameButton.textProperty();
+    boolean nameshown= false;
+    
     Map<Plane, ImageView> planes = new HashMap<Plane, ImageView>();
     //pair oder tupel statt imageview wo path und imageview rein kommt damit man beim zoomen (während der animation)
 
@@ -97,7 +99,9 @@ public class FlughafenView {
         if (!nodes.isEmpty()) {
             gc.clearRect(0, 0, this.width, this.height + heightButtonplatz);
             drawNodes(new ArrayList<Node>(nodes));
-
+            if(nameshown)	{
+  			showName(nodes);
+   			}
         }
     }
 
@@ -289,17 +293,12 @@ public class FlughafenView {
             imageV.setFitWidth(2 * this.zoomFactor);
             imageV.setFitHeight(2 * this.zoomFactor);
             PathTransition pt = new PathTransition();
-
             Path path = getPathFromPlane(p);
-
-
             pt.setDuration(Duration.millis(2000));
             pt.setCycleCount(Animation.INDEFINITE);
             pt.setPath(path);
-
             pt.setNode(imageV);
             pt.setOrientation(PathTransition.OrientationType.NONE);
-
             ParallelTransition pl = new ParallelTransition(imageV, pt);
             pl.play();
 
@@ -342,17 +341,11 @@ public class FlughafenView {
             double x = (node.getX() * this.zoomFactor) + offsetX;
             double y = (node.getY() * this.zoomFactor) + offsetY;
             this.gc.fillText(node.getName(), x + 5, y);
+            nameshown=true;
         }
     }
 
-    public void hideName(Collection<Node> nodes) {
-        for (Node node : nodes) {
-            double x = (node.getX() * this.zoomFactor) + offsetX;
-            double y = (node.getY() * this.zoomFactor) + offsetY;
-            this.gc.fillText(" ", x + 5, y);
-        }
-    }
-
+   
     public void setHboyStyle() {
         buttonHbox.setStyle("-fx-padding: 10;" + "-fx-border-style: solid inside;"
                 + "-fx-border-width: 1;" + "-fx-border-insets: 1;"

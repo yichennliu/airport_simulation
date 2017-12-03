@@ -78,7 +78,7 @@ public class FlughafenController {
 			 } 
 			 else {
 				 this.view. btnText.set("show Nodenames");
-				 this.view.hideName(this.model.getNodes());
+				 this.view.nameshown=false;
 				 this.view.update();			   
 			}  
 		});
