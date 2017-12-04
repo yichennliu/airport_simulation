@@ -14,9 +14,7 @@ public class Flughafen {
 		this.planes = planes;
 		this.generators = generators;
 		this.nodes = nodes;
-		System.out.println(this.planes.get(0).getWaypoints().toString());
-		PathFinder.startSearch(nodes.values(), this.planes.get(0), 0, this.planes.get(0).getWaypoints().get(0),this.planes.get(0).getWaypoints().get(1));
-		PathFinder.startSearch(nodes.values(), this.planes.get(0), 18, this.planes.get(0).getWaypoints().get(1),this.planes.get(0).getWaypoints().get(2));
+		boolean success = PathFinder.startSearch(nodes.values(), this.planes.get(0), 0);
 	}
 	
 	public int getMaxplanes() {

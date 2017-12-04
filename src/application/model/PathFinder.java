@@ -13,54 +13,69 @@ import java.util.Map;
 public class PathFinder {
 	
 	/**
+	 * Suche und reserviere einen Pfad für ein Flugzeug
+	 * 
 	 * @param nodes Die zu durchsuchenden Nodes
 	 * @param plane Das Fluzeug, fuer das die Suche durchefuehrt werden soll
 	 * @param starttime Die Zeit im Modell, bei der die Suche losgehen soll
-	 * @param tTypeStart Der Targettype des Startpunkts der Suche
-	 * @param tTypeEnd Der Targettype des Endpunkts der Suche
-	*/
-	public static void startSearch(Collection<Node> nodes, Plane plane,int starttime, Targettype tTypeStart, Targettype tTypeEnd) {
+	 * @return true wenn ein Pfad gefunden wurde, sonst false
+	 */
+	public static boolean startSearch(Collection<Node> nodes, Plane plane, int starttime) {
+		System.out.println(plane.getWaypoints().toString());
+		
 		// find Nodes with the start target type that are free at starttime
 		List<Node> startNodes = new ArrayList<>();	
 		for (Node node: nodes) {
-			if (node.getTargettype() != null && node.getTargettype().equals(tTypeStart) && node.isFree(starttime)) {
+			if (node.getTargettype() != null && node.getTargettype().equals(plane.getWaypoints().get(0)) && node.isFree(starttime)) {
 				startNodes.add(node);
 			}
 		}
+		
+		// Wenn kein Startnode frei
+		if (startNodes.isEmpty()) {
+			System.out.println("Es wurde kein Weg gefunden :(");
+			return false;
+		}
+		
+		// suche Pfade zwischen den einzelnen Waypoints
+		Map<Node,Breadcrumb> nodesStatus = null;
+		Node result = null;
+		for (int i = 1; i < plane.getWaypoints().size(); i++) {
+			System.out.println(" Next target: "+plane.getWaypoints().get(i));
+			nodesStatus = createBreadcrumbMap(nodes, startNodes, starttime);
 			
-		Map<Node,Breadcrumb> nodesStatus = createBreadcrumbMap(nodes, startNodes, starttime);
-
-		if(find(plane, nodesStatus, tTypeEnd, new ArrayDeque<Node>(startNodes)))
-			System.out.println("Es wurde ein Weg gefunden!");
-		else System.out.println("Es wurde kein Weg gefunden :(");
-	}
-
-	/**
-	 * @param nodes Die zu durchsuchenden Nodes
-	 * @param plane Das Fluzeug, fuer das die Suche durchefuehrt werden soll
-	 * @param starttime Die Zeit im Modell, bei der die Suche losgehen soll
-	 * @param startNode Der Startnode der Suche
-	 * @param tTypeEnd Der Targettype des Endpunkts der Suche
-	*/
-	public static void startSearch(Collection<Node> nodes, Plane plane, int starttime, Node startNode, Targettype tTypeEnd) {
-		Map<Node,Breadcrumb> nodesStatus = createBreadcrumbMap(nodes, Arrays.asList(startNode), starttime);
-		if(find(plane, nodesStatus, tTypeEnd, new ArrayDeque<Node>(Arrays.asList(startNode))))
-			System.out.println("Es wurde ein Weg gefunden!");
-		else System.out.println("Es wurde kein Weg gefunden :(");
+			result = findWaypoint(plane, nodesStatus, plane.getWaypoints().get(i), new ArrayDeque<Node>(startNodes));
+			if (result != null) {
+				// setze Start-Parameter für Suche zum nächsten Waypoint
+				startNodes = Arrays.asList(result);
+				starttime = nodesStatus.get(result).getTime();
+			} else {
+				System.out.println("Es wurde kein Weg gefunden :(");
+				return false;
+			}
+		}
+		System.out.println("Es wurde ein Weg gefunden!");
+		return true;
 	}
 	
 	/**
-	 * @return gibt true zurueck, falls ein Weg gefunden wurde, andernfalls false
+	 * Finde Pfad zu einem waypoint
+	 * 
+	 * @param plane Das Fluzeug, fuer das die Suche durchefuehrt werden soll
+	 * @param nodesStatus Informationen zum Pfad
+	 * @param waypoint Gesuchter waypoint
+	 * @param deq Deque für die Breitensuche
+	 * @return Ziel-Node wenn die Suche erfolgreich war, sonst null
 	 */
-	private static boolean find(Plane plane, Map<Node,Breadcrumb>nodesStatus, Targettype tTypeEnd, Deque<Node> deq) 
+	private static Node findWaypoint(Plane plane, Map<Node,Breadcrumb>nodesStatus, Targettype waypoint, Deque<Node> deq) 
 	{
 		Node current = deq.getFirst();							// in diesem Durchlauf zu überprüfender Node
 		int currentTime = nodesStatus.get(current).getTime(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
 		
-		// vergleiche ob current der letzte waypoint ist
-		if (current.getTargettype() != null &&	current.getTargettype().equals(tTypeEnd)) {	//<ToDo: bis in alle Ewigkeit reservieren
+		// vergleiche ob current der gesuchte waypoint ist
+		if (current.getTargettype() != null &&	current.getTargettype().equals(waypoint)) {	//<ToDo: bis in alle Ewigkeit reservieren
 			savePath(current,plane,nodesStatus);				
-			return true; 
+			return current; 
 		}
 		
 		for(Node child: current.getTo()) {
@@ -77,8 +92,8 @@ public class PathFinder {
 		nodesStatus.get(current).setStatus(Status.DONE);				// alle Kinder-Knoten sind entdeckt, der Knoten kann 
 		deq.removeFirst();												// auf "DONE" gesetzt und aus der Warteschlange geloescht werden
 		
-		if(deq.size()==0) return false;									// return false, wenn kein Weg gefunden werden kann
-		else return find(plane, nodesStatus, tTypeEnd, deq);			// die Breitensuche fortsetzen
+		if(deq.size()==0) return null;									// return null, wenn kein Weg gefunden werden kann
+		else return findWaypoint(plane, nodesStatus, waypoint, deq);	// die Breitensuche fortsetzen
 
 	}
 	
