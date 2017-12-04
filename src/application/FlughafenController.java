@@ -35,8 +35,8 @@ public class FlughafenController {
 		canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, event ->{
 			double xOffset = event.getX()-translateArray[0]; // die Verschiebung relativ zur Startposition des DragEvents
 			double yOffset = event.getY()-translateArray[1];
-			view.setOffsetX(view.getOffsetX()-translateArray[2]+xOffset); // um richtig zu verschieben, muss vom alten Offset die alte Verschiebung wieder weggenommen werden, bevor die neue addiert wird
-			view.setOffsetY(view.getOffsetY()-translateArray[3]+yOffset);
+			FlughafenView.setOffsetX(FlughafenView.getOffsetX()-translateArray[2]+xOffset); // um richtig zu verschieben, muss vom alten Offset die alte Verschiebung wieder weggenommen werden, bevor die neue addiert wird
+			FlughafenView.setOffsetY(FlughafenView.getOffsetY()-translateArray[3]+yOffset);
 			translateArray[2] = xOffset; // die neue Verschiebung (relativ zum Startpunkt des DragEvents) wird gespeichert
 			translateArray[3] = yOffset;
 			this.view.update(); 
