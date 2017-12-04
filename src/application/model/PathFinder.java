@@ -30,7 +30,7 @@ public class PathFinder {
 			
 		Map<Node,Breadcrumb> nodesStatus = createBreadcrumbMap(nodes, startNodes, starttime);
 
-		if(find(startNodes.get(0),startNodes.get(0),plane,nodesStatus, tTypeEnd, new ArrayDeque<Node>(startNodes)))
+		if(find(plane, nodesStatus, tTypeEnd, new ArrayDeque<Node>(startNodes)))
 			System.out.println("Es wurde ein Weg gefunden!");
 		else System.out.println("Es wurde kein Weg gefunden :(");
 	}
@@ -39,13 +39,12 @@ public class PathFinder {
 	 * @param nodes Die zu durchsuchenden Nodes
 	 * @param plane Das Fluzeug, fuer das die Suche durchefuehrt werden soll
 	 * @param starttime Die Zeit im Modell, bei der die Suche losgehen soll
-	 * @param tTypeStart Der Targettype des Startpunkts der Suche
 	 * @param startNode Der Startnode der Suche
+	 * @param tTypeEnd Der Targettype des Endpunkts der Suche
 	*/
-	
 	public static void startSearch(Collection<Node> nodes, Plane plane, int starttime, Node startNode, Targettype tTypeEnd) {
 		Map<Node,Breadcrumb> nodesStatus = createBreadcrumbMap(nodes, Arrays.asList(startNode), starttime);
-		if(find(startNode,startNode,plane,nodesStatus, tTypeEnd, new ArrayDeque<Node>(Arrays.asList(startNode))))
+		if(find(plane, nodesStatus, tTypeEnd, new ArrayDeque<Node>(Arrays.asList(startNode))))
 			System.out.println("Es wurde ein Weg gefunden!");
 		else System.out.println("Es wurde kein Weg gefunden :(");
 	}
@@ -53,8 +52,9 @@ public class PathFinder {
 	/**
 	 * @return gibt true zurueck, falls ein Weg gefunden wurde, andernfalls false
 	 */
-	private static boolean find(Node start, Node current, Plane plane, Map<Node,Breadcrumb>nodesStatus, Targettype tTypeEnd, Deque<Node> deq) 
+	private static boolean find(Plane plane, Map<Node,Breadcrumb>nodesStatus, Targettype tTypeEnd, Deque<Node> deq) 
 	{
+		Node current = deq.getFirst();							// in diesem Durchlauf zu überprüfender Node
 		int currentTime = nodesStatus.get(current).getTime(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
 		
 		// vergleiche ob current der letzte waypoint ist
@@ -77,8 +77,8 @@ public class PathFinder {
 		nodesStatus.get(current).setStatus(Status.DONE);				// alle Kinder-Knoten sind entdeckt, der Knoten kann 
 		deq.removeFirst();												// auf "DONE" gesetzt und aus der Warteschlange geloescht werden
 		
-		if(deq.size()==0) return false;										// return false, wenn kein Weg gefunden werden kann
-		else return find(start,deq.peekFirst(),plane,nodesStatus, tTypeEnd, deq);  	// die Breitensuche fortsetzen
+		if(deq.size()==0) return false;									// return false, wenn kein Weg gefunden werden kann
+		else return find(plane, nodesStatus, tTypeEnd, deq);			// die Breitensuche fortsetzen
 
 	}
 	
