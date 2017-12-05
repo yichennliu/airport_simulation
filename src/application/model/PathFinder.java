@@ -99,8 +99,8 @@ public class PathFinder {
 	
 	private static void savePath(Node node, Plane plane,Map<Node,Breadcrumb>nodesStatus) {
 			int time = nodesStatus.get(node).getTime();
-			node.putReserved(time, plane);
-			node.putReserved(time +1, plane);
+			node.putReserved(time, plane,true);
+			node.putReserved(time +1, plane,false);
 			if(nodesStatus.get(node).getFrom()!=null) {
 				savePath(nodesStatus.get(node).getFrom(),plane,nodesStatus);
 			}

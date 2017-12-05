@@ -12,7 +12,7 @@ public class Node {
 	private Map<String, Node> conflicts;
 	private Targettype targettype = null;
 	private int waittime;
-	private Map<Integer,Plane> reserved = new HashMap<Integer,Plane>();
+	private Map<Integer,Tuple<Plane, Boolean>> reserved = new HashMap<Integer,Tuple<Plane, Boolean>>();
 	boolean blocked = false;
 	
 	public Node(double x, double y, String name, Kind kind, Map<String, Node> to, 
@@ -50,8 +50,8 @@ public class Node {
 	/* updates the Node and Planes that are at this node by using the current Airport time
 	*/
 	public void update() { //überarbeiten!!!
-		Integer time = Flughafen.getTime();
-		Plane plane = reserved.get(time);
+//		Integer time = Flughafen.getTime();
+//		Plane plane = reserved.get(time).fst();
 	}
 
 	
@@ -83,12 +83,12 @@ public class Node {
 	}
 	
 	
-	public Map<Integer,Plane> getReserved() {
+	public Map<Integer,Tuple<Plane,Boolean>> getReserved() {
 		return this.reserved;
 	}
 	
-	public void putReserved(Integer time,Plane plane) {
-		this.reserved.put(time, plane);
+	public void putReserved(Integer time,Plane plane,Boolean stay) {
+		this.reserved.put(time, new Tuple<Plane, Boolean>(plane, stay));
 	}
 	
 	/**
@@ -102,7 +102,7 @@ public class Node {
 			return false;
 		} else {
 			for (Node conflictNode: this.getConflicts()) {
-				if (!conflictNode.isFree(time)) {
+				if (conflictNode.getReserved().get(time)!=null) {
 					return false;
 				}
 			}
