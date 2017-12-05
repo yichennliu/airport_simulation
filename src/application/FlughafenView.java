@@ -50,7 +50,7 @@ public class FlughafenView {
     private static Group root;
     private HBox buttonHbox;
     private Button zoomButton;
-    private ToggleButton nameButton= new ToggleButton("show me the Node-names");
+    private ToggleButton nameButton= new ToggleButton("Show Node names");
     public final StringProperty btnText = nameButton.textProperty();
     boolean nameshown= false;
     private Label zoomLabel;
@@ -75,7 +75,7 @@ public class FlughafenView {
         setButtonStyle(zoomButton);
         setButtonStyle(nameButton);
         this.buttonHbox= new HBox();
-        this.setHboyStyle();
+        this.setHboxStyle();
         buttonHbox.getChildren().addAll(zoomButton, nameButton);
         createZoomLabel();
         root.getChildren().addAll(buttonHbox, zoomLabel);
@@ -99,9 +99,7 @@ public class FlughafenView {
         if (!nodes.isEmpty()) {
             gc.clearRect(0, 0, width, height + heightButtonplatz);
             drawNodes(new ArrayList<Node>(nodes));
-            if(nameshown)	{
-            	showName(nodes);
-   			}
+         
         }
     }
 
@@ -162,7 +160,9 @@ public class FlughafenView {
                 break;
             }
         }
-
+        if(  nameshown) {
+        	 this.gc.fillText(node.getName(), x + 5, y);
+        }
         for (Node children : node.getTo()) {
             gc.strokeLine(x, y, (children.getX() * zoomFactor) + offsetX, (children.getY() * zoomFactor) + offsetY);
         }
@@ -311,17 +311,9 @@ public class FlughafenView {
         update(false);
     }
 
-    public void showName(Collection<Node> nodes) {
-        for (Node node : nodes) {
-            double x = (node.getX() * zoomFactor) + offsetX;
-            double y = (node.getY() * zoomFactor) + offsetY;
-            this.gc.fillText(node.getName(), x + 5, y);
-            nameshown=true;
-        }
-    }
-
+  
    
-    public void setHboyStyle() {
+    public void setHboxStyle() {
         buttonHbox.setStyle("-fx-padding: 10;" + "-fx-border-style: solid inside;"
                 + "-fx-border-width: 1;" + "-fx-border-insets: 1;"
                 + "-fx-border-radius: 1;" + "-fx-border-color:  #6699ff;" + "-fx-background-color:  #6699ff;");
@@ -344,6 +336,15 @@ public class FlughafenView {
                         + "-fx-border-width: 2;"
                         + "-fx-background-color: #ffffcc;"
         );
+    }
+    
+    public void showNames(boolean show) {
+    		nameshown = show;
+    		if(show) {
+    			this.btnText.set("Hide Node names");
+    		}
+    		else this.btnText.set("Show Node names");
+    		this.drawCanvas();
     }
 
     public void createZoomLabel() {
