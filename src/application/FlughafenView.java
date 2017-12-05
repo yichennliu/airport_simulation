@@ -76,9 +76,9 @@ public class FlughafenView {
         setButtonStyle(nameButton);
         this.buttonHbox= new HBox();
         this.setHboxStyle();
-        buttonHbox.getChildren().addAll(zoomButton, nameButton);
         createZoomLabel();
-        root.getChildren().addAll(buttonHbox, zoomLabel);
+        buttonHbox.getChildren().addAll(zoomButton, nameButton, zoomLabel);
+        root.getChildren().addAll(buttonHbox);
     }
 
    public Stage getStage() {
@@ -349,8 +349,7 @@ public class FlughafenView {
 
     public void createZoomLabel() {
         this.zoomLabel = new Label();
-        this.zoomLabel.setTranslateX(740);
-        this.zoomLabel.setTranslateY(height);
+        this.zoomLabel.setAlignment(Pos.TOP_RIGHT);
         this.zoomLabel.setFont(Font.font("Arial", 20));
         this.zoomLabel.setStyle("-fx-background-color: thistle;"
                 + "-fx-border-color: black;"
@@ -360,7 +359,7 @@ public class FlughafenView {
     }
 
     public void updateLabel() {
-        this.zoomLabel.setText((int) zoomFactor - 40 + " %");
+        this.zoomLabel.setText(Math.round(zoomFactor*100/100) + " %");
     }
 
     public Label getZoomLabel() {
