@@ -174,7 +174,7 @@ public class FlughafenView {
     private void drawPlane(Plane plane) {
 
         if (!this.planes.containsKey(plane)) {
-            ImageView imgV = PlaneType.BOEING.getImageView(); // hier spaeter PLaneType aus dem Plane holen plane.getType()
+            ImageView imgV = PlaneType.BELLX.getImageView(); // hier spaeter PLaneType aus dem Plane holen plane.getType()
 
             this.planes.put(plane, imgV);
             root.getChildren().add(imgV);
@@ -183,15 +183,15 @@ public class FlughafenView {
         Node node = plane.getNextNode();
 
         if (node != null) {
-            double x = node.getX() * this.zoomFactor + this.offsetX - (PlaneType.BOEING.getSize() / 2* this.zoomFactor);
-            double y = node.getY() * this.zoomFactor + this.offsetY - (PlaneType.BOEING.getSize() / 2* this.zoomFactor);
+            double x = node.getX() * this.zoomFactor + this.offsetX - (PlaneType.BELLX.getSize() / 2* this.zoomFactor);
+            double y = node.getY() * this.zoomFactor + this.offsetY - (PlaneType.BELLX.getSize() / 2* this.zoomFactor);
 
             imgV.setX(x);
             imgV.setY(y);
         }
 
-        imgV.setFitWidth(PlaneType.BOEING.getSize() * this.zoomFactor);
-        imgV.setFitHeight(PlaneType.BOEING.getSize() * this.zoomFactor);
+        imgV.setFitWidth(PlaneType.BELLX.getSize() * this.zoomFactor);
+        imgV.setFitHeight(PlaneType.BELLX.getSize() * this.zoomFactor);
 
     }
 
@@ -260,7 +260,7 @@ public class FlughafenView {
     	FlughafenView.height= (int) height;
         canvas.setWidth(width);
         canvas.setHeight(height + heightButtonplatz);
-        buttonHbox.setPrefWidth(width); //damit der Hbox sich an Canvas gröse anpasst
+        buttonHbox.setPrefWidth(width); //damit der Hbox sich an Canvas grösse anpasst
         this.drawCanvas();
         
     }
@@ -291,8 +291,8 @@ public class FlughafenView {
             nextNode = this.model.getNode("air6");
         }
 
-        MoveTo line = new MoveTo(lastNode.getX() * zoomFactor + offsetX - PlaneType.BOEING.getSize() / 2, lastNode.getY() * zoomFactor + offsetY - PlaneType.BOEING.getSize() / 2);
-        LineTo line2 = new LineTo(nextNode.getX() * zoomFactor + offsetX - PlaneType.BOEING.getSize() / 2, nextNode.getY() * zoomFactor + offsetY - PlaneType.BOEING.getSize() / 2);
+        MoveTo line = new MoveTo(lastNode.getX() * zoomFactor + offsetX - PlaneType.BELLX.getSize() / 2, lastNode.getY() * zoomFactor + offsetY - PlaneType.BELLX.getSize() / 2);
+        LineTo line2 = new LineTo(nextNode.getX() * zoomFactor + offsetX - PlaneType.BELLX.getSize() / 2, nextNode.getY() * zoomFactor + offsetY - PlaneType.BELLX.getSize() / 2);
         resultPath.getElements().add(line);
         resultPath.getElements().add(line2);
         return resultPath;
