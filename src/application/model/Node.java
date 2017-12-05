@@ -13,6 +13,7 @@ public class Node {
 	private Targettype targettype = null;
 	private int waittime;
 	private Map<Integer,Plane> reserved = new HashMap<Integer,Plane>();
+	boolean blocked = false;
 	
 	public Node(double x, double y, String name, Kind kind, Map<String, Node> to, 
 			 Map<String, Node> conflicts,  Targettype targettype, int waittime) {	
@@ -48,14 +49,11 @@ public class Node {
 	
 	/* updates the Node and Planes that are at this node by using the current Airport time
 	*/
-	public void update() {
+	public void update() { //überarbeiten!!!
 		Integer time = Flughafen.getTime();
 		Plane plane = reserved.get(time);
-		if((plane!=null && reserved.get(time-1) != plane) || 	// benachrichtige das Flugzeug nur, wenn es ankommt und 
-				plane == reserved.get(time-2)) { 				// wenn es laenger als zwei Ticks bleibt	
-			plane.setNextNode(this);
-		}
 	}
+
 	
 	/**
 	 * Only for import
@@ -100,11 +98,11 @@ public class Node {
 	 * @return true if a plane can land on this node on the given time, false otherwise
 	 */
 	public boolean isFree(int time) {
-		if (this.getReserved().get(time) != null) {
+		if (this.getReserved().get(time) != null || blocked) {
 			return false;
 		} else {
 			for (Node conflictNode: this.getConflicts()) {
-				if (conflictNode.getReserved().get(time) != null) {
+				if (!conflictNode.isFree(time)) {
 					return false;
 				}
 			}

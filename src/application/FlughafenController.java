@@ -1,7 +1,10 @@
 package application;
 
 import application.model.*;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
@@ -9,11 +12,12 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class FlughafenController {
 	private FlughafenView view;
 	private Flughafen model;
-	private double translateArray[] = new double[4]; // [mousePressStartX, mousePressStartY, oldOffsetX, oldOffsetY] (f�r das Verschieben ben�tigt)
+	private double translateArray[] = new double[4]; // [mousePressStartX, mousePressStartY, oldOffsetX, oldOffsetY] (für das Verschieben benötigt)
 
 	
 	public FlughafenController(Flughafen model, FlughafenView view) {
@@ -31,7 +35,6 @@ public class FlughafenController {
 		
 		});
 		
-
 		canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, event ->{
 			double xOffset = event.getX()-translateArray[0]; // die Verschiebung relativ zur Startposition des DragEvents
 			double yOffset = event.getY()-translateArray[1];
@@ -39,7 +42,7 @@ public class FlughafenController {
 			view.setOffsetY(view.getOffsetY()-translateArray[3]+yOffset);
 			translateArray[2] = xOffset; // die neue Verschiebung (relativ zum Startpunkt des DragEvents) wird gespeichert
 			translateArray[3] = yOffset;
-			this.view.update(); 
+			this.view.update(false); 
 			
 		});
 		
@@ -49,7 +52,7 @@ public class FlughafenController {
 		
 		canvas.addEventHandler(ScrollEvent.SCROLL, e->{
 			view.zoomTo(e.getDeltaY(), e.getX(), e.getY(),3.0);
-			view.update(); 	
+			view.update(false); 	
 			view.updateLabel();
 		});
 		
@@ -79,12 +82,22 @@ public class FlughafenController {
 			 else {
 				 this.view. btnText.set("show Nodenames");
 				 this.view.nameshown=false;
-				 this.view.update();			   
+				 this.view.update(false);			   
 			}  
 		});
 		
-		this.view.update();	
+		EventHandler<ActionEvent> loop = e -> {
+			this.model.update();
+			this.view.update(true);	
+			Flughafen.tick();
+		};
 		
+		KeyFrame frame = new KeyFrame(Duration.seconds(1),loop);
+		Timeline t1 = new Timeline(frame);
+		t1.setCycleCount(Timeline.INDEFINITE);
+		t1.play();
+		
+		this.view.update(false);		
 	}
 
 	

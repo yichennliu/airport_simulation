@@ -64,7 +64,7 @@ public class PathFinder {
 	 * @param plane Das Fluzeug, fuer das die Suche durchefuehrt werden soll
 	 * @param nodesStatus Informationen zum Pfad
 	 * @param waypoint Gesuchter waypoint
-	 * @param deq Deque für die Breitensuche
+	 * @param deq Deque für die Breitensuche (am Anfang mit Startnodes gefüllt)
 	 * @return Ziel-Node wenn die Suche erfolgreich war, sonst null
 	 */
 	private static Node findWaypoint(Plane plane, Map<Node,Breadcrumb>nodesStatus, Targettype waypoint, Deque<Node> deq) 
@@ -72,7 +72,7 @@ public class PathFinder {
 		Node current = deq.getFirst();							// in diesem Durchlauf zu überprüfender Node
 		int currentTime = nodesStatus.get(current).getTime(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
 		
-		// vergleiche ob current der gesuchte waypoint ist
+		// vergleiche, ob current der gesuchte waypoint ist
 		if (current.getTargettype() != null &&	current.getTargettype().equals(waypoint)) {	//<ToDo: bis in alle Ewigkeit reservieren
 			savePath(current,plane,nodesStatus);				
 			return current; 
@@ -84,16 +84,16 @@ public class PathFinder {
 				child.isFree(currentTime+1) && child.isFree(currentTime+2) 	  // zur Zeit fuer zwei Ticks nicht reserviert
 				) {
 					deq.addLast(child);
-					nodesStatus.get(child).setStatus(Status.SPOTTED);	// Status auf entdeckt aendern
-					nodesStatus.get(child).setTime(currentTime+1); 		// der Zeitpunkt, an dem der Node erreicht wird
-					nodesStatus.get(child).setFrom(current);			// From ist der jetzige Knoten (da er ihn entdeckt hat)
+					nodesStatus.get(child).setStatus(Status.SPOTTED);		// Status auf entdeckt aendern
+					nodesStatus.get(child).setTime(currentTime+1); 			// der Zeitpunkt, an dem der Node erreicht wird
+					nodesStatus.get(child).setFrom(current);				// From ist der jetzige Knoten (da er ihn entdeckt hat)
 				}
 		}
-		nodesStatus.get(current).setStatus(Status.DONE);				// alle Kinder-Knoten sind entdeckt, der Knoten kann 
-		deq.removeFirst();												// auf "DONE" gesetzt und aus der Warteschlange geloescht werden
+		nodesStatus.get(current).setStatus(Status.DONE);					// alle Kinder-Knoten sind entdeckt, der Knoten kann 
+		deq.removeFirst();													// auf "DONE" gesetzt und aus der Warteschlange geloescht werden
 		
-		if(deq.size()==0) return null;									// return null, wenn kein Weg gefunden werden kann
-		else return findWaypoint(plane, nodesStatus, waypoint, deq);	// die Breitensuche fortsetzen
+		if(deq.size()==0) return null;										// return null, wenn kein Weg gefunden werden kann
+		else return findWaypoint(plane, nodesStatus, waypoint, deq);		// die Breitensuche fortsetzen
 
 	}
 	
@@ -105,7 +105,6 @@ public class PathFinder {
 				savePath(nodesStatus.get(node).getFrom(),plane,nodesStatus);
 			}
 			System.out.println("Node "+node.getName() +", Time: " + time);
-
 	}
 	
 	private static Map<Node,Breadcrumb> createBreadcrumbMap(Collection<Node> nodes, Collection<Node> startNodes, Integer time){
@@ -116,6 +115,5 @@ public class PathFinder {
 			if(startNodes.contains(node)) nodesStatus.get(node).setTime(time); 			// fuer die Startnodes wird angefangen zu zaehlen
 		}
 		return nodesStatus;
-		
 	}
 }

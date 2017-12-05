@@ -88,10 +88,9 @@ public class FlughafenView {
         return this.canvas;
     }
 
-    public void update() {
-        drawCanvas();
+    public void update(boolean onlyPlanes) {
+        if(!onlyPlanes) drawCanvas();
         drawPlanes();
-
     }
 
     private void drawCanvas() {
@@ -100,23 +99,18 @@ public class FlughafenView {
             gc.clearRect(0, 0, this.width, this.height + heightButtonplatz);
             drawNodes(new ArrayList<Node>(nodes));
             if(nameshown)	{
-  			showName(nodes);
+            	showName(nodes);
    			}
         }
     }
 
     public void drawPlanes() {
-        List<Plane> planes = model.getPlanes();
+        Collection<Plane> planes = model.getPlanes();
         if (!planes.isEmpty()) {
             for (Plane plane : planes) {
                 drawPlane(plane);
-
             }
-
         }
-        //bad animation
-        //flugtest();
-
     }
 
     /*	drawNodes() zeichnet rekursiv (damit die unten liegenden Nodes zuerst gezeichnet werden) */
@@ -188,13 +182,13 @@ public class FlughafenView {
         Node node = plane.getNextNode();
 
         if (node != null) {
-            double x = node.getX() * this.zoomFactor + this.offsetX - PlaneType.BOEING.getSize() / 2;
-            double y = node.getY() * this.zoomFactor + this.offsetY - PlaneType.BOEING.getSize() / 2;
+            double x = node.getX() * this.zoomFactor + this.offsetX - (PlaneType.BOEING.getSize() / 2* this.zoomFactor);
+            double y = node.getY() * this.zoomFactor + this.offsetY - (PlaneType.BOEING.getSize() / 2* this.zoomFactor);
             imgV.setX(x);
             imgV.setY(y);
         }
-        imgV.setFitWidth(PlaneType.AIRBUS.getSize() * this.zoomFactor);
-        imgV.setFitHeight(PlaneType.AIRBUS.getSize() * this.zoomFactor);
+        imgV.setFitWidth(PlaneType.BOEING.getSize() * this.zoomFactor);
+        imgV.setFitHeight(PlaneType.BOEING.getSize() * this.zoomFactor);
 
     }
 
@@ -283,30 +277,6 @@ public class FlughafenView {
         return this.offsetY;
     }
 
-    private void flugtest() {
-        List<Plane> planes = this.model.getPlanes();
-        for (Plane p : planes) {
-
-            Image buttonImage = new Image("/application/source/Images/pink.png");
-            ImageView imageV = new ImageView(buttonImage);
-            root.getChildren().add(imageV);
-            imageV.setFitWidth(2 * this.zoomFactor);
-            imageV.setFitHeight(2 * this.zoomFactor);
-            PathTransition pt = new PathTransition();
-            Path path = getPathFromPlane(p);
-            pt.setDuration(Duration.millis(2000));
-            pt.setCycleCount(Animation.INDEFINITE);
-            pt.setPath(path);
-            pt.setNode(imageV);
-            pt.setOrientation(PathTransition.OrientationType.NONE);
-            ParallelTransition pl = new ParallelTransition(imageV, pt);
-            pl.play();
-
-        }
-
-
-    }
-
     private Path getPathFromPlane(Plane plane) {
         Path resultPath = new Path();
         Node lastNode = plane.getLastNode();
@@ -333,7 +303,7 @@ public class FlughafenView {
 
     public void zoomOut(Collection<Node> nodes) {
         setInitialZoomAndOffset(nodes);
-        update();
+        update(false);
     }
 
     public void showName(Collection<Node> nodes) {
