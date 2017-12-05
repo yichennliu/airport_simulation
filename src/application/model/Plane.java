@@ -8,6 +8,7 @@ import javafx.util.Pair;
 public class Plane {
 
 	private List<Targettype> waypoints = new ArrayList<Targettype>();
+	private int currentTargetWaypointIndex = 0;
 	private Tuple<Node,Node> currentNodes = new Tuple<Node, Node>(null, null); // links = last
 	
 	private int inittime;
@@ -19,6 +20,29 @@ public class Plane {
 	
 	public List<Targettype> getWaypoints() {
 		return this.waypoints;
+	}
+	
+	/**
+	 * @return target waypoint, or null if there is no next target
+	 */
+	public Targettype getCurrentTarget() {
+		if (this.currentTargetWaypointIndex < this.getWaypoints().size()) {
+			return getWaypoints().get(this.currentTargetWaypointIndex);
+		}
+		return null;
+	}
+	
+	/**
+	 * set next target waypoint
+	 * 
+	 * @return true of there is a next target, false otherwise
+	 */
+	public boolean increaseCurrentTarget() {
+		if (this.currentTargetWaypointIndex < this.getWaypoints().size()-1) {
+			this.currentTargetWaypointIndex++;
+			return true;
+		}
+		return false;
 	}
 	
 	public int getInittime() {

@@ -18,19 +18,29 @@ public class Flughafen {
 	}
 	
 	public void update() {
-		
 		for(Generator g:this.generators) { // Generatoren ausführen
 			Plane plane = g.execute();
 			if(plane!=null) this.addPlane(plane);		
 		}
 		
 		List<Plane> newPlanes = this.planes.get(Flughafen.time); // die Flugzeuge, die in diesem Tick erzeugt werden sollen
+		
+		// TODO: prüfen ob this.maxplanes überschritten wird, überzählige Flugzeuge in den nächsten Tick verschieben
 
-		if(newPlanes!=null) // finde für jedes neue Flugzeug einen Weg
-			for(Plane plane: newPlanes) PathFinder.startSearch(nodes.values(), plane, Flughafen.time);
+		if (newPlanes!=null) {// finde für jedes neue Flugzeug einen Weg
+			for(int i = 0; i < newPlanes.size(); i++) {
+				Plane plane = newPlanes.get(i);
+				boolean success = PathFinder.searchFirstWaypoint(this.getNodes(), plane, Flughafen.getTime());
+				if (success) {
+					// Wenn kein Pfad gefunden wurde: im nächsten Tick noch mal versuchen
+					this.removePlane(plane, getTime());
+					this.addPlane(plane, getTime()+1);
+				}
+			}
+		}
 		
 		for(Node node: nodes.values()) { // jeden Node updaten
-			node.update();
+			node.update(this.getNodes());
 		}
 	}
 	
@@ -48,14 +58,45 @@ public class Flughafen {
 		return collector;
 	}
 	
-	public void addPlane(Plane plane) {
-		List<Plane> planeList = this.planes.get(plane.getInittime());
-		if(planeList==null) this.planes.put(plane.getInittime(), new ArrayList<Plane>());
-		this.planes.get(plane.getInittime()).add(plane);
+	/**
+	 * add plane at a custom time
+	 * 
+	 * @param plane
+	 * @param time
+	 */
+	public void addPlane(Plane plane, int time) {
+		List<Plane> planeList = this.planes.get(time);
+		if(planeList==null) this.planes.put(time, new ArrayList<Plane>());
+		this.planes.get(time).add(plane);
 	}
 	
-	public void removePlane(Plane plane) {
-		this.planes.remove(plane);
+	/**
+	 * add plane at its predefined init time
+	 * 
+	 * @param plane
+	 */
+	public void addPlane(Plane plane) {
+		this.addPlane(plane, plane.getInittime());
+	}
+	
+	/**
+	 * Try to remove a plane
+	 * 
+	 * @param plane The plane
+	 * @param time The start time
+	 * @return true on success, false otherwise
+	 */
+	public boolean removePlane(Plane plane, int time) {
+		List<Plane> planeList = this.planes.get(time);
+		
+		if (planeList != null && planeList.contains(plane)) {
+			planeList.remove(plane);
+			if (planeList.isEmpty()) {
+				this.planes.remove(time);
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	public List<Generator> getGenerators() {
