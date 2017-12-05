@@ -7,9 +7,10 @@ import javafx.scene.image.ImageView;
 
 public enum PlaneType {
 
-	AIRBUS(new Image("/application/source/Images/flugzeugrechts.png"),1), 
-	BOEING(new Image("/application/source/Images/pink.PNG"),0.8), 
-	ECLIPSE_AVIATION(new Image("/application/source/Images/flugzeugYamai.png"),0.5);
+	AIRBUS(new Image("/application/source/Images/flugzeugYamai.png"),1), 
+	BELLX(new Image("/application/source/Images/bellX.PNG"),0.8), 
+	ECLIPSE_AVIATION(new Image("/application/source/Images/eclipseaviation2.png"),0.5),
+	XFUNFZEHN(new Image("/application/source/Images/x15.png"),0.5);
 
 	private final Image img;
 	private final double size;
