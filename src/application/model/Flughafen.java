@@ -18,11 +18,11 @@ public class Flughafen {
 	}
 	
 	public void update() {
-		for(Generator g:this.generators) { // Generatoren ausführen
-			Plane plane = g.execute();
-			if(plane!=null) this.addPlane(plane);		
-		}
-		
+//		for(Generator g:this.generators) { // Generatoren ausführen
+//			Plane plane = g.execute();
+//			if(plane!=null) this.addPlane(plane);		
+//		}
+//		
 		List<Plane> newPlanes = this.planes.get(Flughafen.time); // die Flugzeuge, die in diesem Tick erzeugt werden sollen
 		
 		// TODO: prüfen ob this.maxplanes überschritten wird, überzählige Flugzeuge in den nächsten Tick verschieben

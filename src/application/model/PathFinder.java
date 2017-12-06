@@ -26,7 +26,7 @@ public class PathFinder {
 		// find Nodes with the start target type that are free at starttime
 		List<Node> startNodes = new ArrayList<>();	
 		for (Node node: nodes) {
-			if (node.getTargettype() != null && node.getTargettype().equals(plane.getWaypoints().get(0)) && node.isFree(starttime)) {
+			if (node.getTargettype() != null && node.getTargettype().equals(plane.getWaypoints().get(0)) && node.isFree(starttime,plane)) {
 				startNodes.add(node);
 			}
 		}
@@ -77,9 +77,9 @@ public class PathFinder {
 		// vergleiche, ob current der gesuchte waypoint ist
 		if (current.getTargettype() != null && current.getTargettype().equals(waypoint)) {
 			savePath(current,plane,nodesStatus);					// Pfad reservieren
-			boolean hasNextTaget = plane.increaseCurrentTarget();	// Nächsten Zielwaypoint setzen, falls vorhanden
-			if (hasNextTaget) {
-				current.setBlockedBy(plane);						// Letzten Node dauernhaft blockieren wenn Endziel nicht erreicht
+			boolean hasNextTarget = plane.increaseCurrentTarget();	// Nächsten Zielwaypoint setzen, falls vorhanden
+			if (hasNextTarget) {
+				current.setBlockedBy(plane,currentTime);						// Letzten Node dauerhaft blockieren wenn Endziel nicht erreicht
 				System.out.println("Es wurde ein Weg zum nächsten waypoint gefunden :)");
 			} else {
 				System.out.println("Es wurde ein Weg zum Endziel gefunden :)");
@@ -90,7 +90,7 @@ public class PathFinder {
 		for(Node child: current.getTo()) {
 			if(
 				nodesStatus.get(child).getStatus()==Status.UNKNOWN &&         // falls Knoten noch nicht entdeckt und
-				child.isFree(currentTime+1) && child.isFree(currentTime+2) 	  // zur Zeit fuer zwei Ticks nicht reserviert
+				child.isFree(currentTime+1,plane) && child.isFree(currentTime+2,plane) 	  // zur Zeit fuer zwei Ticks nicht reserviert
 				) {
 					deq.addLast(child);
 					nodesStatus.get(child).setStatus(Status.SPOTTED);		// Status auf entdeckt aendern
@@ -116,7 +116,7 @@ public class PathFinder {
 			if(nodesStatus.get(node).getFrom()!=null) {
 				savePath(nodesStatus.get(node).getFrom(),plane,nodesStatus);
 			}
-			System.out.println("Node "+node.getName() +", Time: " + time);
+			System.out.println("Node "+node.getName() +", Time: " + time );
 	}
 	
 	private static Map<Node,Breadcrumb> createBreadcrumbMap(Collection<Node> nodes, Collection<Node> startNodes, Integer time){

@@ -13,7 +13,7 @@ public class Node {
 	private Targettype targettype = null;
 	private int waittime;
 	private Map<Integer,Tuple<Plane, Boolean>> reserved = new HashMap<Integer,Tuple<Plane, Boolean>>();
-	private Plane blockedBy = null;
+	private Tuple <Integer,Plane> blockedBy = null;
 	
 	public Node(double x, double y, String name, Kind kind, Map<String, Node> to, 
 			 Map<String, Node> conflicts,  Targettype targettype, int waittime) {	
@@ -53,16 +53,17 @@ public class Node {
 	 * @param nodes Airport nodes
 	 */
 	public void update(Collection<Node> nodes) {
-		Plane plane = this.getPlane();
-		if (plane != null) {
+		Plane plane = this.getPlane(); // gibt entweder ein Flugzeug zurück oder null (ein Flugzeug, das gerade blockiert oder gerade angekommen ist)
+		if (plane != null) { 
+			System.out.println("PLane auf Node " + this.name);
 			plane.setNextNode(this);
 			
-			if (this.isBlocked()) {
+			if (this.isBlocked(Flughafen.getTime())) {
 				// Flugzeug noch nicht am Ziel, nächsten waypoint suchen
 				boolean success = PathFinder.search(nodes, plane, Flughafen.getTime(), this, plane.getCurrentTarget());
 				if (success) {
 					// Flugzeug kann weiterfliegen, Blockierung aufheben
-					this.setBlockedBy(null);
+					this.unblock();
 				} else {
 					// Blockierung beibehalten.
 				}
@@ -115,26 +116,32 @@ public class Node {
 	 * 
 	 * @param plane The plane to block this node with
 	 */
-	public void setBlockedBy(Plane plane) {
-		this.blockedBy = plane;
+	public void setBlockedBy(Plane plane,Integer blockingTime) {
+		this.blockedBy = new Tuple(blockingTime,plane);
+	}
+	
+	public void unblock() {
+		this.blockedBy = null;
 	}
 	
 	/**
 	 * The Plane by which this node is blocked, or null
 	 * @return
 	 */
-	public Plane getBlockedBy() {
+	public Tuple<Integer,Plane>  getBlockedBy() {
 		return this.blockedBy;
 	}
 	
-	public boolean isBlocked() {
-		return this.blockedBy != null;
+	public boolean isBlocked(Integer time) {
+		if(this.blockedBy!=null)
+			return (this.blockedBy.fst()<=time);
+		else return false;
 	}
 	
 	/**
 	 * Check whether the current node is free.
 	 * 
-	 * A node is free iff
+	 * A node is free if
 	 * <ul>
 	 *  <li>it is not reserved at the given time</li>
 	 *  <li>it conflict nodes are not reserved at the given time</li>
@@ -144,8 +151,11 @@ public class Node {
 	 * @param time Time to check for
 	 * @return true if a plane can land on this node on the given time, false otherwise
 	 */
-	public boolean isFree(int time) {
-		if (this.getReserved().get(time) != null || this.isBlocked()) {
+	public boolean isFree(int time, Plane plane) {
+		boolean blocked = (this.isBlocked(time)) ? (plane!=this.getBlockedBy().snd()) : false;
+
+	
+		if (this.getReserved().get(time) != null || blocked) {
 			return false;
 		} else {
 			for (Node conflictNode: this.getConflicts()) {
@@ -164,10 +174,14 @@ public class Node {
 		Tuple<Plane, Boolean> reservation = reserved.get(Flughafen.getTime());
 		if (reservation != null && reservation.snd()) {
 			return reservation.fst();
-		} else {
+		} 
+		else {
 			// return plane if node is blocked, or null
-			return this.getBlockedBy();
+			if(this.blockedBy!=null) {
+				if(Flughafen.getTime()>=this.blockedBy.fst())
+					return this.blockedBy.snd();
+			}
 		}
+		return null;
 	}
-	
 }
