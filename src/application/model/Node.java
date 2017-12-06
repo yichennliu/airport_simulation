@@ -55,20 +55,26 @@ public class Node {
 	public void update(Collection<Node> nodes) {
 		Plane plane = this.getPlane(); // gibt entweder ein Flugzeug zurück oder null (ein Flugzeug, das gerade blockiert oder gerade angekommen ist)
 		if (plane != null) { 
-			System.out.println("PLane auf Node " + this.name);
+			System.out.println("Plane auf Node " + this.name);
 			plane.setNextNode(this);
 			
 			if (this.isBlocked(Flughafen.getTime())) {
-				// Flugzeug noch nicht am Ziel, nächsten waypoint suchen
+				if(plane.getStatus()!=PlaneStatus.WAITING) {
+					plane.increaseCurrentTarget();
+					plane.setStatus(PlaneStatus.WAITING);
+				}
+				
+				// Flugzeug noch nicht am Endziel, nächsten waypoint suchen
 				boolean success = PathFinder.search(nodes, plane, Flughafen.getTime(), this, plane.getCurrentTarget());
 				if (success) {
 					// Flugzeug kann weiterfliegen, Blockierung aufheben
 					this.unblock();
+					plane.setStatus(PlaneStatus.FLYING);
 				} else {
 					// Blockierung beibehalten.
 				}
 			} else {
-				// Flugzeug vorhanden aber Node nicht blockiert: Flugzeug am Ziel
+				// Flugzeug vorhanden, aber Node nicht blockiert: Flugzeug am Ziel
 				// TODO: Alte Flugzeuge aus Flughafen löschen um mit maxplanes vergleichen zu können?
 			}
 		}
@@ -118,10 +124,12 @@ public class Node {
 	 */
 	public void setBlockedBy(Plane plane,Integer blockingTime) {
 		this.blockedBy = new Tuple(blockingTime,plane);
+		System.out.println(this.name +" blockiert");
 	}
 	
 	public void unblock() {
 		this.blockedBy = null;
+		System.out.println(this.name +": Blockierung aufgehoben");
 	}
 	
 	/**
@@ -152,8 +160,7 @@ public class Node {
 	 * @return true if a plane can land on this node on the given time, false otherwise
 	 */
 	public boolean isFree(int time, Plane plane) {
-		boolean blocked = (this.isBlocked(time)) ? (plane!=this.getBlockedBy().snd()) : false;
-
+		boolean blocked = (this.isBlocked(time)) ? (plane!=this.getBlockedBy().snd()) : false; 
 	
 		if (this.getReserved().get(time) != null || blocked) {
 			return false;

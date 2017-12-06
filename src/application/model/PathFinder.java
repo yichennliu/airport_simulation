@@ -53,7 +53,7 @@ public class PathFinder {
 	 * @return true wenn ein Pfad gefunden wurde, sonst false 
 	 */
 	public static boolean search(Collection<Node> nodes, Plane plane, int starttime, Node startNode, Targettype targetWaypoint) {
-		System.out.println("Suche waypoint: "+targetWaypoint);
+		System.out.println("Suche waypoint: ["+targetWaypoint+"]");
 
 		List<Node> startNodes = Arrays.asList(startNode);
 		Map<Node,Breadcrumb> nodesStatus = createBreadcrumbMap(nodes, startNodes, starttime);
@@ -80,7 +80,7 @@ public class PathFinder {
 			boolean hasNextTarget = plane.increaseCurrentTarget();	// Nächsten Zielwaypoint setzen, falls vorhanden
 			if (hasNextTarget) {
 				current.setBlockedBy(plane,currentTime);						// Letzten Node dauerhaft blockieren wenn Endziel nicht erreicht
-				System.out.println("Es wurde ein Weg zum nächsten waypoint gefunden :)");
+				System.out.println("Es wurde ein Weg zum nächsten waypoint ("+waypoint+") gefunden :)");
 			} else {
 				System.out.println("Es wurde ein Weg zum Endziel gefunden :)");
 			}
@@ -116,7 +116,7 @@ public class PathFinder {
 			if(nodesStatus.get(node).getFrom()!=null) {
 				savePath(nodesStatus.get(node).getFrom(),plane,nodesStatus);
 			}
-			System.out.println("Node "+node.getName() +", Time: " + time );
+			System.out.println("[Search] Node "+node.getName() +", Time: " + time );
 	}
 	
 	private static Map<Node,Breadcrumb> createBreadcrumbMap(Collection<Node> nodes, Collection<Node> startNodes, Integer time){

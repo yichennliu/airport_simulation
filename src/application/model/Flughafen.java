@@ -18,12 +18,12 @@ public class Flughafen {
 	}
 	
 	public void update() {
-//		for(Generator g:this.generators) { // Generatoren ausführen
-//			Plane plane = g.execute();
-//			if(plane!=null) this.addPlane(plane);		
-//		}
-//		
-		List<Plane> newPlanes = this.planes.get(Flughafen.time); // die Flugzeuge, die in diesem Tick erzeugt werden sollen
+		for(Generator g:this.generators) { // Generatoren ausführen
+			Plane plane = g.execute();
+			if(plane!=null) this.addPlane(plane);		
+		}
+
+		List<Plane> newPlanes = this.planes.get(getTime()); // die Flugzeuge, die in diesem Tick erzeugt werden sollen
 		
 		// TODO: prüfen ob this.maxplanes überschritten wird, überzählige Flugzeuge in den nächsten Tick verschieben
 
@@ -31,11 +31,12 @@ public class Flughafen {
 			for(int i = 0; i < newPlanes.size(); i++) {
 				Plane plane = newPlanes.get(i);
 				boolean success = PathFinder.searchFirstWaypoint(this.getNodes(), plane, Flughafen.getTime());
-				if (success) {
+				if (!success) {
 					// Wenn kein Pfad gefunden wurde: im nächsten Tick noch mal versuchen
 					this.removePlane(plane, getTime());
 					this.addPlane(plane, getTime()+1);
 				}
+				else plane.setStatus(PlaneStatus.FLYING);
 			}
 		}
 		
