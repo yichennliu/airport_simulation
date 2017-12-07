@@ -58,18 +58,12 @@ public class Node {
 			System.out.println("Plane auf Node " + this.name);
 			plane.setNextNode(this);
 			
-			if (this.isBlocked(Flughafen.getTime())) {
-				if(plane.getStatus()!=PlaneStatus.WAITING) {
-					plane.increaseCurrentTarget();
-					plane.setStatus(PlaneStatus.WAITING);
-				}
-				
+			if (this.isBlockedAfter(Flughafen.getTime())) {
 				// Flugzeug noch nicht am Endziel, nächsten waypoint suchen
 				boolean success = PathFinder.search(nodes, plane, Flughafen.getTime(), this, plane.getCurrentTarget());
 				if (success) {
 					// Flugzeug kann weiterfliegen, Blockierung aufheben
 					this.unblock();
-					plane.setStatus(PlaneStatus.FLYING);
 				} else {
 					// Blockierung beibehalten.
 				}
@@ -140,12 +134,15 @@ public class Node {
 		return this.blockedBy;
 	}
 	
-	public boolean isBlocked(Integer time) {
+	public boolean isBlockedAfter(Integer time) {
 		if(this.blockedBy!=null)
 			return (this.blockedBy.fst()<=time);
 		else return false;
 	}
 	
+	public boolean isBlocked() {
+		return this.blockedBy!=null;
+	}
 	/**
 	 * Check whether the current node is free.
 	 * 
@@ -160,7 +157,7 @@ public class Node {
 	 * @return true if a plane can land on this node on the given time, false otherwise
 	 */
 	public boolean isFree(int time, Plane plane) {
-		boolean blocked = (this.isBlocked(time)) ? (plane!=this.getBlockedBy().snd()) : false; 
+		boolean blocked = (this.isBlockedAfter(time)) ? (plane!=this.getBlockedBy().snd()) : false; 
 	
 		if (this.getReserved().get(time) != null || blocked) {
 			return false;
