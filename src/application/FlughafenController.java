@@ -8,6 +8,8 @@ import org.json.JSONException;
 import application.model.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
@@ -95,6 +97,14 @@ public class FlughafenController {
 			}  
 		});
 		
+		
+//		this.view.getCombo().getSelectionModel().selectedItemProperty().addListener(new ChangeListener(){
+//			public void changed (ObservableValue ov, String oldItem, String newItem ){
+//				
+//		}
+//		
+//	});
+		
 		EventHandler<ActionEvent> loop = e -> {
 			this.model.update();
 			this.view.update(true);	
@@ -107,20 +117,21 @@ public class FlughafenController {
 		t1.play();
 		
 		this.view.update(false);		
+
 	
 	
 	this.view.getfileChooserButton().addEventHandler(MouseEvent.MOUSE_PRESSED, event ->{
 		openFile();
 	});
 
+
+	}
 	
+		
+
 	
 
 
-
-
-
-}
 private void openFile() {
 	
 

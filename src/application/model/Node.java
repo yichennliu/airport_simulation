@@ -58,20 +58,20 @@ public class Node {
 			System.out.println("Plane auf Node " + this.name);
 			plane.setNextNode(this);
 			
-			if (this.isBlocked(Flughafen.getTime())) {
-				if(plane.getStatus()!=PlaneStatus.WAITING) {
-					plane.increaseCurrentTarget();
-					plane.setStatus(PlaneStatus.WAITING);
-				}
-				
+			if (this.isBlockedAfter(Flughafen.getTime())) { // falls gerade ein Flugzeug draufsteht, das den Node blockiert
 				// Flugzeug noch nicht am Endziel, nächsten waypoint suchen
 				boolean success = PathFinder.search(nodes, plane, Flughafen.getTime(), this, plane.getCurrentTarget());
 				if (success) {
 					// Flugzeug kann weiterfliegen, Blockierung aufheben
 					this.unblock();
-					plane.setStatus(PlaneStatus.FLYING);
-				} else {
-					// Blockierung beibehalten.
+				} else if(this.targettype!=Targettype.wait) { // nur einen Wait-Knoten suchen, wenn das Flugzeug nicht schon auf einem steht
+					// suche freien Wait-Knoten
+					success = PathFinder.search(nodes, plane, Flughafen.getTime(), this, Targettype.wait);
+					if (success) this.unblock();
+					else {
+						// Blockierung beibehalten.
+					}
+					
 				}
 			} else {
 				// Flugzeug vorhanden, aber Node nicht blockiert: Flugzeug am Ziel
@@ -140,12 +140,15 @@ public class Node {
 		return this.blockedBy;
 	}
 	
-	public boolean isBlocked(Integer time) {
+	public boolean isBlockedAfter(Integer time) {
 		if(this.blockedBy!=null)
 			return (this.blockedBy.fst()<=time);
 		else return false;
 	}
 	
+	public boolean isBlocked() {
+		return this.blockedBy!=null;
+	}
 	/**
 	 * Check whether the current node is free.
 	 * 
@@ -160,7 +163,7 @@ public class Node {
 	 * @return true if a plane can land on this node on the given time, false otherwise
 	 */
 	public boolean isFree(int time, Plane plane) {
-		boolean blocked = (this.isBlocked(time)) ? (plane!=this.getBlockedBy().snd()) : false; 
+		boolean blocked = (this.isBlockedAfter(time)) ? (plane!=this.getBlockedBy().snd()) : false; 
 	
 		if (this.getReserved().get(time) != null || blocked) {
 			return false;

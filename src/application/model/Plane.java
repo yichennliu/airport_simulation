@@ -3,13 +3,11 @@ package application.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.util.Pair;
 
 public class Plane {
 
-	private PlaneStatus state = PlaneStatus.UNSPAWNED;
 	private List<Targettype> waypoints = new ArrayList<Targettype>();
-	private int currentTargetWaypointIndex = 0;
+	private int currentTargetWaypointIndex = 1;
 	private Tuple<Node,Node> currentNodes = new Tuple<Node, Node>(null, null); // links = last
 	
 	private int inittime;
@@ -66,13 +64,5 @@ public class Plane {
 		Node currentNext = this.currentNodes.snd();
 		this.currentNodes.setSnd(node);
 		this.currentNodes.setFst(currentNext);
-	}
-
-	public void setStatus(PlaneStatus status) {
-		this.state = status;
-	}
-	
-	public PlaneStatus getStatus() {
-		return this.state;
 	}
 }
