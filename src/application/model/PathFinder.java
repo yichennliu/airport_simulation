@@ -90,13 +90,18 @@ public class PathFinder {
 		for(Node child: current.getTo()) {
 			if(
 				nodesStatus.get(child).getStatus()==Status.UNKNOWN &&         // falls Knoten noch nicht entdeckt und
-				child.isFree(currentTime+1,plane) && child.isFree(currentTime+2,plane) 	  // zur Zeit fuer zwei Ticks nicht reserviert
-				) {
+				child.isFree(currentTime+1,plane) && child.isFree(currentTime+2,plane) // zur Zeit fuer zwei Ticks nicht reserviert
+				) 
+			{
+				Targettype childTType = child.getTargettype();
+
+				if(!(childTType!=null && childTType.equals(waypoint) && child.isBlocked())) { // falls das Kind (nicht (der gesuchte Waypoint ist && dabei geblockt ist)) || einfach ein "normales" child ist (!!)
 					deq.addLast(child);
 					nodesStatus.get(child).setStatus(Status.SPOTTED);		// Status auf entdeckt aendern
 					nodesStatus.get(child).setTime(currentTime+1); 			// der Zeitpunkt, an dem der Node erreicht wird
 					nodesStatus.get(child).setFrom(current);				// From ist der jetzige Knoten (da er ihn entdeckt hat)
 				}
+			}
 		}
 		nodesStatus.get(current).setStatus(Status.DONE);					// alle Kinder-Knoten sind entdeckt, der Knoten kann 
 		deq.removeFirst();													// auf "DONE" gesetzt und aus der Warteschlange geloescht werden
