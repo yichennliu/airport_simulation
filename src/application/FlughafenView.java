@@ -397,11 +397,13 @@ public class FlughafenView {
                    + "-fx-border-width: 2;"
                    + "-fx-background-color: #ffffcc;"
            );
-    	
+    	   
+  
+   }
+    	   
+    public ComboBox getCombo() {
+	   return this.flughafenSize;
+	   
     }
-    
-    
-    
-    
-
+  
 }
