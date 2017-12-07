@@ -3,8 +3,11 @@ package application;
 import application.model.*;
 import application.model.Node;
 import javafx.scene.shape.*;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Duration;
+import javafx.util.Pair;
 import javafx.animation.Animation;
 import javafx.animation.ParallelTransition;
 import javafx.animation.PathTransition;
@@ -24,6 +27,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javax.swing.*;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -52,12 +58,14 @@ public class FlughafenView {
     private HBox buttonHbox;
     private Button zoomButton;
     private ToggleButton nameButton= new ToggleButton("Show Node names");
-    private ComboBox flughafenSize = new ComboBox();
+    private Button fileChooserButton = new Button("Import file");
+    
     public final StringProperty btnText = nameButton.textProperty();
+   
     boolean nameshown= false;
     private Label zoomLabel;
-    Map<Plane, ImageView> planes = new HashMap<Plane, ImageView>();
-    //pair oder tupel statt imageview wo path und imageview rein kommt damit man beim zoomen (während der animation)
+    Map<Plane, ViewPlane> planes = new HashMap<Plane, ViewPlane>();
+
 
     public FlughafenView(Flughafen model, Stage stage) {
         this.model = model;
@@ -67,21 +75,25 @@ public class FlughafenView {
         this.gc = canvas.getGraphicsContext2D();
         root.getChildren().addAll(canvas);
         this.setInitialZoomAndOffset(model.getNodes());
-        this.scene = new Scene(root);
-        this.stage.setScene(scene);
-        this.stage.setTitle("Flughafen");
-        this.stage.show();
+      
         this.zoomButton= new Button("");
         Image buttonImage = new Image("/application/source/Images/zoomout.png");
         zoomButton.setGraphic(new ImageView(buttonImage));
         setButtonStyle(zoomButton);
         setButtonStyle(nameButton);
+        setButtonStyle(fileChooserButton);
         this.buttonHbox= new HBox();
         this.setHboxStyle();
         createZoomLabel();
-        changeFlughafenSize();
-        buttonHbox.getChildren().addAll(zoomButton, nameButton, flughafenSize,zoomLabel );
+  
+        buttonHbox.getChildren().addAll(zoomButton, nameButton,zoomLabel,fileChooserButton );
         root.getChildren().addAll(buttonHbox);
+        
+        this.scene = new Scene(root);
+        this.stage.setScene(scene);
+        this.stage.setTitle("Flughafen");
+        this.stage.show();
+       
     }
 
    public Stage getStage() {
@@ -136,30 +148,32 @@ public class FlughafenView {
 		/*	setStyle: Funktionales Interface, dem man drei Argumente mitgeben kann, damit es die Farben fuer die Nodes 
 			anpasst. */
 
-        Function<Double, Function<Color, Consumer<Color>>> setStyle = width -> (strokeC -> (fillC -> {
-            this.gc.setLineWidth(width);
+        Function<Double, Function<Color, Function<Color,Consumer<Boolean>>>> setStyle = width -> (strokeC -> (fillC -> (dotted-> {
+        		this.gc.setLineWidth(width);
             this.gc.setStroke(strokeC);
             this.gc.setFill(fillC);
-        }));
+            if(dotted) this.gc.setLineDashes(10);
+            else this.gc.setLineDashes(null);
+        })));
 
-        setStyle.apply(1.0).apply(Color.DARKGREY).accept(Color.GREY);
+        setStyle.apply(1.0).apply(Color.DARKGREY).apply(Color.GREY).accept(false);
 
         switch (kind) {
             case air: {
-                setStyle.apply(1.0).apply(Color.BLUE).accept(Color.BLUE.darker());
+                setStyle.apply(1.0).apply(Color.BLUE).apply(Color.BLUE.darker()).accept(true);
                 break;
             }
             case concrete: {
-                setStyle.apply(0.3).apply(Color.grayRgb(10, 1)).accept(Color.grayRgb(10, 1));
+                setStyle.apply(0.3).apply(Color.grayRgb(10, 1)).apply(Color.grayRgb(10, 1)).accept(false);
                 break;
             }
             case hangar: {
-                setStyle.apply(0.6).apply(Color.DARKGREEN).accept(Color.DARKGREEN);
+                setStyle.apply(2.6).apply(Color.rgb(0, 179, 0)).apply(Color.rgb(0, 179, 0)).accept(false);
                 break;
 
             }
             case runway: {
-                setStyle.apply(0.4).apply(Color.BLACK).accept(Color.BLACK);
+                setStyle.apply(1.4).apply(Color.BLACK).apply(Color.BLACK).accept(false);
                 break;
             }
         }
@@ -175,26 +189,29 @@ public class FlughafenView {
     }
 
     private void drawPlane(Plane plane) {
-
+    	if(plane.getNextNode() == null &&plane.getLastNode() == null) return;
+    	ViewPlane viewPlane;
         if (!this.planes.containsKey(plane)) {
-            ImageView imgV = PlaneType.BELLX.getImageView(); // hier spaeter PLaneType aus dem Plane holen plane.getType()
-
-            this.planes.put(plane, imgV);
-            root.getChildren().add(imgV);
+        		viewPlane = new ViewPlane();
+            this.planes.put(plane, viewPlane);
+            root.getChildren().add(viewPlane.getImageview());
         }
-        ImageView imgV = this.planes.get(plane);
+        else viewPlane = planes.get(plane);
+        ImageView imgV = viewPlane.getImageview();
+        double planeSize=viewPlane.getType().getSize();
+       
         Node node = plane.getNextNode();
 
         if (node != null) {
-            double x = node.getX() * this.zoomFactor + this.offsetX - (PlaneType.BELLX.getSize() / 2* this.zoomFactor);
-            double y = node.getY() * this.zoomFactor + this.offsetY - (PlaneType.BELLX.getSize() / 2* this.zoomFactor);
+            double x = node.getX() * this.zoomFactor + this.offsetX - (planeSize/ 2* this.zoomFactor);
+            double y = node.getY() * this.zoomFactor + this.offsetY - (planeSize / 2* this.zoomFactor);
 
             imgV.setX(x);
             imgV.setY(y);
         }
 
-        imgV.setFitWidth(PlaneType.BELLX.getSize() * this.zoomFactor);
-        imgV.setFitHeight(PlaneType.BELLX.getSize() * this.zoomFactor);
+        imgV.setFitWidth(planeSize* this.zoomFactor);
+        imgV.setFitHeight(planeSize * this.zoomFactor);
 
     }
 
@@ -293,9 +310,10 @@ public class FlughafenView {
             lastNode = this.model.getNode(plane.getWaypoints().get(0).toString());
             nextNode = this.model.getNode("air6");
         }
-
-        MoveTo line = new MoveTo(lastNode.getX() * zoomFactor + offsetX - PlaneType.BELLX.getSize() / 2, lastNode.getY() * zoomFactor + offsetY - PlaneType.BELLX.getSize() / 2);
-        LineTo line2 = new LineTo(nextNode.getX() * zoomFactor + offsetX - PlaneType.BELLX.getSize() / 2, nextNode.getY() * zoomFactor + offsetY - PlaneType.BELLX.getSize() / 2);
+     	ViewPlane viewPlane = new ViewPlane();
+        double planeSize=viewPlane.getType().getSize();
+        MoveTo line = new MoveTo(lastNode.getX() * zoomFactor + offsetX - planeSize / 2, lastNode.getY() * zoomFactor + offsetY - planeSize / 2);
+        LineTo line2 = new LineTo(nextNode.getX() * zoomFactor + offsetX - planeSize / 2, nextNode.getY() * zoomFactor + offsetY - planeSize / 2);
         resultPath.getElements().add(line);
         resultPath.getElements().add(line2);
         return resultPath;
@@ -377,31 +395,13 @@ public class FlughafenView {
     }
     
     
-
- 
-    public void changeFlughafenSize() {
-    	flughafenSize.setPromptText("Choose JasonFile ");
-    	
-    	   flughafenSize .getItems().addAll(
-    	            "small",
-    	            "big",
-    	            "was weiss ich"
-    	          
-    	        );
-    	   
-    	   flughafenSize.setStyle( "-fx-border-color:  #66ffff; "
-                   + "-fx-font-size: 10;"
-                   + "-fx-border-insets: -5; "
-                   + "-fx-border-radius: 5;"
-                   + "-fx-border-style: dotted;"
-                   + "-fx-border-width: 2;"
-                   + "-fx-background-color: #ffffcc;"
-           );
-    	
-    }
-    
-    
-    
-    
+public Button getfileChooserButton() {
+	return fileChooserButton;	
+}
 
 }
+
+
+    
+
+

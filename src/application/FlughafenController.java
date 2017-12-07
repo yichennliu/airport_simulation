@@ -1,5 +1,10 @@
 package application;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.json.JSONException;
+
 import application.model.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -7,10 +12,13 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -18,8 +26,12 @@ public class FlughafenController {
 	private FlughafenView view;
 	private Flughafen model;
 	private double translateArray[] = new double[4]; // [mousePressStartX, mousePressStartY, oldOffsetX, oldOffsetY] (für das Verschieben benötigt)
+	 private FileChooser fileChooser = new FileChooser();
 
-	
+//	
+//	Stage stage= new Stage(); 
+//	stage=FlughafenView.getStage();
+//	
 	public FlughafenController(Flughafen model, FlughafenView view) {
 		this.model = model;
 		this.view = view;
@@ -95,9 +107,64 @@ public class FlughafenController {
 		t1.play();
 		
 		this.view.update(false);		
-	}
+	
+	
+	this.view.getfileChooserButton().addEventHandler(MouseEvent.MOUSE_PRESSED, event ->{
+		openFile();
+	});
 
 	
-}
 	
+
+
+
+
+
+}
+private void openFile() {
+	
+
+	Flughafen newFlughafen;
+	 File seletedFile =  fileChooser.showOpenDialog(this.view.getStage());
+	 String path = seletedFile.getAbsolutePath();
+	 fileChooser.getExtensionFilters().addAll(
+	         new ExtensionFilter("Text Files", "*.txt","Image Files", "*.png", "*.jpg", "*.gif","Audio Files", "*.wav", "*.mp3", "*.aac")
+	      );
+	 
+    try {
+    		newFlughafen = JSONImport.createFlughafen(path);
+      
+    } catch (Exception ex) {
+        System.out.println("die Datei kann nicht aufgemacht werdennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+      //this.view.reset(this.model);
+            
+    } 
+}
+
+
+}
+
+	
+	
+	
+	
+
+	
+
+////uetter für Button  in view // getter für Stage haben wr
+////   incontroler holer wir getFilechooserbutton
+//   // in den controller :  private FileChooser fileChooser = new FileChooser();
+// File seletedFile =  fileChooser.showOpenDialog(stage);
+//   String path = seletedFile.getAbsoulutePath();
+//   Flughafen newFlughafen;
+//   try {
+//   		Flughafen = JSONImport.createFlughafen(path);
+//   }
+//   catch(Exception e) {
+//   		System.//....
+//   		return;
+//   }
+//this.model = newFlughafen;
+//this.view.reset(this.model); // reset-MEthode der View schreiben
+   
 

@@ -8,9 +8,9 @@ import javafx.scene.image.ImageView;
 public enum PlaneType {
 
 	AIRBUS(new Image("/application/source/Images/flugzeugYamai.png"),1), 
-	BELLX(new Image("/application/source/Images/bellX.PNG"),0.8), 
-	ECLIPSE_AVIATION(new Image("/application/source/Images/eclipseaviation2.png"),0.5),
-	XFUNFZEHN(new Image("/application/source/Images/x15.png"),0.5);
+	BELLX(new Image("/application/source/Images/bellX.PNG"),1.2), 
+	ECLIPSE_AVIATION(new Image("/application/source/Images/eclipseaviation2.png"),0.8),
+	XFUNFZEHN(new Image("/application/source/Images/x15.png"),1.5);
 
 	private final Image img;
 	private final double size;
@@ -30,9 +30,10 @@ public enum PlaneType {
 	
 	public static PlaneType getRandomType() {
 		Random generator = new Random();
-		PlaneType[] types = PlaneType.values();
+	PlaneType[] types = PlaneType.values();
 		return types[generator.nextInt(types.length)];
 	}
+	
 	
 	
 }
