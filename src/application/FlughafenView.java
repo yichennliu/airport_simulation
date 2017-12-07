@@ -58,7 +58,7 @@ public class FlughafenView {
     private HBox buttonHbox;
     private Button zoomButton;
     private ToggleButton nameButton= new ToggleButton("Show Node names");
-    private Button fileChooserButton = new Button();
+    private Button fileChooserButton = new Button("Import files");
     
     public final StringProperty btnText = nameButton.textProperty();
    
