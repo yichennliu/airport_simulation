@@ -58,14 +58,20 @@ public class Node {
 			System.out.println("Plane auf Node " + this.name);
 			plane.setNextNode(this);
 			
-			if (this.isBlockedAfter(Flughafen.getTime())) {
+			if (this.isBlockedAfter(Flughafen.getTime())) { // falls gerade ein Flugzeug draufsteht, das den Node blockiert
 				// Flugzeug noch nicht am Endziel, nächsten waypoint suchen
 				boolean success = PathFinder.search(nodes, plane, Flughafen.getTime(), this, plane.getCurrentTarget());
 				if (success) {
 					// Flugzeug kann weiterfliegen, Blockierung aufheben
 					this.unblock();
-				} else {
-					// Blockierung beibehalten.
+				} else if(this.targettype!=Targettype.wait) { // nur einen Wait-Knoten suchen, wenn das Flugzeug nicht schon auf einem steht
+					// suche freien Wait-Knoten
+					success = PathFinder.search(nodes, plane, Flughafen.getTime(), this, Targettype.wait);
+					if (success) this.unblock();
+					else {
+						// Blockierung beibehalten.
+					}
+					
 				}
 			} else {
 				// Flugzeug vorhanden, aber Node nicht blockiert: Flugzeug am Ziel
