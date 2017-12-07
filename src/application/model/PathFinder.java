@@ -72,7 +72,7 @@ public class PathFinder {
 	 */
 	private static boolean findWaypoint(Plane plane, Map<Node,Breadcrumb>nodesStatus, Targettype waypoint, Deque<Node> deq) {
 		Node current = deq.getFirst();							// in diesem Durchlauf zu überprüfender Node
-		int currentTime = nodesStatus.get(current).getTime(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
+		Integer currentTime = nodesStatus.get(current).getTime(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
 		
 		// vergleiche, ob current der gesuchte waypoint ist
 		if (current.getTargettype() != null && current.getTargettype().equals(waypoint)) {
