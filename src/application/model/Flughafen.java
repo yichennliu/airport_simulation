@@ -36,7 +36,6 @@ public class Flughafen {
 					this.removePlane(plane, getTime());
 					this.addPlane(plane, getTime()+1);
 				}
-				else plane.setStatus(PlaneStatus.FLYING);
 			}
 		}
 		
