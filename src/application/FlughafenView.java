@@ -15,6 +15,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
@@ -51,6 +52,7 @@ public class FlughafenView {
     private HBox buttonHbox;
     private Button zoomButton;
     private ToggleButton nameButton= new ToggleButton("Show Node names");
+    private ComboBox flughafenSize = new ComboBox();
     public final StringProperty btnText = nameButton.textProperty();
     boolean nameshown= false;
     private Label zoomLabel;
@@ -77,7 +79,8 @@ public class FlughafenView {
         this.buttonHbox= new HBox();
         this.setHboxStyle();
         createZoomLabel();
-        buttonHbox.getChildren().addAll(zoomButton, nameButton, zoomLabel);
+        changeFlughafenSize();
+        buttonHbox.getChildren().addAll(zoomButton, nameButton, flughafenSize,zoomLabel );
         root.getChildren().addAll(buttonHbox);
     }
 
@@ -340,6 +343,10 @@ public class FlughafenView {
     
     public void showNames(boolean show) {
     		nameshown = show;
+
+    		
+    		
+    		
     		if(show) {
     			this.btnText.set("Hide Node names");
     		}
@@ -349,11 +356,14 @@ public class FlughafenView {
 
     public void createZoomLabel() {
         this.zoomLabel = new Label();
-        this.zoomLabel.setAlignment(Pos.TOP_RIGHT);
-        this.zoomLabel.setFont(Font.font("Arial", 20));
-        this.zoomLabel.setStyle("-fx-background-color: thistle;"
-                + "-fx-border-color: black;"
-                + "-fx-background-image:url('/application/source/Images/zoomLabel.jpg');"
+        this.zoomLabel.setStyle( "-fx-border-color:  #66ffff; "
+                + "-fx-font-size: 13;"
+                + "-fx-border-insets: -5; "
+                + "-fx-border-radius: 5;"
+                + "-fx-border-style: dotted;"
+                + "-fx-border-width: 2;"
+                + "-fx-background-color: #ffffcc;"
+             
         );
         updateLabel();
     }
@@ -365,5 +375,33 @@ public class FlughafenView {
     public Label getZoomLabel() {
         return this.zoomLabel;
     }
+    
+    
+
+ 
+    public void changeFlughafenSize() {
+    	flughafenSize.setPromptText("Choose JasonFile ");
+    	
+    	   flughafenSize .getItems().addAll(
+    	            "small",
+    	            "big",
+    	            "was weiss ich"
+    	          
+    	        );
+    	   
+    	   flughafenSize.setStyle( "-fx-border-color:  #66ffff; "
+                   + "-fx-font-size: 10;"
+                   + "-fx-border-insets: -5; "
+                   + "-fx-border-radius: 5;"
+                   + "-fx-border-style: dotted;"
+                   + "-fx-border-width: 2;"
+                   + "-fx-background-color: #ffffcc;"
+           );
+    	
+    }
+    
+    
+    
+    
 
 }
