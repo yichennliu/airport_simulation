@@ -391,7 +391,7 @@ public class FlughafenView {
     	   
     	   flughafenSize.setStyle( "-fx-border-color:  #66ffff; "
                    + "-fx-font-size: 10;"
-                   + "-fx-border-insets: -5; "
+                   + "-fx-border-insets: -5;"
                    + "-fx-border-radius: 5;"
                    + "-fx-border-style: dotted;"
                    + "-fx-border-width: 2;"
