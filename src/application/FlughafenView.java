@@ -246,10 +246,10 @@ public class FlughafenView {
         Node lastNode = plane.getLastNode();
 
         if (lastNode!=null) {
-            double x1 = lastNode.getX();
-            double y1 = lastNode.getY();
-            double x2 = nextNode.getX();
-            double y2 = nextNode.getY();
+            double x1 = lastNode.getX()*zoomFactor+offsetX;
+            double y1 = lastNode.getY()*zoomFactor+offsetY;
+            double x2 = nextNode.getX()*zoomFactor+offsetX;
+            double y2 = nextNode.getY()*zoomFactor+offsetY;
             
             Path path = viewPlane.getPath();
             if(x1==x2 && y1==y2){
