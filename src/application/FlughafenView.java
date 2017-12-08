@@ -379,7 +379,7 @@ public class FlughafenView {
     }
 
     public void updateLabel() {
-        this.zoomButton.setText("Zoomfactor"+Math.round(zoomFactor*100/100) );
+        this.zoomButton.setText("Zoom-Factor : "+Math.round(zoomFactor*100/100) );
     }
 
     public Label getZoomLabel() {
