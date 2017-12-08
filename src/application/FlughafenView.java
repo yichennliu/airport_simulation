@@ -58,8 +58,8 @@ public class FlughafenView {
         this.gc = canvas.getGraphicsContext2D();
         root.getChildren().addAll(canvas);
         this.setInitialZoomAndOffset(model.getNodes());
-        Label  buttonlabel = getZoomLabel();
-        this.zoomButton= new Button("buttonlabel"+zoomLabel);
+       
+        this.zoomButton= new Button("buttonlabel"+this.zoomFactor);
         Image buttonImage = new Image("/application/source/Images/zoomout.png");
         zoomButton.setGraphic(new ImageView(buttonImage));
         setButtonStyle(zoomButton);
@@ -379,7 +379,7 @@ public class FlughafenView {
     }
 
     public void updateLabel() {
-        this.zoomLabel.setText(Math.round(zoomFactor*100/100) + " %");
+        this.zoomButton.setText("Zoomfactor"+Math.round(zoomFactor*100/100) );
     }
 
     public Label getZoomLabel() {
