@@ -48,14 +48,13 @@ public class FlughafenView {
 	private Stage stage;
 	private Scene scene;
 	private Canvas canvas;
+	private 	Rectangle backGroundRectangle = new Rectangle(width,height + heightButtonplatz);
 	private GraphicsContext gc;
 	private static Group root;
 	private Button fileChooserButton = new Button("Import files");
 	private Button zoomButton;
 	private ToolBar tb = new ToolBar();
-
 	private HBox buttonHbox;
-
 	private ToggleButton nameButton = new ToggleButton("Show Node names");
 	public final StringProperty btnText = nameButton.textProperty();
 	boolean nameshown = false;
@@ -69,9 +68,8 @@ public class FlughafenView {
 		StackPane holder = new StackPane();
 		this.canvas = new Canvas(width, height + heightButtonplatz);
 		this.gc = canvas.getGraphicsContext2D();
-		Rectangle r = new Rectangle();
-		r.setWidth(width);
-		r.setHeight( height + heightButtonplatz);
+
+
 //		this.gc.setStyle("-fx-background-color: red");
 //		holder.setStyle("-fx-background-color: #dededc");
 //		holder.getChildren().add(canvas);
@@ -79,12 +77,11 @@ public class FlughafenView {
 
 		final ColorPicker colorPicker = new ColorPicker();
 		 colorPicker.setValue(Color.ANTIQUEWHITE);
-		 r.setFill(Color.ANTIQUEWHITE);
+		 backGroundRectangle.setFill(Color.ANTIQUEWHITE);
 		 colorPicker.setOnAction(new EventHandler<ActionEvent>() {
-			 
 	            @Override
 	            public void handle(ActionEvent event) {
-	                r.setFill(colorPicker.getValue());
+	                backGroundRectangle.setFill(colorPicker.getValue());
 	            }
 	        });
 	
@@ -99,7 +96,7 @@ public class FlughafenView {
 		this.setHboxStyle();
 		createZoomLabel();
 		
-		root.getChildren().addAll(r);
+		root.getChildren().addAll(backGroundRectangle);
 		root.getChildren().addAll(canvas);
 		buttonHbox.getChildren().addAll(zoomButton, nameButton,fileChooserButton,tb);
 		root.getChildren().addAll(buttonHbox);
@@ -349,8 +346,11 @@ public class FlughafenView {
 		FlughafenView.height = (int) height;
 		canvas.setWidth(width);
 		canvas.setHeight(height + heightButtonplatz);
-		buttonHbox.setPrefWidth(width); // damit der Hbox sich an Canvas grösse anpasst
+		buttonHbox.setPrefWidth(width);
+		backGroundRectangle.widthProperty().bind(canvas.widthProperty());
+		backGroundRectangle.heightProperty().bind(canvas.widthProperty());
 		this.drawCanvas();
+		
 
 	}
 
