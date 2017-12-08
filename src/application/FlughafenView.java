@@ -219,7 +219,10 @@ public class FlughafenView {
 
 	}
 
-	private void drawPlane(Plane plane) {
+	private void drawPlane(Plane plane) { 
+		buttonHbox.toFront();
+		
+		
 		if (plane.getNextNode() == null && plane.getLastNode() == null) {
 			ViewPlane vp = this.planes.get(plane);
 			if (vp != null)
