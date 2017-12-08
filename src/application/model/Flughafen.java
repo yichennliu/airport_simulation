@@ -20,7 +20,7 @@ public class Flughafen {
 	
 	/**
 	 * Flughafen aktualisieren
-	 */
+	 */ 
 	public void update() {
 		for (Plane plane: planesToRemove) {
 			plane.setNextNode(null);

@@ -20,7 +20,7 @@ public class Plane {
 		return this.waypoints;
 	}
 	
-	/**
+	/** 
 	 * @return target waypoint, or null if there is no next target
 	 */
 	public Targettype getCurrentTarget() {
