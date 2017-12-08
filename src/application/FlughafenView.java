@@ -4,6 +4,9 @@ import application.model.*;
 import application.model.Node;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import javafx.animation.PathTransition;
+import javafx.animation.PathTransition.OrientationType;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,6 +26,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -240,15 +245,42 @@ public class FlughafenView {
 		ImageView imgV = viewPlane.getImageview();
 		double planeSize = viewPlane.getType().getSize();
 
-		Node node = plane.getNextNode();
+		Node nextNode = plane.getNextNode();
+        Node lastNode = plane.getLastNode();
 
-		if (node != null) {
-			double x = node.getX() * this.zoomFactor + this.offsetX - (planeSize / 2 * this.zoomFactor);
-			double y = node.getY() * this.zoomFactor + this.offsetY - (planeSize / 2 * this.zoomFactor);
-
-			imgV.setX(x);
-			imgV.setY(y);
-		}
+        if (lastNode!=null) {
+            double x1 = lastNode.getX();
+            double y1 = lastNode.getY();
+            double x2 = nextNode.getX();
+            double y2 = nextNode.getY();
+            
+            Path path = viewPlane.getPath();
+            if(x1==x2 && y1==y2){
+            	imgV.setX(x1); // noch mit offset und so weiter
+            	imgV.setY(y1);
+            	return;
+            }
+            MoveTo moveTo = new MoveTo(x1,y1);
+            LineTo lineTo = new LineTo(x2,y2);
+            path.setTranslateX((x1*this.zoomFactor+offsetX)-x1);
+            path.setTranslateY((y1*this.zoomFactor+offsetY)-y1);
+            path.setScaleX(this.zoomFactor);
+            path.setScaleY(this.zoomFactor);
+            
+            
+            path.getElements().clear();
+            
+            path.getElements().add(moveTo);
+            path.getElements().add(lineTo);
+            
+            PathTransition pt = new PathTransition();
+            pt.setNode(imgV);
+            pt.setPath(path);
+            pt.setCycleCount(1);
+            pt.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
+            pt.setDuration(Duration.seconds(1));
+            pt.play();
+            }
 
 		imgV.setFitWidth(planeSize * this.zoomFactor);
 		imgV.setFitHeight(planeSize * this.zoomFactor);
