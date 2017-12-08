@@ -14,7 +14,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
@@ -28,11 +30,8 @@ public class FlughafenController {
 	private FlughafenView view;
 	private Flughafen model;
 	private double translateArray[] = new double[4]; // [mousePressStartX, mousePressStartY, oldOffsetX, oldOffsetY] (für das Verschieben benötigt)
-	 private FileChooser fileChooser = new FileChooser();
+	private FileChooser fileChooser = new FileChooser();
 
-//	
-//	Stage stage= new Stage(); 
-//	stage=FlughafenView.getStage();
 //	
 	public FlughafenController(Flughafen model, FlughafenView view) {
 		this.model = model;
@@ -97,14 +96,6 @@ public class FlughafenController {
 			}  
 		});
 		
-		
-//		this.view.getCombo().getSelectionModel().selectedItemProperty().addListener(new ChangeListener(){
-//			public void changed (ObservableValue ov, String oldItem, String newItem ){
-//				
-//		}
-//		
-//	});
-		
 		EventHandler<ActionEvent> loop = e -> {
 			this.model.update();
 			this.view.update(true);	
@@ -116,6 +107,12 @@ public class FlughafenController {
 		t1.setCycleCount(Timeline.INDEFINITE);
 		t1.play();
 		
+		
+		this.fileChooser.getExtensionFilters().addAll(
+		         new ExtensionFilter("Flughafendatei","*.json"),
+		         new ExtensionFilter("Alle Dateien","*.*")
+		 );
+		
 		this.view.update(false);		
 
 	
@@ -126,30 +123,29 @@ public class FlughafenController {
 
 
 	}
-	
-		
 
-	
-
-
-private void openFile() {
-	
-
+	private void openFile() {
 	Flughafen newFlughafen;
-	 File seletedFile =  fileChooser.showOpenDialog(this.view.getStage());
-	 String path = seletedFile.getAbsolutePath();
-	 fileChooser.getExtensionFilters().addAll(
-	         new ExtensionFilter("Text Files", "*.txt","Image Files", "*.png", "*.jpg", "*.gif","Audio Files", "*.wav", "*.mp3", "*.aac")
-	      );
-	 
-    try {
-    		newFlughafen = JSONImport.createFlughafen(path);
-      
-    } catch (Exception ex) {
-        System.out.println("die Datei kann nicht aufgemacht werdennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
-      //this.view.reset(this.model);
-            
-    } 
+	Stage fileOpenStage = new Stage();
+	File selectedFile =  fileChooser.showOpenDialog(fileOpenStage);
+	if(selectedFile!=null) {
+		String path = selectedFile.getPath();
+	    
+	    try {
+	    		newFlughafen = JSONImport.createFlughafen(path);
+	      
+	    } catch (JSONException ex) {
+	    	System.out.println(ex.getMessage());
+	    	new Alert(Alert.AlertType.ERROR,
+	                "Flughafen-Modell konnte nicht geladen werden",
+	                ButtonType.OK).show();
+	    	return;
+	    }
+		this.fileChooser.setInitialDirectory(selectedFile.getParentFile());
+		this.model = newFlughafen;
+	    this.view.reset(this.model);
+	}
+
 }
 
 

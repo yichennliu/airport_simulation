@@ -96,6 +96,20 @@ public class FlughafenView {
        
     }
 
+    public void reset(Flughafen model) {
+    	// alle ImageViews der Planes aus der View loeschen
+    	for(ViewPlane vp: this.planes.values()) {
+    		this.root.getChildren().remove(vp.getImageview());
+    	}
+    	// Planes-Hashmap resetten
+    	this.planes = new HashMap<Plane,ViewPlane>();
+    	// das neue Model setzen
+    	this.model = model;
+    	// alles neu zeichnen
+    	this.setInitialZoomAndOffset(this.model.getNodes());
+    	this.update(false);
+    }
+    
    public Stage getStage() {
         return stage;
     }
@@ -266,14 +280,6 @@ public class FlughafenView {
 
         }
     }
-
-//    public double getZoomFactor() {
-//        return this.zoomFactor;
-//    }
-
-//    public void setZoomFactor(double factor) {
-//        this.zoomFactor = factor;
-//    }
 
     public void resize(double width, double height) {
     	FlughafenView.width= (int) width;
