@@ -159,26 +159,17 @@ public class FlughafenView {
 		this.buttonHbox = new HBox();
 		this.setHboxStyle();
 		createZoomLabel();
+		
 		root.getChildren().addAll(r);
 		root.getChildren().addAll(canvas);
 		buttonHbox.getChildren().addAll(zoomButton, nameButton,fileChooserButton,tb);
 		root.getChildren().addAll(buttonHbox);
 		tb.getItems().addAll(colorPicker);
 
-
-        Function<Double, Function<Color, Function<Color,Consumer<Boolean>>>> setStyle = width -> (strokeC -> (fillC -> (dotted-> {
-        	this.gc.setLineWidth(width);
-            this.gc.setStroke(strokeC);
-            this.gc.setFill(fillC);
-            if(dotted) this.gc.setLineDashes(10);
-            else this.gc.setLineDashes(null);
-        })));
-
 		this.scene = new Scene(root);
 		this.stage.setScene(scene);
 		this.stage.setTitle("Flughafen");
 		this.stage.show();
-
 
 	}
 
@@ -196,20 +187,6 @@ public class FlughafenView {
 		this.update(false);
 	}
 
-
-            }
-            case runway: {
-                setStyle.apply(1.4).apply(Color.BLACK).apply(Color.BLACK).accept(false);
-                break;
-            }
-        }
-        if(nameshown) {
-        	 this.gc.fillText(node.getName(), x + 5, y);
-        }
-        for (Node children : node.getTo()) {
-            gc.strokeLine(x, y, (children.getX() * zoomFactor) + offsetX, (children.getY() * zoomFactor) + offsetY);
-        }
-
 	public Stage getStage() {
 		return stage;
 	}
@@ -224,29 +201,6 @@ public class FlughafenView {
 		drawPlanes();
 	}
 
-
-    private void drawPlane(Plane plane) {
-    	if(plane.getNextNode() == null && plane.getLastNode() == null) {
-    		
-    		ViewPlane vp = this.planes.get(plane);
-    		if(vp!=null){
-    			this.root.getChildren().remove(vp.getImageview());
-    		}
-    		this.planes.remove(plane);
-    		return;
-    	}
-    	ViewPlane viewPlane;
-        if (!this.planes.containsKey(plane)) { 
-        		viewPlane = new ViewPlane();
-        		viewPlane.setPath(new Path());
-        		this.planes.put(plane, viewPlane);
-        		root.getChildren().add(viewPlane.getImageview());
-        }
-        else viewPlane = planes.get(plane);
-        ImageView imgV = viewPlane.getImageview();
-        double planeSize=viewPlane.getType().getSize();
-        
-
 	private void drawCanvas() {
 		Collection<Node> nodes = model.getNodes();
 		if (!nodes.isEmpty()) {
@@ -257,44 +211,6 @@ public class FlughafenView {
 
         Node nextNode = plane.getNextNode();
         Node lastNode = plane.getLastNode();
-
-        if (lastNode!=null) {
-            double x1 = lastNode.getX();
-            double y1 = lastNode.getY();
-            double x2 = nextNode.getX();
-            double y2 = nextNode.getY();
-            
-            Path path = viewPlane.getPath();
-            if(x1==x2 && y1==y2){
-            	imgV.setX(x1); // noch mit offset und so weiter
-            	imgV.setY(y1);
-            	return;
-            }
-            MoveTo moveTo = new MoveTo(x1,y1);
-            LineTo lineTo = new LineTo(x2,y2);
-            path.setTranslateX((x1*this.zoomFactor+offsetX)-x1);
-            path.setTranslateY((y1*this.zoomFactor+offsetY)-y1);
-            path.setScaleX(this.zoomFactor);
-            path.setScaleY(this.zoomFactor);
-            
-            
-            path.getElements().clear();
-            
-            path.getElements().add(moveTo);
-            path.getElements().add(lineTo);
-            
-            PathTransition pt = new PathTransition();
-            pt.setNode(imgV);
-            pt.setPath(path);
-            pt.setCycleCount(1);
-            pt.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
-            pt.setDuration(Duration.seconds(1));
-            pt.play();
-            
-        }
-
-        imgV.setFitWidth(planeSize* this.zoomFactor);
-        imgV.setFitHeight(planeSize * this.zoomFactor);
 
 	public void drawPlanes() {
 		Collection<Plane> planes = model.getPlanes();
@@ -488,11 +404,6 @@ public class FlughafenView {
 
 		}
 	}
-
-
-    public void updateLabel() {
-        this.zoomLabel.setText("Zoomfactor:"+ Math.round(zoomFactor*100/100));
-    }
 
 	public void resize(double width, double height) {
 		FlughafenView.width = (int) width;
