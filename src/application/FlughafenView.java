@@ -58,7 +58,8 @@ public class FlughafenView {
         this.gc = canvas.getGraphicsContext2D();
         root.getChildren().addAll(canvas);
         this.setInitialZoomAndOffset(model.getNodes());
-        this.zoomButton= new Button("");
+        Label  buttonlabel = getZoomLabel();
+        this.zoomButton= new Button("buttonlabel"+zoomLabel);
         Image buttonImage = new Image("/application/source/Images/zoomout.png");
         zoomButton.setGraphic(new ImageView(buttonImage));
         setButtonStyle(zoomButton);
@@ -365,15 +366,15 @@ public class FlughafenView {
 
     public void createZoomLabel() {
         this.zoomLabel = new Label();
-        this.zoomLabel.setStyle( "-fx-border-color:  #66ffff; "
-                + "-fx-font-size: 13;"
-                + "-fx-border-insets: -5; "
-                + "-fx-border-radius: 5;"
-                + "-fx-border-style: dotted;"
-                + "-fx-border-width: 2;"
-                + "-fx-background-color: #ffffcc;"
-             
-        );
+//        this.zoomLabel.setStyle( "-fx-border-color:  #66ffff; "
+//                + "-fx-font-size: 13;"
+//                + "-fx-border-insets: -5; "
+//                + "-fx-border-radius: 5;"
+//                + "-fx-border-style: dotted;"
+//                + "-fx-border-width: 2;"
+//                + "-fx-background-color: #ffffcc;"
+//             
+//        );
         updateLabel();
     }
 

@@ -84,6 +84,7 @@ public class FlughafenController {
 		this.view.getZoomOutButton().addEventHandler(MouseEvent.MOUSE_PRESSED, event ->{
 			this.view.zoomOut(this.model.getNodes());
 			this.view.updateLabel();
+			
 		});
 
 		
