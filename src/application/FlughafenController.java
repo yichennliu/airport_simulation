@@ -19,6 +19,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.FileChooser;
@@ -135,10 +137,13 @@ public class FlughafenController {
 	    		newFlughafen = JSONImport.createFlughafen(path);
 	      
 	    } catch (JSONException ex) {
-	    	System.out.println(ex.getMessage());
-	    	new Alert(Alert.AlertType.ERROR,
-	                "Flughafen-Modell konnte nicht geladen werden",
-	                ButtonType.OK).show();
+	    	Alert alertWindow = new Alert(Alert.AlertType.ERROR,
+	                ex.getMessage(),
+	                ButtonType.OK);
+	    	alertWindow.setHeaderText("Fehler beim Laden des Flughafens");
+	    	Image img = new Image("/application/source/Images/ber.png");
+	    	alertWindow.setGraphic(new ImageView(img));
+	    	alertWindow.show();
 	    	return;
 	    }
 		this.fileChooser.setInitialDirectory(selectedFile.getParentFile());
@@ -151,27 +156,4 @@ public class FlughafenController {
 
 }
 
-	
-	
-	
-	
-
-	
-
-////uetter für Button  in view // getter für Stage haben wr
-////   incontroler holer wir getFilechooserbutton
-//   // in den controller :  private FileChooser fileChooser = new FileChooser();
-// File seletedFile =  fileChooser.showOpenDialog(stage);
-//   String path = seletedFile.getAbsoulutePath();
-//   Flughafen newFlughafen;
-//   try {
-//   		Flughafen = JSONImport.createFlughafen(path);
-//   }
-//   catch(Exception e) {
-//   		System.//....
-//   		return;
-//   }
-//this.model = newFlughafen;
-//this.view.reset(this.model); // reset-MEthode der View schreiben
-   
 

@@ -56,6 +56,13 @@ public class Node {
 		Plane plane = this.getPlane(); // gibt entweder ein Flugzeug zurück oder null (ein Flugzeug, das gerade blockiert oder gerade angekommen ist)
 		if (plane != null) { 
 			System.out.println("Plane auf Node " + this.name);
+			/* falls an einem Ausflug-Knoten angekommen - noch verbessern!! */
+			if(this.getTargettype()!=null && 
+				this.getTargettype().equals(Targettype.ausflug)) {
+				plane.setNextNode(null);
+				plane.setNextNode(null);
+				return;
+			}
 			plane.setNextNode(this);
 			
 			if (this.isBlockedAfter(Flughafen.getTime())) { // falls gerade ein Flugzeug draufsteht, das den Node blockiert

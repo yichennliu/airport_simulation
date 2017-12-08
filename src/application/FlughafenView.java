@@ -141,7 +141,7 @@ public class FlughafenView {
         double y = (node.getY() * zoomFactor) + offsetY;
         Kind kind = node.getKind();
 		
-		/*	setStyle: Funktionales Interface, dem man drei Argumente mitgeben kann, damit es die Farben fuer die Nodes 
+		/*	setStyle: Funktionales Interface, dem man vier Argumente mitgeben kann, damit es die Farben fuer die Nodes 
 			anpasst. */
 
         Function<Double, Function<Color, Function<Color,Consumer<Boolean>>>> setStyle = width -> (strokeC -> (fillC -> (dotted-> {
@@ -185,7 +185,12 @@ public class FlughafenView {
     }
 
     private void drawPlane(Plane plane) {
-    	if(plane.getNextNode() == null &&plane.getLastNode() == null) return;
+    	if(plane.getNextNode() == null &&plane.getLastNode() == null) {
+    		ViewPlane vp = this.planes.get(plane);
+    		if(vp!=null) this.root.getChildren().remove(vp.getImageview());
+    		this.planes.remove(plane);
+    		return;
+    	}
     	ViewPlane viewPlane;
         if (!this.planes.containsKey(plane)) {
         		viewPlane = new ViewPlane();
