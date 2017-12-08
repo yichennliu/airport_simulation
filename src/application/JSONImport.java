@@ -10,8 +10,17 @@ import application.model.*;
 public class JSONImport {
 	
 	public static Flughafen createFlughafen(String jsonPath) throws JSONException {
-		/* load file */
-		InputStream is = ClassLoader.getSystemResourceAsStream(jsonPath);
+		/* load file with relative path*/
+		InputStream is = ClassLoader.getSystemResourceAsStream(jsonPath); 
+		if(is==null) {
+			/*if file not found try to load file with absolute path*/
+			try {
+				is = new FileInputStream(jsonPath);
+			}
+			catch(FileNotFoundException e) {
+				throw new JSONException("File not found");
+			}
+		}
 		JSONObject json = new JSONObject(new JSONTokener(is));
 		
 		/* import maxplanes */
