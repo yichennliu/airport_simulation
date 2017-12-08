@@ -3,14 +3,7 @@ package application;
 import application.model.*;
 import application.model.Node;
 import javafx.scene.shape.*;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.util.Duration;
-import javafx.util.Pair;
-import javafx.animation.Animation;
-import javafx.animation.ParallelTransition;
-import javafx.animation.PathTransition;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.*;
@@ -18,25 +11,17 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javax.swing.*;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -59,9 +44,7 @@ public class FlughafenView {
     private Button zoomButton;
     private ToggleButton nameButton= new ToggleButton("Show Node names");
     private Button fileChooserButton = new Button("Import files");
-    
     public final StringProperty btnText = nameButton.textProperty();
-   
     boolean nameshown= false;
     private Label zoomLabel;
     Map<Plane, ViewPlane> planes = new HashMap<Plane, ViewPlane>();
@@ -75,7 +58,6 @@ public class FlughafenView {
         this.gc = canvas.getGraphicsContext2D();
         root.getChildren().addAll(canvas);
         this.setInitialZoomAndOffset(model.getNodes());
-      
         this.zoomButton= new Button("");
         Image buttonImage = new Image("/application/source/Images/zoomout.png");
         zoomButton.setGraphic(new ImageView(buttonImage));
@@ -367,14 +349,12 @@ public class FlughafenView {
     
     public void showNames(boolean show) {
     		nameshown = show;
-
-    		
-    		
     		
     		if(show) {
     			this.btnText.set("Hide Node names");
     		}
-    		else this.btnText.set("Show Node names");
+    		
+    		else{ this.btnText.set("Show Node names");}
     		this.drawCanvas();
     }
 
@@ -400,10 +380,10 @@ public class FlughafenView {
         return this.zoomLabel;
     }
     
-    
-public Button getfileChooserButton() {
-	return fileChooserButton;	
-}
+    public Button getfileChooserButton() {
+    	return fileChooserButton;	
+
+    }
 
 }
 
