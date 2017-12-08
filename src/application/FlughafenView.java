@@ -246,10 +246,10 @@ public class FlughafenView {
         Node lastNode = plane.getLastNode();
 
         if (lastNode!=null) {
-            double x1 = lastNode.getX()*zoomFactor+offsetX;
-            double y1 = lastNode.getY()*zoomFactor+offsetY;
-            double x2 = nextNode.getX()*zoomFactor+offsetX;
-            double y2 = nextNode.getY()*zoomFactor+offsetY;
+            double x1 = lastNode.getX();
+            double y1 = lastNode.getY();
+            double x2 = nextNode.getX();
+            double y2 = nextNode.getY();
             
             Path path = viewPlane.getPath();
             if(x1==x2 && y1==y2){
@@ -259,11 +259,10 @@ public class FlughafenView {
             }
             MoveTo moveTo = new MoveTo(x1,y1);
             LineTo lineTo = new LineTo(x2,y2);
-            path.setTranslateX((x1*this.zoomFactor+offsetX)-x1);
-            path.setTranslateY((y1*this.zoomFactor+offsetY)-y1);
+            path.setTranslateX((x1*this.zoomFactor+offsetX));
+            path.setTranslateY((y1*this.zoomFactor+offsetY));
             path.setScaleX(this.zoomFactor);
             path.setScaleY(this.zoomFactor);
-            
             
             path.getElements().clear();
             
@@ -277,7 +276,8 @@ public class FlughafenView {
             pt.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
             pt.setDuration(Duration.seconds(1));
             pt.play();
-            }
+            
+        }
 
 		imgV.setFitWidth(planeSize * this.zoomFactor);
 		imgV.setFitHeight(planeSize * this.zoomFactor);
