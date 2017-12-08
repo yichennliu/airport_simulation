@@ -128,4 +128,8 @@ public class Flughafen {
 	public static void tick() {
 		time++;
 	}
+	
+	public int getActivePlanes() {
+		return this.activePlanes;
+	}
 }
