@@ -47,46 +47,6 @@ public class Node {
 		return this.to.values();
 	}
 	
-	/**
-	 * updates the Node and Planes that are at this node by using the current Airport time
-	 * 
-	 * @param nodes Airport nodes
-	 */
-	public void update(Collection<Node> nodes) {
-		Plane plane = this.getPlane(); // gibt entweder ein Flugzeug zurück oder null (ein Flugzeug, das gerade blockiert oder gerade angekommen ist)
-		if (plane != null) { 
-			System.out.println("Plane auf Node " + this.name);
-			/* falls an einem Ausflug-Knoten angekommen - noch verbessern!! */
-			if(this.getTargettype()!=null && 
-				this.getTargettype().equals(Targettype.ausflug)) {
-				plane.setNextNode(null);
-				plane.setNextNode(null);
-				return;
-			}
-			plane.setNextNode(this);
-			
-			if (this.isBlockedAfter(Flughafen.getTime())) { // falls gerade ein Flugzeug draufsteht, das den Node blockiert
-				// Flugzeug noch nicht am Endziel, nächsten waypoint suchen
-				boolean success = PathFinder.search(nodes, plane, Flughafen.getTime(), this, plane.getCurrentTarget());
-				if (success) {
-					// Flugzeug kann weiterfliegen, Blockierung aufheben
-					this.unblock();
-				} else if(this.targettype!=Targettype.wait) { // nur einen Wait-Knoten suchen, wenn das Flugzeug nicht schon auf einem steht
-					// suche freien Wait-Knoten
-					success = PathFinder.search(nodes, plane, Flughafen.getTime(), this, Targettype.wait);
-					if (success) this.unblock();
-					else {
-						// Blockierung beibehalten.
-					}
-					
-				}
-			} else {
-				// Flugzeug vorhanden, aber Node nicht blockiert: Flugzeug am Ziel
-				// TODO: Alte Flugzeuge aus Flughafen löschen um mit maxplanes vergleichen zu können?
-			}
-		}
-	}
-
 	
 	/**
 	 * Only for import

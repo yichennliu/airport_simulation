@@ -3,7 +3,6 @@ package application.model;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Plane {
 
 	private List<Targettype> waypoints = new ArrayList<Targettype>();
@@ -46,6 +45,10 @@ public class Plane {
 	
 	public int getInittime() {
 		return this.inittime;
+	}
+	
+	public void increaseInittime() {
+		this.inittime++;
 	}
 	
 	public Node getLastNode() {

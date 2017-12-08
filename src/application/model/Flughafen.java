@@ -4,43 +4,92 @@ import java.util.*;
 
 public class Flughafen {
 	private int maxplanes;
-	private Map<Integer,List<Plane>> planes; // eine Map, die eine Liste der zu spawnenden Flugzeuge zu bestimmten Zeitpunkten hält
+	private List<Plane> planes;
+	private int activePlanes = 0;
 	private List<Generator> generators;
 	private Map<String, Node> nodes;
 	private static int time = 0;
 	
 	public Flughafen(int maxplanes, List<Plane> planes, List<Generator> generators, Map<String, Node> nodes) {
 		this.maxplanes = maxplanes;
-		this.planes = new HashMap<Integer,List<Plane>>();
-		for(Plane plane: planes) addPlane(plane);
+		this.planes = planes;
 		this.generators = generators;
 		this.nodes = nodes;
 	}
 	
 	public void update() {
-		for(Generator g:this.generators) { // Generatoren ausführen
+		// Generatoren ausführen
+		for(Generator g:this.generators) {
 			Plane plane = g.execute();
-			if(plane!=null) this.addPlane(plane);		
+			if(plane!=null) this.planes.add(plane);
 		}
-
-		List<Plane> newPlanes = this.planes.get(getTime()); // die Flugzeuge, die in diesem Tick erzeugt werden sollen
 		
-		// TODO: prüfen ob this.maxplanes überschritten wird, überzählige Flugzeuge in den nächsten Tick verschieben
-
-		if (newPlanes!=null) {// finde für jedes neue Flugzeug einen Weg
+		// die Flugzeuge, die in diesem Tick erzeugt werden sollen
+		List<Plane> newPlanes = new ArrayList<Plane>();
+		for (Plane plane: this.planes) {
+			if (plane.getInittime() == getTime()) newPlanes.add(plane);
+		}
+		
+		// Flugzeuge starten lassen falls Weg frei
+		if (!newPlanes.isEmpty()) {
 			for(int i = 0; i < newPlanes.size(); i++) {
 				Plane plane = newPlanes.get(i);
-				boolean success = PathFinder.searchFirstWaypoint(this.getNodes(), plane, Flughafen.getTime());
-				if (!success) {
-					// Wenn kein Pfad gefunden wurde: im nächsten Tick noch mal versuchen
-					this.removePlane(plane, getTime());
-					this.addPlane(plane, getTime()+1);
+				if (this.activePlanes < this.maxplanes) {
+					boolean success = PathFinder.searchFirstWaypoint(this.getNodes(), plane, Flughafen.getTime());
+					if (success) {
+						this.activePlanes++;
+					} else {
+						// Wenn kein Pfad gefinden wurde erreicht: im nächsten Tick noch mal versuchen
+						plane.increaseInittime();
+					}
+				} else {
+					// Wenn maxplanes erreicht: im nächsten Tick noch mal versuchen
+					plane.increaseInittime();
 				}
 			}
 		}
 		
-		for(Node node: nodes.values()) { // jeden Node updaten
-			node.update(this.getNodes());
+		// jeden Node updaten und Fleugzeuge gefegebenenfalls weiterfliegen lassen
+		for(Node node: nodes.values()) {
+			this.updateNode(node);
+		}
+	}
+	
+	/**
+	 * Aktualisiert die Zustände der Nodes und lässt (falls nötig) darauf befindliche Flugzeuge weiterfliegen
+	 * 
+	 * @param node
+	 */
+	private void updateNode(Node node) {
+		Plane plane = node.getPlane(); // gibt entweder ein Flugzeug zurück oder null (ein Flugzeug, das gerade blockiert oder gerade angekommen ist)
+		if (plane != null) { 
+			System.out.println("Plane auf Node " + node.getName());
+			/* falls an einem Ausflug-Knoten angekommen - noch verbessern!! */
+			if(node.getTargettype()!=null && 
+				node.getTargettype().equals(Targettype.ausflug)) {
+				plane.setNextNode(null);
+				plane.setNextNode(null);
+				this.activePlanes--;
+				return;
+			}
+			plane.setNextNode(node);
+			
+			if (node.isBlockedAfter(Flughafen.getTime())) { // falls gerade ein Flugzeug draufsteht, das den Node blockiert
+				// Flugzeug noch nicht am Endziel, nächsten waypoint suchen
+				boolean success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, plane.getCurrentTarget());
+				if (success) {
+					// Flugzeug kann weiterfliegen, Blockierung aufheben
+					node.unblock();
+				} else if(node.getTargettype()!=Targettype.wait) { // nur einen Wait-Knoten suchen, wenn das Flugzeug nicht schon auf einem steht
+					// suche freien Wait-Knoten
+					success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, Targettype.wait);
+					if (success) node.unblock();
+					else {
+						// Blockierung beibehalten.
+					}
+					
+				}
+			}
 		}
 	}
 	
@@ -49,56 +98,9 @@ public class Flughafen {
 	}
 
 	public Collection<Plane> getPlanes() {
-		Collection<Plane> collector = new ArrayList<Plane>();
-		for(List<Plane> planeList: this.planes.values()) {
-			for(Plane plane:planeList) {
-				collector.add(plane);
-			}
-		}
-		return collector;
+		return this.planes;
 	}
-	
-	/**
-	 * add plane at a custom time
-	 * 
-	 * @param plane
-	 * @param time
-	 */
-	public void addPlane(Plane plane, int time) {
-		List<Plane> planeList = this.planes.get(time);
-		if(planeList==null) this.planes.put(time, new ArrayList<Plane>());
-		this.planes.get(time).add(plane);
-	}
-	
-	/**
-	 * add plane at its predefined init time
-	 * 
-	 * @param plane
-	 */
-	public void addPlane(Plane plane) {
-		this.addPlane(plane, plane.getInittime());
-	}
-	
-	/**
-	 * Try to remove a plane
-	 * 
-	 * @param plane The plane
-	 * @param time The start time
-	 * @return true on success, false otherwise
-	 */
-	public boolean removePlane(Plane plane, int time) {
-		List<Plane> planeList = this.planes.get(time);
 		
-		if (planeList != null && planeList.contains(plane)) {
-			planeList.remove(plane);
-			if (planeList.isEmpty()) {
-				this.planes.remove(time);
-			}
-			return true;
-		}
-		return false;
-	}
-	
 	public List<Generator> getGenerators() {
 		return this.generators;
 	}
