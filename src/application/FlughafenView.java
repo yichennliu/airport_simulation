@@ -4,9 +4,6 @@ import application.model.*;
 import application.model.Node;
 import javafx.scene.shape.*;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.animation.PathTransition;
-import javafx.animation.PathTransition.OrientationType;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -30,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -52,7 +48,9 @@ public class FlughafenView {
 	private Button fileChooserButton = new Button("Import files");
 	private Button zoomButton;
 	private ToolBar tb = new ToolBar();
+
 	private HBox buttonHbox;
+
 	private ToggleButton nameButton = new ToggleButton("Show Node names");
 	public final StringProperty btnText = nameButton.textProperty();
 	boolean nameshown = false;
@@ -73,71 +71,7 @@ public class FlughafenView {
 //		holder.setStyle("-fx-background-color: #dededc");
 //		holder.getChildren().add(canvas);
 //		root.getChildren().addAll(holder);
-		
-		}
 
-
-    public Canvas getCanvas() {
-        return this.canvas;
-    }
-
-    public void update(boolean onlyPlanes) {
-    	if(!onlyPlanes) drawCanvas();        
-//    	if(!onlyPaths)
-    		drawPlanes();
-//        else updatePaths();
-    }
-
-    private void drawCanvas() {
-        Collection<Node> nodes = model.getNodes();
-        if (!nodes.isEmpty()) {
-            gc.clearRect(0, 0, width, height + heightButtonplatz);
-            drawNodes(new ArrayList<Node>(nodes));
-         
-        }
-    }
-
-    public void drawPlanes() {
-        Collection<Plane> planes = model.getPlanes();
-        if (!planes.isEmpty()) {
-            for (Plane plane : planes) {
-                drawPlane(plane);
-         }
-        }
-    }
-
-    private void updatePaths(){
-
-    	for(ViewPlane vp: this.planes.values()){
-           Path path = vp.getPath();
-           double oldTranslateX = path.getTranslateX();
-           double oldTranslateY = path.getTranslateY();
-           
-           path.setTranslateX(oldTranslateX);
-           path.setTranslateY(oldTranslateY);
-           
-           path.setScaleX(this.zoomFactor);
-           path.setScaleY(this.zoomFactor);
-    	}
-    }
-    
-   /*	drawNodes() zeichnet rekursiv (damit die unten liegenden Nodes zuerst gezeichnet werden) */
-
-    private void drawNodes(ArrayList<Node> nodes) {
-        if (nodes.size() > 0) {
-            Node node = nodes.remove(0);
-            drawNodes(nodes);
-            drawNode(node);
-        }
-
-
-    }
-
-    private void drawNode(Node node) {
-        double radius = 5;
-        double x = (node.getX() * zoomFactor) + offsetX;
-        double y = (node.getY() * zoomFactor) + offsetY;
-        Kind kind = node.getKind();
 		final ColorPicker colorPicker = new ColorPicker();
 		 colorPicker.setValue(Color.ANTIQUEWHITE);
 		 r.setFill(Color.ANTIQUEWHITE);
@@ -208,9 +142,6 @@ public class FlughafenView {
 			drawNodes(new ArrayList<Node>(nodes));
 		}
 	}
-
-        Node nextNode = plane.getNextNode();
-        Node lastNode = plane.getLastNode();
 
 	public void drawPlanes() {
 		Collection<Plane> planes = model.getPlanes();
@@ -306,41 +237,14 @@ public class FlughafenView {
 		ImageView imgV = viewPlane.getImageview();
 		double planeSize = viewPlane.getType().getSize();
 
-			Node nextNode = plane.getNextNode();
-	        Node lastNode = plane.getLastNode();
+		Node node = plane.getNextNode();
 
-	        if (lastNode!=null) {
-	            double x1 = lastNode.getX();
-	            double y1 = lastNode.getY();
-	            double x2 = nextNode.getX();
-	            double y2 = nextNode.getY();
-	            
-	            Path path = viewPlane.getPath();
-	            if(x1==x2 && y1==y2){
-	            	imgV.setX(x1); // noch mit offset und so weiter
-	            	imgV.setY(y1);
-	            	return;
-	            }
-	            MoveTo moveTo = new MoveTo(x1,y1);
-	            LineTo lineTo = new LineTo(x2,y2);
-	            path.setTranslateX((x1*this.zoomFactor+offsetX)-x1);
-	            path.setTranslateY((y1*this.zoomFactor+offsetY)-y1);
-	            path.setScaleX(this.zoomFactor);
-	            path.setScaleY(this.zoomFactor);
-	            
-	            
-	            path.getElements().clear();
-	            
-	            path.getElements().add(moveTo);
-	            path.getElements().add(lineTo);
-	            
-	            PathTransition pt = new PathTransition();
-	            pt.setNode(imgV);
-	            pt.setPath(path);
-	            pt.setCycleCount(1);
-	            pt.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
-	            pt.setDuration(Duration.seconds(1));
-	            pt.play();
+		if (node != null) {
+			double x = node.getX() * this.zoomFactor + this.offsetX - (planeSize / 2 * this.zoomFactor);
+			double y = node.getY() * this.zoomFactor + this.offsetY - (planeSize / 2 * this.zoomFactor);
+
+			imgV.setX(x);
+			imgV.setY(y);
 		}
 
 		imgV.setFitWidth(planeSize * this.zoomFactor);
