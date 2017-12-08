@@ -97,14 +97,6 @@ public class FlughafenController {
 			}  
 		});
 		
-		
-//		this.view.getCombo().getSelectionModel().selectedItemProperty().addListener(new ChangeListener(){
-//			public void changed (ObservableValue ov, String oldItem, String newItem ){
-//				
-//		}
-//		
-//	});
-		
 		EventHandler<ActionEvent> loop = e -> {
 			this.model.update();
 			this.view.update(true);	
@@ -126,31 +118,26 @@ public class FlughafenController {
 
 
 	}
+
+
+	private void openFile() {
 	
-		
-
-	
-
-
-private void openFile() {
-	
-
-	Flughafen newFlughafen;
-	 File seletedFile =  fileChooser.showOpenDialog(this.view.getStage());
-	 String path = seletedFile.getAbsolutePath();
-	 fileChooser.getExtensionFilters().addAll(
+		Flughafen newFlughafen;
+		File seletedFile =  fileChooser.showOpenDialog(this.view.getStage());
+		String path = seletedFile.getAbsolutePath();
+		fileChooser.getExtensionFilters().addAll(
 	         new ExtensionFilter("Text Files", "*.txt","Image Files", "*.png", "*.jpg", "*.gif","Audio Files", "*.wav", "*.mp3", "*.aac")
 	      );
 	 
-    try {
+		try {
     		newFlughafen = JSONImport.createFlughafen(path);
       
-    } catch (Exception ex) {
+		} catch (Exception ex) {
         System.out.println("die Datei kann nicht aufgemacht werdennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
       //this.view.reset(this.model);
             
-    } 
-}
+		} 
+	}
 
 
 }
