@@ -5,6 +5,7 @@ import java.util.*;
 public class Flughafen {
 	private int maxplanes;
 	private List<Plane> planes;
+	private List<Plane> planesToRemove = new ArrayList<Plane>();
 	private int activePlanes = 0;
 	private List<Generator> generators;
 	private Map<String, Node> nodes;
@@ -17,7 +18,17 @@ public class Flughafen {
 		this.nodes = nodes;
 	}
 	
+	/**
+	 * Flughafen aktualisieren
+	 */
 	public void update() {
+		for (Plane plane: planesToRemove) {
+			plane.setNextNode(null);
+			plane.setNextNode(null);
+			System.out.println("Remove plane");
+		}
+		planesToRemove = new ArrayList<Plane>();
+		
 		// Generatoren ausführen
 		for(Generator g:this.generators) {
 			Plane plane = g.execute();
@@ -65,29 +76,28 @@ public class Flughafen {
 		if (plane != null) { 
 			System.out.println("Plane auf Node " + node.getName());
 			/* falls an einem Ausflug-Knoten angekommen - noch verbessern!! */
-			if(node.getTargettype()!=null && 
-				node.getTargettype().equals(Targettype.ausflug)) {
-				plane.setNextNode(null);
-				plane.setNextNode(null);
+			if(node.getTargettype()!=null && node.getTargettype().equals(plane.getLastTarget())) {
+				plane.setNextNode(node);
+				this.planesToRemove.add(plane);
 				this.activePlanes--;
-				return;
-			}
-			plane.setNextNode(node);
-			
-			if (node.isBlockedAfter(Flughafen.getTime())) { // falls gerade ein Flugzeug draufsteht, das den Node blockiert
-				// Flugzeug noch nicht am Endziel, nächsten waypoint suchen
-				boolean success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, plane.getCurrentTarget());
-				if (success) {
-					// Flugzeug kann weiterfliegen, Blockierung aufheben
-					node.unblock();
-				} else if(node.getTargettype()!=Targettype.wait) { // nur einen Wait-Knoten suchen, wenn das Flugzeug nicht schon auf einem steht
-					// suche freien Wait-Knoten
-					success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, Targettype.wait);
-					if (success) node.unblock();
-					else {
-						// Blockierung beibehalten.
+			} else {
+				plane.setNextNode(node);
+				
+				if (node.isBlockedAfter(Flughafen.getTime())) { // falls gerade ein Flugzeug draufsteht, das den Node blockiert
+					// Flugzeug noch nicht am Endziel, nächsten waypoint suchen
+					boolean success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, plane.getCurrentTarget());
+					if (success) {
+						// Flugzeug kann weiterfliegen, Blockierung aufheben
+						node.unblock();
+					} else if(node.getTargettype()!=Targettype.wait) { // nur einen Wait-Knoten suchen, wenn das Flugzeug nicht schon auf einem steht
+						// suche freien Wait-Knoten
+						success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, Targettype.wait);
+						if (success) node.unblock();
+						else {
+							// Blockierung beibehalten.
+						}
+						
 					}
-					
 				}
 			}
 		}

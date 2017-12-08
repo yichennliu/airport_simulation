@@ -31,6 +31,13 @@ public class Plane {
 	}
 	
 	/**
+	 * @return end target
+	 */
+	public Targettype getLastTarget() {
+		return this.getWaypoints().get(this.getWaypoints().size()-1);
+	}
+	
+	/**
 	 * set next target waypoint
 	 * 
 	 * @return true of there is a next target, false otherwise
