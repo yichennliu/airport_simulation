@@ -424,6 +424,9 @@ public class FlughafenView {
 		button.setStyle("-fx-border-color:  #66ffff; " + "-fx-font-size: 10;" + "-fx-border-insets: -5; "
 				+ "-fx-border-radius: 5;" + "-fx-border-style: dotted;" + "-fx-border-width: 2;"
 				+ "-fx-background-color: #ffffcc;");
+		button.setMinSize(40, 30);
+		
+		
 	}
 
 	
@@ -468,20 +471,11 @@ public class FlughafenView {
 
 	}
 	
-
-	
-	
-//	public Label test() {
-//		int a= 9; 
-//		Label test =  new Label(); 
-//		test.setText("show me the test int "+a);
-//		return test;
-//		
-//	}
 	
 	public void setActivePlanes() {
 		int showActivePlanes= model.getActivePlanes();
 		int maxPlanes= model.getMaxplanes();
+		setTextStyle(showMaxplanes);
 		this.showMaxplanes.setText("Active planes "+showActivePlanes+" / "+maxPlanes);
 	}
 	
