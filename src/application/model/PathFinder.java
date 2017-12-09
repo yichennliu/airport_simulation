@@ -74,27 +74,27 @@ public class PathFinder {
 	 * @param plane Das Fluzeug, fuer das die Suche durchefuehrt werden soll
 	 * @param waypoint Gesuchter waypoint
 	 * @param deq Deque für die Breitensuche (am Anfang mit Startnodes gefüllt)
-	 * @param Map mit linkedBreadcrumbs zur Verkn�pfung der m�glichen Wegm�glichkeiten
+	 * @param Map mit linkedBreadcrumbs zur Verknüpfung der möglichen Wegmöglichkeiten
 	 * @return true wenn ein Pfad gefunden wurde, sonst false
 	 */
 	private static boolean findWaypoint(Plane plane, Targettype waypoint, Deque<Breadcrumb> deq, Map<Node, Breadcrumb> linkedBreadcrumbs) {
 		Breadcrumb current = deq.getFirst();							// in diesem Durchlauf zu überprüfender Breadcrumb 
 		Breadcrumb fromBreadcrumb = current.getFrom();
 		Node currentNode = current.getPointsAt();
-		Integer currentTime = current.getTime(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
+		Integer currentTime = current.getTime();						// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
 		Targettype currentTargettype = currentNode.getTargettype();
 		int count = 0;
 		
-		if(currentTargettype != null && currentTargettype.equals(waypoint)) {	//Pr�fen ob Ziel erreicht wurde
+		if(currentTargettype != null && currentTargettype.equals(waypoint)) {	//Prüfen ob Ziel erreicht wurde
 			savePath(current,plane);
 			System.out.println("\n- - - - -");
 			boolean hasNextTarget = true;
 			if(!currentNode.getTargettype().equals(Targettype.WAIT)) { 	// falls der jetzige Node kein wait-Knoten ist.
-				hasNextTarget = plane.increaseCurrentTarget();		// Nächsten Zielwaypoint setzen, falls vorhanden
+				hasNextTarget = plane.increaseCurrentTarget();			// Nächsten Zielwaypoint setzen, falls vorhanden
 			}
 				
 			if (hasNextTarget) {
-				currentNode.setBlockedBy(plane,currentTime);						// Letzten Node dauerhaft blockieren wenn Endziel nicht erreicht
+				currentNode.setBlockedBy(plane,currentTime);			// Letzten Node dauerhaft blockieren wenn Endziel nicht erreicht
 			} 
 			return true;
 		}
@@ -103,13 +103,13 @@ public class PathFinder {
 		
 		if(fromBreadcrumb!=null) {
 			count = fromBreadcrumb.getCounter(); 
-			if(fromBreadcrumb.getPointsAt() == currentNode) {		// falls man schon am selben Node war, das hei�t der Node vom fromBreadcrumb == currentNode
+			if(fromBreadcrumb.getPointsAt() == currentNode) {			// falls man schon am selben Node war, das hei�t der Node vom fromBreadcrumb == currentNode
 				count++;
 				current.setCounter(count);
 			}
 		}
 		
-		if (count<10) { // nur die Childs �berpr�fen, wenn Count nicht �berschritten
+		if (count<10) { // nur die Childs überprüfen, wenn Count nicht überschritten
 			
 			Collection<Node> toList = currentNode.getTo();
 			
@@ -155,7 +155,9 @@ public class PathFinder {
 									
 	}
 				
-	
+	/**
+	 * Gefundenen Pfad reservieren
+	 */
 	private static void savePath(Breadcrumb breadcrumb, Plane plane) {
 			
 			int time = breadcrumb.getTime();
