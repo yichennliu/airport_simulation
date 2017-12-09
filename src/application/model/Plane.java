@@ -8,6 +8,7 @@ public class Plane {
 	private List<Targettype> waypoints = new ArrayList<Targettype>();
 	private int currentTargetWaypointIndex = 1;
 	private Tuple<Node,Node> currentNodes = new Tuple<Node, Node>(null, null); // links = last
+	private int waitingDuration = 0;
 	
 	private int inittime;
 	
@@ -74,5 +75,22 @@ public class Plane {
 		Node currentNext = this.currentNodes.snd();
 		this.currentNodes.setSnd(node);
 		this.currentNodes.setFst(currentNext);
+	}
+	
+	/**
+	 * How long a plane is already waiting on a node
+	 * 
+	 * @return wait time
+	 */
+	public int getWaitingDuration() {
+		return this.waitingDuration;
+	}
+	
+	public void increaseWaitingDuration() {
+		this.waitingDuration++;
+	}
+	
+	public void resetWaitingDuration() {
+		this.waitingDuration = 0;
 	}
 }
