@@ -38,7 +38,7 @@ public class JSONImport {
 				JSONArray jsonWaypoints = jsonPlane.getJSONArray("waypoints");
 				List<Targettype> waypoints = new ArrayList<Targettype>();
 				for (int j = 0; j < jsonWaypoints.length(); j++) {
-					waypoints.add(Targettype.valueOf(jsonWaypoints.getString(j)));
+					waypoints.add(Targettype.valueOf(jsonWaypoints.getString(j).toUpperCase()));
 				}
 				
 				/* Import inittime */
@@ -61,7 +61,7 @@ public class JSONImport {
 				JSONArray jsonWaypoints = jsonGenerator.getJSONArray("waypoints");
 				List<Targettype> waypoints = new ArrayList<Targettype>();
 				for (int j = 0; j < jsonWaypoints.length(); j++) {
-					waypoints.add(Targettype.valueOf(jsonWaypoints.getString(j)));
+					waypoints.add(Targettype.valueOf(jsonWaypoints.getString(j).toUpperCase()));
 				}
 				
 				/* Import chance */
@@ -87,14 +87,14 @@ public class JSONImport {
 			String name = jsonNode.getString("name");
 			
 			/* import kind */
-			Kind kind = Kind.valueOf(jsonNode.getString("kind"));
+			Kind kind = Kind.valueOf(jsonNode.getString("kind").toUpperCase());
 			
 			/* for "to" and "conflicts" all nodes have to be created first */
 			
 			/* import (optional) targettype */
 			Targettype targettype = null;
 			if (jsonNode.has("targettype")) {
-				targettype = Targettype.valueOf(jsonNode.getString("targettype"));
+				targettype = Targettype.valueOf(jsonNode.getString("targettype").toUpperCase());
 			}
 			
 			/* import (optional) waittime */

@@ -78,7 +78,7 @@ public class PathFinder {
 		if (current.getTargettype() != null && current.getTargettype().equals(waypoint)) {
 			savePath(current,plane,nodesStatus);					// Pfad reservieren
 			boolean hasNextTarget = true;
-			if(!current.getTargettype().equals(Targettype.wait)) { 	// falls der jetzige Node kein wait-Knoten ist.
+			if(!current.getTargettype().equals(Targettype.WAIT)) { 	// falls der jetzige Node kein wait-Knoten ist.
 				hasNextTarget = plane.increaseCurrentTarget();		// Nächsten Zielwaypoint setzen, falls vorhanden
 			}
 				
