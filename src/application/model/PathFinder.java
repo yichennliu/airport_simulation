@@ -88,7 +88,7 @@ public class PathFinder {
 			savePath(current,plane);
 			System.out.println("\n- - - - -");
 			boolean hasNextTarget = true;
-			if(!currentNode.getTargettype().equals(Targettype.wait)) { 	// falls der jetzige Node kein wait-Knoten ist.
+			if(!currentNode.getTargettype().equals(Targettype.WAIT)) { 	// falls der jetzige Node kein wait-Knoten ist.
 				hasNextTarget = plane.increaseCurrentTarget();		// Nächsten Zielwaypoint setzen, falls vorhanden
 			}
 				
@@ -117,7 +117,7 @@ public class PathFinder {
 				if((childBreadcrumb==null || (childBreadcrumb!=null && childBreadcrumb.getPointsAt() == currentNode)) && 					// wurde noch nicht entdeckt
 						(child.isFree(currentTime+1, plane) &&	// ist frei
 						child.isFree(currentTime+2, plane))) 
-				{
+				{ 
 					
 						Targettype childTType = child.getTargettype();
 						
@@ -132,7 +132,7 @@ public class PathFinder {
 			
 			current.setStatus(Status.DONE);
 			Kind nodeKind = currentNode.getKind();
-			if(nodeKind == Kind.concrete || nodeKind == Kind.hangar) {
+			if(nodeKind == Kind.CONCRETE || nodeKind == Kind.HANGAR) {
 				if(currentNode.isFree(currentTime+1,plane) && currentNode.isFree(currentTime+2,plane)) {
 					Breadcrumb 	newBreadcrumb = new Breadcrumb(Status.SPOTTED ,current ,currentNode ,currentTime+1);
 					linkedBreadcrumbs.put(currentNode,newBreadcrumb);
