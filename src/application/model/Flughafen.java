@@ -75,28 +75,36 @@ public class Flughafen {
 		Plane plane = node.getPlane(); // gibt entweder ein Flugzeug zurück oder null (ein Flugzeug, das gerade blockiert oder gerade angekommen ist)
 		if (plane != null) { 
 			System.out.println("Plane auf Node " + node.getName());
-			/* falls an einem Ausflug-Knoten angekommen - noch verbessern!! */
+			plane.setNextNode(node);
+			
+			// falls an einem Ausflug-Knoten angekommen
 			if(node.getTargettype()!=null && node.getTargettype().equals(plane.getLastTarget())) {
-				plane.setNextNode(node);
 				this.planesToRemove.add(plane);
 				this.activePlanes--;
 			} else {
-				plane.setNextNode(node);
-				
-				if (node.isBlockedAfter(Flughafen.getTime())) { // falls gerade ein Flugzeug draufsteht, das den Node blockiert
-					// Flugzeug noch nicht am Endziel, nächsten waypoint suchen
-					boolean success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, plane.getCurrentTarget());
-					if (success) {
-						// Flugzeug kann weiterfliegen, Blockierung aufheben
-						node.unblock();
-					} else if(node.getTargettype()!=Targettype.wait) { // nur einen Wait-Knoten suchen, wenn das Flugzeug nicht schon auf einem steht
-						// suche freien Wait-Knoten
-						success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, Targettype.wait);
-						if (success) node.unblock();
-						else {
-							// Blockierung beibehalten.
+				// falls gerade ein Flugzeug draufsteht, das den Node blockiert
+				if (node.isBlockedAfter(Flughafen.getTime())) {
+					// auf Mindeswartezeit prüfen
+					if (plane.getWaitingDuration() >= node.getWaittime()) {
+						// Flugzeug noch nicht am Endziel, nächsten waypoint suchen
+						boolean success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, plane.getCurrentTarget());
+						if (success) {
+							// Flugzeug kann weiterfliegen, Blockierung aufheben, Wartezeit zurücksetzen
+							plane.resetWaitingDuration();
+							node.unblock();
+						} else if(node.getTargettype()!=Targettype.wait) { // nur einen Wait-Knoten suchen, wenn das Flugzeug nicht schon auf einem steht
+							// suche freien Wait-Knoten
+							success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, Targettype.wait);
+							if (success) node.unblock();
+							else {
+								// Warten
+							}
+						} else {
+							// Warten
 						}
-						
+					} else {
+						// Warten, der Mindeswartezeit annähern
+						plane.increaseWaitingDuration();
 					}
 				}
 			}
