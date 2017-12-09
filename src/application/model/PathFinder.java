@@ -18,14 +18,15 @@ public class PathFinder {
 	 * @param nodes Die zu durchsuchenden Nodes
 	 * @param plane Das Fluzeug, fuer das die Suche durchefuehrt werden soll
 	 * @param starttime Die Zeit im Modell, bei der die Suche losgehen soll
+	 * @param targetWaypoint Ziel
 	 * @return true wenn ein Pfad gefunden wurde, sonst false 
 	 */
-	public static boolean searchFirstWaypoint(Collection<Node> nodes, Plane plane, int starttime) {
-		System.out.println("Suche waypoint: "+plane.getWaypoints().get(1));
+	public static boolean searchFirstWaypoint(Collection<Node> nodes, Plane plane, int starttime, Targettype targetWaypoint ) {
+		System.out.println("Suche waypoint: "+targetWaypoint);
 
 		// find Nodes with the start target type that are free at starttime
 		List<Breadcrumb> startNodes = new ArrayList<Breadcrumb>();	
-		Map<Node,Breadcrumb> startLinkedBreadcrumbs  = new HashMap<Node,Breadcrumb>(); //Map für die Verknüpfung der Breadcrumbs miteinander
+		Map<Node,Breadcrumb> startLinkedBreadcrumbs  = new HashMap<Node,Breadcrumb>(); //Map fï¿½r die Verknï¿½pfung der Breadcrumbs miteinander
 		
 		for (Node node: nodes) {
 			//Wenn ein TargetType vorhanden && dieser dem ersten Waypoint des Planes entspricht && dieser Node nicht belegt ist
@@ -43,7 +44,7 @@ public class PathFinder {
 		}
 		
 		
-		return findWaypoint(plane, plane.getWaypoints().get(1), new ArrayDeque<Breadcrumb>(startNodes),new HashMap<Node,Breadcrumb>());
+		return findWaypoint(plane, targetWaypoint, new ArrayDeque<Breadcrumb>(startNodes),new HashMap<Node,Breadcrumb>());
 	}
 	
 	/**
@@ -73,7 +74,7 @@ public class PathFinder {
 	 * @param plane Das Fluzeug, fuer das die Suche durchefuehrt werden soll
 	 * @param waypoint Gesuchter waypoint
 	 * @param deq Deque fÃ¼r die Breitensuche (am Anfang mit Startnodes gefÃ¼llt)
-	 * @param Map mit linkedBreadcrumbs zur Verknüpfung der möglichen Wegmöglichkeiten
+	 * @param Map mit linkedBreadcrumbs zur Verknï¿½pfung der mï¿½glichen Wegmï¿½glichkeiten
 	 * @return true wenn ein Pfad gefunden wurde, sonst false
 	 */
 	private static boolean findWaypoint(Plane plane, Targettype waypoint, Deque<Breadcrumb> deq, Map<Node, Breadcrumb> linkedBreadcrumbs) {
@@ -84,7 +85,7 @@ public class PathFinder {
 		Targettype currentTargettype = currentNode.getTargettype();
 		int count = 0;
 		
-		if(currentTargettype != null && currentTargettype.equals(waypoint)) {	//Prüfen ob Ziel erreicht wurde
+		if(currentTargettype != null && currentTargettype.equals(waypoint)) {	//Prï¿½fen ob Ziel erreicht wurde
 			savePath(current,plane);
 			System.out.println("\n- - - - -");
 			boolean hasNextTarget = true;
@@ -102,13 +103,13 @@ public class PathFinder {
 		
 		if(fromBreadcrumb!=null) {
 			count = fromBreadcrumb.getCounter(); 
-			if(fromBreadcrumb.getPointsAt() == currentNode) {		// falls man schon am selben Node war, das heißt der Node vom fromBreadcrumb == currentNode
+			if(fromBreadcrumb.getPointsAt() == currentNode) {		// falls man schon am selben Node war, das heiï¿½t der Node vom fromBreadcrumb == currentNode
 				count++;
 				current.setCounter(count);
 			}
 		}
 		
-		if (count<10) { // nur die Childs überprüfen, wenn Count nicht überschritten
+		if (count<10) { // nur die Childs ï¿½berprï¿½fen, wenn Count nicht ï¿½berschritten
 			
 			Collection<Node> toList = currentNode.getTo();
 			
@@ -121,7 +122,9 @@ public class PathFinder {
 					
 						Targettype childTType = child.getTargettype();
 						
-						if(!(childTType!=null && childTType.equals(waypoint) && child.isBlocked())) { // falls das Kind (nicht (der gesuchte Waypoint ist && dabei geblockt ist)) (es ist also entweder nicht der gesuchte Waypoint, oder, wenn es einer ist, darf er nicht geblockt sein)
+						// falls das Kind (nicht (der gesuchte Waypoint ist && dabei geblockt ist)) (es ist also entweder nicht 
+						// der gesuchte Waypoint, oder, wenn es einer ist, darf er nicht geblockt sein)
+						if(!(childTType!=null && childTType.equals(waypoint) && child.isBlocked())) {
 							Breadcrumb 	newBreadcrumb = new Breadcrumb(Status.SPOTTED ,current ,child ,currentTime+1);
 
 							linkedBreadcrumbs.put(child, newBreadcrumb);
@@ -160,7 +163,7 @@ public class PathFinder {
 			Node node = breadcrumb.getPointsAt();
 			node.putReserved(time, plane,true);
 			
-			if(!(fromBreadcrumb!=null && fromBreadcrumb.getPointsAt() == node))  node.putReserved(time +1, plane,false);	//Wenn der Node des fromBreadcrumbs gleich dem Node des currentVreadcrumbs entspricht, dann passiert nichts, weil wir gewartet haben. ABER: Falls das nicht der Fall ist, wir also nicht gewartet haben, dann auf True setzen.
+			if(!(fromBreadcrumb!=null && fromBreadcrumb.getPointsAt() == node))  node.putReserved(time +1, plane,false);
 			
 			if(fromBreadcrumb!=null) {
 				savePath(fromBreadcrumb,plane);

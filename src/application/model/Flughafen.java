@@ -46,12 +46,18 @@ public class Flughafen {
 			for(int i = 0; i < newPlanes.size(); i++) {
 				Plane plane = newPlanes.get(i);
 				if (this.activePlanes < this.maxplanes) {
-					boolean success = PathFinder.searchFirstWaypoint(this.getNodes(), plane, Flughafen.getTime());
+					boolean success = PathFinder.searchFirstWaypoint(this.getNodes(), plane, Flughafen.getTime(), plane.getCurrentTarget());
 					if (success) {
 						this.activePlanes++;
 					} else {
-						// Wenn kein Pfad gefinden wurde erreicht: im nächsten Tick noch mal versuchen
-						plane.increaseInittime();
+						// versuche wait-target anzufliegen
+						boolean foundWait = PathFinder.searchFirstWaypoint(this.getNodes(), plane, Flughafen.getTime(), Targettype.WAIT);
+						if (foundWait) {
+							this.activePlanes++;
+						} else {
+							// Wenn kein Pfad gefunden wurde: im nächsten Tick noch mal versuchen
+							plane.increaseInittime();
+						}
 					}
 				} else {
 					// Wenn maxplanes erreicht: im nächsten Tick noch mal versuchen
