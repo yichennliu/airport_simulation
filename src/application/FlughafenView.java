@@ -5,6 +5,7 @@ import application.model.Node;
 import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.animation.PathTransition;
@@ -54,16 +55,18 @@ public class FlughafenView {
 	private GraphicsContext gc;
 	private 	Rectangle backGroundRectangle ;
 	private HBox buttonHbox;
-	private Label showMaxplanes;
+	private Label showMaxplanes = new Label();
 	private Button zoomButton;
 	private ToggleButton nameButton = new ToggleButton("Show Node names");
 	public 	final StringProperty btnText = nameButton.textProperty();
 	boolean nameshown = false;
-	private Font fontLarge = Font.font("Droid Sans", FontWeight.LIGHT, 13);
+	private Font fontSmall = Font.font("Droid Sans", FontWeight.EXTRA_LIGHT, 10);
+	private Font fontBold = Font.font("Droid Sans", FontWeight.EXTRA_BOLD, 18);
 	private Button fileChooserButton;
 	private ToolBar colorToolbar = new ToolBar();
 	private final ColorPicker colorPicker ;
 
+	
    
 	private Label zoomLabel;
 	Map<Plane, ViewPlane> planes = new HashMap<Plane, ViewPlane>();
@@ -101,7 +104,6 @@ public class FlughafenView {
 		buttonHbox.getChildren().addAll(showMaxplanes,zoomButton, nameButton,fileChooserButton,colorToolbar);
 		root.getChildren().addAll(buttonHbox);
 		colorToolbar.getItems().addAll(colorPicker);
-
 		this.scene = new Scene(root);
 		this.stage.setScene(scene);
 		this.stage.setTitle("Flughafen");
@@ -212,7 +214,7 @@ public class FlughafenView {
 		}
 		}
 		if (nameshown) {
-			gc.setFont(fontLarge);
+			gc.setFont(fontSmall);
 			this.gc.fillText(node.getName(), x - 40, y+10);
 			
 		}
@@ -256,8 +258,8 @@ public class FlughafenView {
             
             Path path = viewPlane.getPath();
             if(x1==x2 && y1==y2){
-            	imgV.setX(x1); // noch mit offset und so weiter
-            	imgV.setY(y1);
+            	imgV.setX(x1*zoomFactor+offsetX); // noch mit offset und so weiter
+            	imgV.setY(y1*zoomFactor+offsetY);
             	return;
             }
             MoveTo moveTo = new MoveTo(x1,y1);
@@ -422,9 +424,21 @@ public class FlughafenView {
 		button.setStyle("-fx-border-color:  #66ffff; " + "-fx-font-size: 10;" + "-fx-border-insets: -5; "
 				+ "-fx-border-radius: 5;" + "-fx-border-style: dotted;" + "-fx-border-width: 2;"
 				+ "-fx-background-color: #ffffcc;");
+		button.setMinSize(40, 30);
+		
+		
 	}
 
 	
+	
+	public void setTextStyle(Label label) {
+		
+		label.setTextAlignment(TextAlignment.CENTER);
+		label.setFont(fontBold);
+		label.setTextFill(Color.WHITE);
+		
+		
+	}
 	
 	public void showNames(boolean show) {
 		nameshown = show;
@@ -457,14 +471,12 @@ public class FlughafenView {
 
 	}
 	
-
 	
 	public void setActivePlanes() {
 		int showActivePlanes= model.getActivePlanes();
-		this.showMaxplanes  = new Label();
-		this.showMaxplanes.setText("active planes "+showActivePlanes);
-		System.out.println("active planesssssssssssss"+showActivePlanes);
-		
+		int maxPlanes= model.getMaxplanes();
+		setTextStyle(showMaxplanes);
+		this.showMaxplanes.setText("Active planes "+showActivePlanes+" / "+maxPlanes);
 	}
 	
 	public Label getActivePlanesLabel() {
