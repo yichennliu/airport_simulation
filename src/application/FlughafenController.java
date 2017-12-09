@@ -23,6 +23,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
@@ -117,8 +118,16 @@ public class FlughafenController {
 		         new ExtensionFilter("Alle Dateien","*.*")
 		 );
 		
-		this.view.update(false);		
-
+		this.view.update(false);	
+		
+		
+		
+		this.view.getColorPicker().setOnAction(new EventHandler<ActionEvent>() {
+	            @Override
+	            public void handle(ActionEvent event) {
+	            	view.getBgRect().setFill(view.getColorPicker().getValue()); // muss in controler
+	            }
+	        });
 
 	
 	this.view.getfileChooserButton().addEventHandler(MouseEvent.MOUSE_PRESSED, event ->{
