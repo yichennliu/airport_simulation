@@ -22,7 +22,7 @@ public class Main extends Application {
     	Alert alertWindow = new Alert(Alert.AlertType.ERROR,
                 e.getMessage(),
                 ButtonType.OK);
-    	alertWindow.setHeaderText("Fehler, bitte überprüfen Sie ihre JSON-Dartei");
+    	alertWindow.setHeaderText("Fehler, bitte ÃœberprÃ¼fen Sie ihre JSON-Dartei");
     	Image img = new Image("/application/source/Images/ber.jpg");
     	alertWindow.setGraphic(new ImageView(img));
     	alertWindow.show();
