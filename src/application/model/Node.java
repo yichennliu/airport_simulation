@@ -43,10 +43,12 @@ public class Node {
 		return this.kind;
 	}
 	
+	/**
+	 * @return Nodes, die von diesem Node aus angeflogen werden können
+	 */
 	public Collection<Node> getTo() {
 		return this.to.values();
 	}
-	
 	
 	/**
 	 * Only for import
@@ -58,7 +60,6 @@ public class Node {
 	public Collection<Node> getConflicts() {
 		return this.conflicts.values();
 	}
-
 	
 	/**
 	 * Only for import
@@ -71,11 +72,17 @@ public class Node {
 		return this.targettype;
 	}
 	
+	/**
+	 * @return Die Mindestwartezeit für diesen Node
+	 */
 	public int getWaittime() {
 		return this.waittime;
 	}
 	
-	
+	/**
+	 * Glibt die Reservierungsinformationen zu diesem Node zurück. 
+	 * Der Blockierungsstatus wird separat gehandhabt
+	 */
 	public Map<Integer,Tuple<Plane,Boolean>> getReserved() {
 		return this.reserved;
 	}
@@ -85,15 +92,19 @@ public class Node {
 	}
 	
 	/**
-	 * Block this node permanently, or unblock it (set it to null)
+	 * Block this node permanently, starting at a given time
 	 * 
 	 * @param plane The plane to block this node with
+	 * @param blockingTime Zeit, ab der der Node blockiert werden soll
 	 */
 	public void setBlockedBy(Plane plane,Integer blockingTime) {
 		this.blockedBy = new Tuple(blockingTime,plane);
 		System.out.println(this.name +" blockiert");
 	}
 	
+	/**
+	 * Blockierung aufheben
+	 */
 	public void unblock() {
 		this.blockedBy = null;
 		System.out.println(this.name +": Blockierung aufgehoben");
@@ -107,6 +118,10 @@ public class Node {
 		return this.blockedBy;
 	}
 	
+	/**
+	 * @param time Zeit, zu oder nach der auf Blockierung geprüft werden soll
+	 * @return true wenn der Node blockiert ist, sonst false
+	 */
 	public boolean isBlockedAfter(Integer time) {
 		if(this.blockedBy!=null)
 			return (this.blockedBy.fst()<=time);
@@ -116,14 +131,15 @@ public class Node {
 	public boolean isBlocked() {
 		return this.blockedBy!=null;
 	}
+	
 	/**
 	 * Check whether the current node is free.
 	 * 
-	 * A node is free if
+	 * A node is free iff
 	 * <ul>
 	 *  <li>it is not reserved at the given time</li>
 	 *  <li>it conflict nodes are not reserved at the given time</li>
-	 *  <li>it is not blocked</li>
+	 *  <li>it is not blocked at the given time</li>
 	 * </ul>
 	 * 
 	 * @param time Time to check for

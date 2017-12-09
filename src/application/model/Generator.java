@@ -12,6 +12,9 @@ public class Generator {
 		
 	}
 	
+	/**
+	 * @return Mit gegebener Wahrscheinlichkeit ein neues Flugzeug oder null
+	 */
 	public Plane execute() { 
 		if (chance <= Math.random()) {
 			return new Plane(this.waypoints, Flughafen.getTime());
