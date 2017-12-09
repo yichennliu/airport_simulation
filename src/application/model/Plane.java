@@ -3,12 +3,12 @@ package application.model;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Plane {
 
 	private List<Targettype> waypoints = new ArrayList<Targettype>();
 	private int currentTargetWaypointIndex = 1;
 	private Tuple<Node,Node> currentNodes = new Tuple<Node, Node>(null, null); // links = last
+	private int waitingDuration = 0;
 	
 	private int inittime;
 	
@@ -21,7 +21,7 @@ public class Plane {
 		return this.waypoints;
 	}
 	
-	/**
+	/** 
 	 * @return target waypoint, or null if there is no next target
 	 */
 	public Targettype getCurrentTarget() {
@@ -29,6 +29,13 @@ public class Plane {
 			return getWaypoints().get(this.currentTargetWaypointIndex);
 		}
 		return null;
+	}
+	
+	/**
+	 * @return end target
+	 */
+	public Targettype getLastTarget() {
+		return this.getWaypoints().get(this.getWaypoints().size()-1);
 	}
 	
 	/**
@@ -48,6 +55,10 @@ public class Plane {
 		return this.inittime;
 	}
 	
+	public void increaseInittime() {
+		this.inittime++;
+	}
+	
 	public Node getLastNode() {
 		return this.currentNodes.fst();
 		
@@ -64,5 +75,22 @@ public class Plane {
 		Node currentNext = this.currentNodes.snd();
 		this.currentNodes.setSnd(node);
 		this.currentNodes.setFst(currentNext);
+	}
+	
+	/**
+	 * How long a plane is already waiting on a node
+	 * 
+	 * @return wait time
+	 */
+	public int getWaitingDuration() {
+		return this.waitingDuration;
+	}
+	
+	public void increaseWaitingDuration() {
+		this.waitingDuration++;
+	}
+	
+	public void resetWaitingDuration() {
+		this.waitingDuration = 0;
 	}
 }
