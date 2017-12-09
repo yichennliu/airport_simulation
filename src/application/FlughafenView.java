@@ -94,7 +94,8 @@ public class FlughafenView {
 		setButtonStyle(zoomButton);
 		setButtonStyle(nameButton);
 		setButtonStyle(fileChooserButton);
-		createActiveplaneLabel();
+		createZoomLabel();
+		setActivePlanes();
 		root.getChildren().addAll(backGroundRectangle);
 		root.getChildren().addAll(canvas);
 		buttonHbox.getChildren().addAll(showMaxplanes,zoomButton, nameButton,fileChooserButton,colorToolbar);
@@ -142,7 +143,6 @@ public class FlughafenView {
 		if (!nodes.isEmpty()) {
 			gc.clearRect(0, 0, width, height + heightButtonplatz);
 			drawNodes(new ArrayList<Node>(nodes));
-		
 		}
 	}
 
@@ -439,6 +439,14 @@ public class FlughafenView {
 		this.drawCanvas();
 	}
 
+	public void createZoomLabel() {
+		this.zoomLabel = new Label();
+		updateLabel();
+	}
+
+	public void updateLabel() {
+		this.zoomButton.setText("Zoom-Factor : " + Math.round(zoomFactor * 100 / 100));
+	}
 
 	public Label getZoomLabel() {
 		return this.zoomLabel;
@@ -449,23 +457,20 @@ public class FlughafenView {
 
 	}
 	
-	public void createActiveplaneLabel() {
-		this.showMaxplanes  = new Label("active planes");
-		setActivePlanes();
-	}
 
 	
-	public int setActivePlanes() {
+	public void setActivePlanes() {
 		int showActivePlanes= model.getActivePlanes();
-		this.showMaxplanes  = new Label("active planes"+showActivePlanes);
-		System.out.println(showActivePlanes);
-		return showActivePlanes;
+		this.showMaxplanes  = new Label();
+		this.showMaxplanes.setText("active planes "+showActivePlanes);
+		System.out.println("active planesssssssssssss"+showActivePlanes);
+		
 	}
 	
-	public Label getActivePlanesLabel() {		
+	public Label getActivePlanesLabel() {
 		return this.showMaxplanes;
 	}
 	
-	
+
 
 }

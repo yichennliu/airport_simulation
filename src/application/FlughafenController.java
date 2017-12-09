@@ -101,7 +101,7 @@ public class FlughafenController {
 		
 		EventHandler<ActionEvent> loop = e -> {
 			this.model.update();
-			this.view.update(true);	
+			this.view.update(true);
 			Flughafen.tick();
 		};
 		
@@ -118,7 +118,7 @@ public class FlughafenController {
 		
 		this.view.update(false);		
 
-	
+
 	
 	this.view.getfileChooserButton().addEventHandler(MouseEvent.MOUSE_PRESSED, event ->{
 		openFile();
@@ -142,7 +142,7 @@ public class FlughafenController {
 	                ex.getMessage(),
 	                ButtonType.OK);
 	    	alertWindow.setHeaderText("Fehler beim Laden des Flughafens");
-	    	Image img = new Image("/application/source/Images/ber.png");
+	    	Image img = new Image("/application/source/Images/ber.jpg");
 	    	alertWindow.setGraphic(new ImageView(img));
 	    	alertWindow.show();
 	    	return;
