@@ -258,8 +258,8 @@ public class FlughafenView {
             
             Path path = viewPlane.getPath();
             if(x1==x2 && y1==y2){
-            	imgV.setX(x1); // noch mit offset und so weiter
-            	imgV.setY(y1);
+            	imgV.setX(x1*zoomFactor+offsetX); // noch mit offset und so weiter
+            	imgV.setY(y1*zoomFactor+offsetY);
             	return;
             }
             MoveTo moveTo = new MoveTo(x1,y1);
