@@ -144,20 +144,12 @@ public class FlughafenController {
 	if(selectedFile!=null) {
 		String path = selectedFile.getPath();
 	    
-	    try {
-	    		newFlughafen = JSONImport.createFlughafen(path);
-	      
-	    } catch (JSONException ex) {
-	    	Alert alertWindow = new Alert(Alert.AlertType.ERROR,
-	                ex.getMessage(),
-	                ButtonType.OK);
-	    	alertWindow.setHeaderText("Fehler beim Laden des Flughafens");
-	    	Image img = new Image("/application/source/Images/ber.jpg");
-	    	alertWindow.setGraphic(new ImageView(img));
-	    	alertWindow.show();
+	    newFlughafen = JSONImport.createFlughafen(path);
+	    if (newFlughafen == null) {
 	    	return;
 	    }
-		this.fileChooser.setInitialDirectory(selectedFile.getParentFile());
+	    
+	    this.fileChooser.setInitialDirectory(selectedFile.getParentFile());
 		this.model = newFlughafen;
 	    this.view.reset(this.model);
 	}
