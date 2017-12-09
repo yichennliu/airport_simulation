@@ -3,6 +3,8 @@ package application;
 import application.model.*;
 import application.model.Node;
 import javafx.scene.shape.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.animation.PathTransition;
@@ -47,17 +49,22 @@ public class FlughafenView {
 	private Flughafen model;
 	private Stage stage;
 	private Scene scene;
-	private Canvas canvas;
-	private 	Rectangle backGroundRectangle = new Rectangle(width,height + heightButtonplatz);
-	private GraphicsContext gc;
 	private static Group root;
-	private Button fileChooserButton = new Button("Import files");
-	private Button zoomButton;
-	private ToolBar tb = new ToolBar();
+	private Canvas canvas;
+	private GraphicsContext gc;
+	private 	Rectangle backGroundRectangle ;
 	private HBox buttonHbox;
+	private Label showMaxplanes;
+	private Button zoomButton;
 	private ToggleButton nameButton = new ToggleButton("Show Node names");
-	public final StringProperty btnText = nameButton.textProperty();
+	public 	final StringProperty btnText = nameButton.textProperty();
 	boolean nameshown = false;
+	private Font fontLarge = Font.font("Droid Sans", FontWeight.LIGHT, 13);
+	private Button fileChooserButton;
+	private ToolBar colorToolbar = new ToolBar();
+	private final ColorPicker colorPicker ;
+
+   
 	private Label zoomLabel;
 	Map<Plane, ViewPlane> planes = new HashMap<Plane, ViewPlane>();
 
@@ -65,42 +72,34 @@ public class FlughafenView {
 		this.model = model;
 		this.stage = stage;
 		root = new Group();
-		StackPane holder = new StackPane();
+		this.buttonHbox = new HBox();
+		this.setHboxStyle();
 		this.canvas = new Canvas(width, height + heightButtonplatz);
 		this.gc = canvas.getGraphicsContext2D();
-
-
-//		this.gc.setStyle("-fx-background-color: red");
-//		holder.setStyle("-fx-background-color: #dededc");
-//		holder.getChildren().add(canvas);
-//		root.getChildren().addAll(holder);
-
-		final ColorPicker colorPicker = new ColorPicker();
-		 colorPicker.setValue(Color.ANTIQUEWHITE);
-		 backGroundRectangle.setFill(Color.ANTIQUEWHITE);
+		this. backGroundRectangle = new Rectangle(width,height + heightButtonplatz);
+		this.colorPicker= new ColorPicker();
+		colorPicker.setValue(Color.ANTIQUEWHITE);
+		backGroundRectangle.setFill(Color.ANTIQUEWHITE);
 		 colorPicker.setOnAction(new EventHandler<ActionEvent>() {
 	            @Override
 	            public void handle(ActionEvent event) {
-	                backGroundRectangle.setFill(colorPicker.getValue());
+	                backGroundRectangle.setFill(colorPicker.getValue()); // muss in controler
 	            }
 	        });
-	
+		 fileChooserButton = new Button("Open File");
 		this.setInitialZoomAndOffset(model.getNodes());
 		this.zoomButton = new Button("buttonlabel" + this.zoomFactor);
 		Image buttonImage = new Image("/application/source/Images/zoomout.png");
-		zoomButton.setGraphic(new ImageView(buttonImage));
+		this.zoomButton.setGraphic(new ImageView(buttonImage));
 		setButtonStyle(zoomButton);
 		setButtonStyle(nameButton);
 		setButtonStyle(fileChooserButton);
-		this.buttonHbox = new HBox();
-		this.setHboxStyle();
-		createZoomLabel();
-		
+		createActiveplaneLabel();
 		root.getChildren().addAll(backGroundRectangle);
 		root.getChildren().addAll(canvas);
-		buttonHbox.getChildren().addAll(zoomButton, nameButton,fileChooserButton,tb);
+		buttonHbox.getChildren().addAll(showMaxplanes,zoomButton, nameButton,fileChooserButton,colorToolbar);
 		root.getChildren().addAll(buttonHbox);
-		tb.getItems().addAll(colorPicker);
+		colorToolbar.getItems().addAll(colorPicker);
 
 		this.scene = new Scene(root);
 		this.stage.setScene(scene);
@@ -135,6 +134,7 @@ public class FlughafenView {
 		if (!onlyPlanes)
 			drawCanvas();
 		drawPlanes();
+		setActivePlanes();
 	}
 
 	private void drawCanvas() {
@@ -142,6 +142,7 @@ public class FlughafenView {
 		if (!nodes.isEmpty()) {
 			gc.clearRect(0, 0, width, height + heightButtonplatz);
 			drawNodes(new ArrayList<Node>(nodes));
+		
 		}
 	}
 
@@ -211,7 +212,9 @@ public class FlughafenView {
 		}
 		}
 		if (nameshown) {
-			this.gc.fillText(node.getName(), x + 5, y);
+			gc.setFont(fontLarge);
+			this.gc.fillText(node.getName(), x - 40, y+10);
+			
 		}
 		for (Node children : node.getTo()) {
 			gc.strokeLine(x, y, (children.getX() * zoomFactor) + offsetX, (children.getY() * zoomFactor) + offsetY);
@@ -408,7 +411,7 @@ public class FlughafenView {
 				+ "-fx-background-color:  #627e89;");
 		buttonHbox.setSpacing(20);
 		buttonHbox.setAlignment(Pos.CENTER);
-
+		buttonHbox.toFront();
 		buttonHbox.setPrefHeight(heightButtonplatz - 20);
 		buttonHbox.setPrefWidth(width);
 
@@ -421,6 +424,8 @@ public class FlughafenView {
 				+ "-fx-background-color: #ffffcc;");
 	}
 
+	
+	
 	public void showNames(boolean show) {
 		nameshown = show;
 
@@ -434,23 +439,6 @@ public class FlughafenView {
 		this.drawCanvas();
 	}
 
-	public void createZoomLabel() {
-		this.zoomLabel = new Label();
-		// this.zoomLabel.setStyle( "-fx-border-color: #66ffff; "
-		// + "-fx-font-size: 13;"
-		// + "-fx-border-insets: -5; "
-		// + "-fx-border-radius: 5;"
-		// + "-fx-border-style: dotted;"
-		// + "-fx-border-width: 2;"
-		// + "-fx-background-color: #ffffcc;"
-		//
-		// );
-		updateLabel();
-	}
-
-	public void updateLabel() {
-		this.zoomButton.setText("Zoom-Factor : " + Math.round(zoomFactor * 100 / 100));
-	}
 
 	public Label getZoomLabel() {
 		return this.zoomLabel;
@@ -460,5 +448,24 @@ public class FlughafenView {
 		return fileChooserButton;
 
 	}
+	
+	public void createActiveplaneLabel() {
+		this.showMaxplanes  = new Label("active planes");
+		setActivePlanes();
+	}
+
+	
+	public int setActivePlanes() {
+		int showActivePlanes= model.getActivePlanes();
+		this.showMaxplanes  = new Label("active planes"+showActivePlanes);
+		System.out.println(showActivePlanes);
+		return showActivePlanes;
+	}
+	
+	public Label getActivePlanesLabel() {		
+		return this.showMaxplanes;
+	}
+	
+	
 
 }
