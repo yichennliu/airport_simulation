@@ -79,16 +79,10 @@ public class FlughafenView {
 		this.setHboxStyle();
 		this.canvas = new Canvas(width, height + heightButtonplatz);
 		this.gc = canvas.getGraphicsContext2D();
-		this. backGroundRectangle = new Rectangle(width,height + heightButtonplatz);
 		this.colorPicker= new ColorPicker();
-		colorPicker.setValue(Color.ANTIQUEWHITE);
-		backGroundRectangle.setFill(Color.ANTIQUEWHITE);
-		 colorPicker.setOnAction(new EventHandler<ActionEvent>() {
-	            @Override
-	            public void handle(ActionEvent event) {
-	                backGroundRectangle.setFill(colorPicker.getValue()); // muss in controler
-	            }
-	        });
+		setColorPikcer();
+		createBgRect();
+
 		 fileChooserButton = new Button("Open File");
 		this.setInitialZoomAndOffset(model.getNodes());
 		this.zoomButton = new Button("buttonlabel" + this.zoomFactor);
@@ -99,7 +93,7 @@ public class FlughafenView {
 		setButtonStyle(fileChooserButton);
 		createZoomLabel();
 		setActivePlanes();
-		root.getChildren().addAll(backGroundRectangle);
+		
 		root.getChildren().addAll(canvas);
 		buttonHbox.getChildren().addAll(showMaxplanes,zoomButton, nameButton,fileChooserButton,colorToolbar);
 		root.getChildren().addAll(buttonHbox);
@@ -432,11 +426,9 @@ public class FlughafenView {
 	
 	
 	public void setTextStyle(Label label) {
-		
 		label.setTextAlignment(TextAlignment.CENTER);
 		label.setFont(fontBold);
-		label.setTextFill(Color.WHITE);
-		
+		label.setTextFill(Color.WHITE);		
 		
 	}
 	
@@ -481,6 +473,26 @@ public class FlughafenView {
 	
 	public Label getActivePlanesLabel() {
 		return this.showMaxplanes;
+	}
+	
+	
+	public void createBgRect() {
+		this. backGroundRectangle = new Rectangle(width,height + heightButtonplatz);
+		backGroundRectangle.setFill(Color.ANTIQUEWHITE);
+		root.getChildren().addAll(backGroundRectangle);
+		
+	}
+	
+	public Rectangle getBgRect() {
+		return backGroundRectangle;}
+	
+	
+	public void setColorPikcer() {
+		colorPicker.setValue(Color.ANTIQUEWHITE);
+	}
+	
+	public ColorPicker getColorPicker() {
+		return this.colorPicker;
 	}
 	
 
