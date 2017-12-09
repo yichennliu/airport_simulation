@@ -24,10 +24,15 @@ public class PathFinder {
 		System.out.println("Suche waypoint: "+plane.getWaypoints().get(1));
 
 		// find Nodes with the start target type that are free at starttime
-		List<Node> startNodes = new ArrayList<>();	
+		List<Breadcrumb> startNodes = new ArrayList<Breadcrumb>();	
+		Map<Node,Breadcrumb> startLinkedBreadcrumbs  = new HashMap<Node,Breadcrumb>(); //Map für die Verknüpfung der Breadcrumbs miteinander
+		
 		for (Node node: nodes) {
+			//Wenn ein TargetType vorhanden && dieser dem ersten Waypoint des Planes entspricht && dieser Node nicht belegt ist
 			if (node.getTargettype() != null && node.getTargettype().equals(plane.getWaypoints().get(0)) && node.isFree(starttime,plane)) {
-				startNodes.add(node);
+				Breadcrumb newBreadcrumb = new Breadcrumb(Status.UNKNOWN, null, node, starttime);
+				startNodes.add(newBreadcrumb);	
+				startLinkedBreadcrumbs.put(node, newBreadcrumb);	
 			}
 		}
 		
@@ -37,9 +42,8 @@ public class PathFinder {
 			return false;
 		}
 		
-		Map<Node,Breadcrumb> nodesStatus = createBreadcrumbMap(nodes, startNodes, starttime);
 		
-		return findWaypoint(plane, nodesStatus, plane.getWaypoints().get(1), new ArrayDeque<Node>(startNodes));
+		return findWaypoint(plane, plane.getWaypoints().get(1), new ArrayDeque<Breadcrumb>(startNodes),new HashMap<Node,Breadcrumb>());
 	}
 	
 	/**
@@ -54,87 +58,114 @@ public class PathFinder {
 	 */
 	public static boolean search(Collection<Node> nodes, Plane plane, int starttime, Node startNode, Targettype targetWaypoint) {
 		System.out.println("Suche waypoint: ["+targetWaypoint+"]");
-
-		List<Node> startNodes = Arrays.asList(startNode);
-		Map<Node,Breadcrumb> nodesStatus = createBreadcrumbMap(nodes, startNodes, starttime);
+		Breadcrumb startBreadcrumb = new Breadcrumb(Status.UNKNOWN, null, startNode, starttime);
 		
-		return findWaypoint(plane, nodesStatus, targetWaypoint, new ArrayDeque<Node>(startNodes));
+		List<Breadcrumb> startDeq = Arrays.asList(startBreadcrumb);
+		Map<Node,Breadcrumb> startLinkedBreadcrumbs  = new HashMap<Node,Breadcrumb>();
+		startLinkedBreadcrumbs.put(startNode, startBreadcrumb);
+		
+		return findWaypoint(plane, targetWaypoint, new ArrayDeque<Breadcrumb>(startDeq),new HashMap<Node,Breadcrumb>());
 	}
 	
 	/**
 	 * Finde Pfad zu einem waypoint (rekursiv)
 	 * 
 	 * @param plane Das Fluzeug, fuer das die Suche durchefuehrt werden soll
-	 * @param nodesStatus Informationen zum Pfad
 	 * @param waypoint Gesuchter waypoint
 	 * @param deq Deque fÃ¼r die Breitensuche (am Anfang mit Startnodes gefÃ¼llt)
+	 * @param Map mit linkedBreadcrumbs zur Verknüpfung der möglichen Wegmöglichkeiten
 	 * @return true wenn ein Pfad gefunden wurde, sonst false
 	 */
-	private static boolean findWaypoint(Plane plane, Map<Node,Breadcrumb>nodesStatus, Targettype waypoint, Deque<Node> deq) {
-		Node current = deq.getFirst();							// in diesem Durchlauf zu Ã¼berprÃ¼fender Node
-		Integer currentTime = nodesStatus.get(current).getTime(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
+	private static boolean findWaypoint(Plane plane, Targettype waypoint, Deque<Breadcrumb> deq, Map<Node, Breadcrumb> linkedBreadcrumbs) {
+		Breadcrumb current = deq.getFirst();							// in diesem Durchlauf zu Ã¼berprÃ¼fender Breadcrumb 
+		Breadcrumb fromBreadcrumb = current.getFrom();
+		Node currentNode = current.getPointsAt();
+		Integer currentTime = current.getTime(); 	// holt aus NodesStatus die aktuelle Zeit seit dem ersten find()-Aufruf
+		Targettype currentTargettype = currentNode.getTargettype();
+		int count = 0;
 		
-		// vergleiche, ob current der gesuchte waypoint ist
-		if (current.getTargettype() != null && current.getTargettype().equals(waypoint)) {
-			savePath(current,plane,nodesStatus);					// Pfad reservieren
+		if(currentTargettype != null && currentTargettype.equals(waypoint)) {	//Prüfen ob Ziel erreicht wurde
+			savePath(current,plane);
+			System.out.println("\n- - - - -");
 			boolean hasNextTarget = true;
-			if(!current.getTargettype().equals(Targettype.wait)) { 	// falls der jetzige Node kein wait-Knoten ist.
+			if(!currentNode.getTargettype().equals(Targettype.WAIT)) { 	// falls der jetzige Node kein wait-Knoten ist.
 				hasNextTarget = plane.increaseCurrentTarget();		// NÃ¤chsten Zielwaypoint setzen, falls vorhanden
 			}
 				
 			if (hasNextTarget) {
-				current.setBlockedBy(plane,currentTime);						// Letzten Node dauerhaft blockieren wenn Endziel nicht erreicht
-				System.out.println("Es wurde ein Weg zum nÃ¤chsten waypoint ("+waypoint+") gefunden :)");
-			} else {
-				System.out.println("Es wurde ein Weg zum Endziel gefunden :)");
-			}
+				currentNode.setBlockedBy(plane,currentTime);						// Letzten Node dauerhaft blockieren wenn Endziel nicht erreicht
+			} 
 			return true;
 		}
 		
-		for(Node child: current.getTo()) {
-			if(
-				nodesStatus.get(child).getStatus()==Status.UNKNOWN &&         // falls Knoten noch nicht entdeckt und
-				child.isFree(currentTime+1,plane) && child.isFree(currentTime+2,plane) // zur Zeit fuer zwei Ticks nicht reserviert
-				) 
-			{
-				Targettype childTType = child.getTargettype();
-
-				if(!(childTType!=null && childTType.equals(waypoint) && child.isBlocked())) { // falls das Kind (nicht (der gesuchte Waypoint ist && dabei geblockt ist)) || einfach ein "normales" child ist (!!)
-					deq.addLast(child);
-					nodesStatus.get(child).setStatus(Status.SPOTTED);		// Status auf entdeckt aendern
-					nodesStatus.get(child).setTime(currentTime+1); 			// der Zeitpunkt, an dem der Node erreicht wird
-					nodesStatus.get(child).setFrom(current);				// From ist der jetzige Knoten (da er ihn entdeckt hat)
-				}
+		
+		
+		if(fromBreadcrumb!=null) {
+			count = fromBreadcrumb.getCounter(); 
+			if(fromBreadcrumb.getPointsAt() == currentNode) {		// falls man schon am selben Node war, das heißt der Node vom fromBreadcrumb == currentNode
+				count++;
+				current.setCounter(count);
 			}
 		}
-		nodesStatus.get(current).setStatus(Status.DONE);					// alle Kinder-Knoten sind entdeckt, der Knoten kann 
-		deq.removeFirst();													// auf "DONE" gesetzt und aus der Warteschlange geloescht werden
+		
+		if (count<10) { // nur die Childs überprüfen, wenn Count nicht überschritten
+			
+			Collection<Node> toList = currentNode.getTo();
+			
+			for(Node child: toList) {
+				Breadcrumb childBreadcrumb = linkedBreadcrumbs.get(child);
+				if((childBreadcrumb==null || (childBreadcrumb!=null && childBreadcrumb.getPointsAt() == currentNode)) && 					// wurde noch nicht entdeckt
+						(child.isFree(currentTime+1, plane) &&	// ist frei
+						child.isFree(currentTime+2, plane))) 
+				{ 
+					
+						Targettype childTType = child.getTargettype();
+						
+						if(!(childTType!=null && childTType.equals(waypoint) && child.isBlocked())) { // falls das Kind (nicht (der gesuchte Waypoint ist && dabei geblockt ist)) (es ist also entweder nicht der gesuchte Waypoint, oder, wenn es einer ist, darf er nicht geblockt sein)
+							Breadcrumb 	newBreadcrumb = new Breadcrumb(Status.SPOTTED ,current ,child ,currentTime+1);
+
+							linkedBreadcrumbs.put(child, newBreadcrumb);
+							deq.addLast(newBreadcrumb);
+						}
+				}
+			}
+			
+			current.setStatus(Status.DONE);
+			Kind nodeKind = currentNode.getKind();
+			if(nodeKind == Kind.CONCRETE || nodeKind == Kind.HANGAR) {
+				if(currentNode.isFree(currentTime+1,plane) && currentNode.isFree(currentTime+2,plane)) {
+					Breadcrumb 	newBreadcrumb = new Breadcrumb(Status.SPOTTED ,current ,currentNode ,currentTime+1);
+					linkedBreadcrumbs.put(currentNode,newBreadcrumb);
+					deq.addLast(newBreadcrumb);
+				}
+				
+			}
+		}
+		deq.removeFirst();
 		
 		if(deq.size()==0) {
 			System.out.println("Es wurde kein Weg gefunden :(");
 			return false;													// return false, wenn kein Weg gefunden werden kann
 		}
-		else return findWaypoint(plane, nodesStatus, waypoint, deq);		// die Breitensuche fortsetzen
-
-	}
-	
-	private static void savePath(Node node, Plane plane,Map<Node,Breadcrumb>nodesStatus) {
-			int time = nodesStatus.get(node).getTime();
-			node.putReserved(time, plane,true);
-			node.putReserved(time +1, plane,false);
-			if(nodesStatus.get(node).getFrom()!=null) {
-				savePath(nodesStatus.get(node).getFrom(),plane,nodesStatus);
-			}
-			System.out.println("[Search] Node "+node.getName() +", Time: " + time );
-	}
-	
-	private static Map<Node,Breadcrumb> createBreadcrumbMap(Collection<Node> nodes, Collection<Node> startNodes, Integer time){
-		Map<Node,Breadcrumb> nodesStatus = new HashMap<Node,Breadcrumb>();
 		
-		for(Node node:nodes) {
-			nodesStatus.put(node, new Breadcrumb()); 									// alle Nodes in die Map schreiben (als UNKNOWN)
-			if(startNodes.contains(node)) nodesStatus.get(node).setTime(time); 			// fuer die Startnodes wird angefangen zu zaehlen
-		}
-		return nodesStatus;
+		else return findWaypoint(plane,waypoint,deq,linkedBreadcrumbs);
+									
 	}
+				
+	
+	private static void savePath(Breadcrumb breadcrumb, Plane plane) {
+			
+			int time = breadcrumb.getTime();
+			Breadcrumb fromBreadcrumb = breadcrumb.getFrom();
+			Node node = breadcrumb.getPointsAt();
+			node.putReserved(time, plane,true);
+			
+			if(!(fromBreadcrumb!=null && fromBreadcrumb.getPointsAt() == node))  node.putReserved(time +1, plane,false);	//Wenn der Node des fromBreadcrumbs gleich dem Node des currentVreadcrumbs entspricht, dann passiert nichts, weil wir gewartet haben. ABER: Falls das nicht der Fall ist, wir also nicht gewartet haben, dann auf True setzen.
+			
+			if(fromBreadcrumb!=null) {
+				savePath(fromBreadcrumb,plane);
+			}
+			System.out.print("[Search for "+plane.toString()+"] Node "+node.getName() +", Time: " + time );
+	}
+	
 }

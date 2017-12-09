@@ -92,9 +92,9 @@ public class Flughafen {
 							// Flugzeug kann weiterfliegen, Blockierung aufheben, Wartezeit zurücksetzen
 							plane.resetWaitingDuration();
 							node.unblock();
-						} else if(node.getTargettype()!=Targettype.wait) { // nur einen Wait-Knoten suchen, wenn das Flugzeug nicht schon auf einem steht
+						} else if(node.getTargettype()!=Targettype.WAIT) { // nur einen Wait-Knoten suchen, wenn das Flugzeug nicht schon auf einem steht
 							// suche freien Wait-Knoten
-							success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, Targettype.wait);
+							success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, Targettype.WAIT);
 							if (success) node.unblock();
 							else {
 								// Warten

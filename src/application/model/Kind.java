@@ -1,5 +1,5 @@
 package application.model;
 
 public enum Kind {
-	air, concrete, hangar, runway;
+	AIR, CONCRETE, HANGAR, RUNWAY;
 }

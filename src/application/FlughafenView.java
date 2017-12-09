@@ -189,20 +189,20 @@ public class FlughafenView {
 		setStyle.apply(1.0).apply(Color.DARKGREY).apply(Color.GREY).accept(false);
 
 		switch (kind) {
-		case air: {
+		case AIR: {
 			setStyle.apply(1.0).apply(Color.BLUE).apply(Color.BLUE.darker()).accept(true);
 			break;
 		}
-		case concrete: {
+		case CONCRETE: {
 			setStyle.apply(0.3).apply(Color.grayRgb(10, 1)).apply(Color.grayRgb(10, 1)).accept(false);
 			break;
 		}
-		case hangar: {
+		case HANGAR: {
 			setStyle.apply(2.6).apply(Color.rgb(0, 179, 0)).apply(Color.rgb(0, 179, 0)).accept(false);
 			break;
 
 		}
-		case runway: {
+		case RUNWAY: {
 			setStyle.apply(1.4).apply(Color.BLACK).apply(Color.BLACK).accept(false);
 			break;
 		}
