@@ -85,6 +85,7 @@ public class FlughafenController {
 			this.view.zoomOut(this.model.getNodes());
 			this.view.updateLabel();
 			
+			
 		});
 
 		

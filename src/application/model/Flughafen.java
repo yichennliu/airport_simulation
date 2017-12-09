@@ -138,7 +138,6 @@ public class Flughafen {
 	}
 	
 	public int getActivePlanes() {
-		//System.out.println("aktiiiiiveee in plaaanennnnnnnnnnnnnnn"+activePlanes);
 		return this.activePlanes;
 	}
 }
