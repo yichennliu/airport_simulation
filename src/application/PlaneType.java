@@ -10,7 +10,7 @@ public enum PlaneType {
 	AIRBUS(new Image("/application/source/Images/airbus.png"),1), 
 	BELLX(new Image("/application/source/Images/bellX.PNG"),1.2), 
 	ECLIPSE_AVIATION(new Image("/application/source/Images/eclipseaviation.png"),0.8),
-	XFUNFZEHN(new Image("/application/source/Images/x15.png"),1.5);
+	XFUNFZEHN(new Image("/application/source/Images/x15.png"),1);
 
 	private final Image img;
 	private final double size;

@@ -23,14 +23,13 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToolBar;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,7 +40,7 @@ import java.util.function.Function;
 
 public class FlughafenView {
 
-	private static int width = 800;
+	private static int width = 850;
 	private static int height = 600;
 	private static double zoomFactor = 1.0;
 	private static final int heightButtonplatz = 70; // abstand von oben bis Nodes
@@ -82,6 +81,7 @@ public class FlughafenView {
 		this.colorPicker= new ColorPicker();
 		setColorPikcer();
 		createBgRect();
+		
 
 		 fileChooserButton = new Button("Open File");
 		this.setInitialZoomAndOffset(model.getNodes());
@@ -181,7 +181,7 @@ public class FlughafenView {
 			this.gc.setStroke(strokeC);
 			this.gc.setFill(fillC);
 			if (dotted)
-				this.gc.setLineDashes(10);
+				this.gc.setLineDashes(5);
 			else
 				this.gc.setLineDashes(null);
 		})));
@@ -190,20 +190,21 @@ public class FlughafenView {
 
 		switch (kind) {
 		case AIR: {
-			setStyle.apply(1.0).apply(Color.BLUE).apply(Color.BLUE.darker()).accept(true);
+			setStyle.apply(0.7).apply(Color.DODGERBLUE).apply(Color.DODGERBLUE.darker()).accept(true);
 			break;
 		}
 		case CONCRETE: {
-			setStyle.apply(0.3).apply(Color.grayRgb(10, 1)).apply(Color.grayRgb(10, 1)).accept(false);
+			setStyle.apply(3.3).apply(Color.LIGHTSLATEGRAY).apply(Color.LIGHTSLATEGRAY).accept(false);
 			break;
 		}
 		case HANGAR: {
-			setStyle.apply(2.6).apply(Color.rgb(0, 179, 0)).apply(Color.rgb(0, 179, 0)).accept(false);
+			setStyle.apply(2.5).apply(Color.MEDIUMAQUAMARINE).apply(Color.MEDIUMAQUAMARINE).accept(false);
 			break;
 
 		}
 		case RUNWAY: {
-			setStyle.apply(1.4).apply(Color.BLACK).apply(Color.BLACK).accept(false);
+			setStyle.apply(3.4).apply(Color.SANDYBROWN).apply(Color.SANDYBROWN).accept(false);
+			
 			break;
 		}
 		}
@@ -223,7 +224,6 @@ public class FlughafenView {
 	private void drawPlane(Plane plane) { 
 		buttonHbox.toFront();
 		
-		
 		if (plane.getNextNode() == null && plane.getLastNode() == null) {
 			ViewPlane vp = this.planes.get(plane);
 			if (vp != null)
@@ -240,6 +240,8 @@ public class FlughafenView {
 			viewPlane = planes.get(plane);
 		ImageView imgV = viewPlane.getImageview();
 		double planeSize = viewPlane.getType().getSize();
+		
+	
 
 		Node nextNode = plane.getNextNode();
         Node lastNode = plane.getLastNode();
@@ -249,7 +251,6 @@ public class FlughafenView {
             double y1 = lastNode.getY();
             double x2 = nextNode.getX();
             double y2 = nextNode.getY();
-            
             Path path = viewPlane.getPath();
             if(x1==x2 && y1==y2){
             	imgV.setX(x1*zoomFactor+offsetX); // noch mit offset und so weiter
@@ -277,7 +278,32 @@ public class FlughafenView {
             pt.play();
             
         }
-
+        
+        Kind kind = nextNode.getKind();
+        
+        switch (kind) {
+		case AIR: {
+			imgV.setEffect(new DropShadow(3,3,20, Color.GRAY));
+			
+			break;
+		}
+		case  RUNWAY: {
+			imgV.setEffect(new DropShadow(1,1,10, Color.SANDYBROWN));
+			
+			break;
+		}
+		case  CONCRETE: {
+			imgV.setEffect(new DropShadow(1,1,10, Color.TRANSPARENT));
+			break;
+		}
+		case  HANGAR: {
+			imgV.setEffect(new DropShadow(1,1,10, Color.TRANSPARENT));
+			break;
+		}
+		
+		}
+        
+        
 		imgV.setFitWidth(planeSize * this.zoomFactor);
 		imgV.setFitHeight(planeSize * this.zoomFactor);
 
@@ -404,7 +430,7 @@ public class FlughafenView {
 	public void setHboxStyle() {
 		buttonHbox.setStyle("-fx-padding: 10;" + "-fx-border-style: solid inside;" + "-fx-border-width: 1;"
 				+ "-fx-border-insets: 1;" + "-fx-border-radius: 1;" + "-fx-border-color:  #6699ff;"
-				+ "-fx-background-color:  #627e89;");
+				+ "-fx-background-color: #627e89;");
 		buttonHbox.setSpacing(20);
 		buttonHbox.setAlignment(Pos.CENTER);
 		buttonHbox.toFront();
@@ -415,9 +441,9 @@ public class FlughafenView {
 
 	public void setButtonStyle(ButtonBase button) {
 
-		button.setStyle("-fx-border-color:  #66ffff; " + "-fx-font-size: 10;" + "-fx-border-insets: -5; "
+		button.setStyle("-fx-border-color:  #66ffff; " + "-fx-font-size: 13;" + "-fx-border-insets: -5; "
 				+ "-fx-border-radius: 5;" + "-fx-border-style: dotted;" + "-fx-border-width: 2;"
-				+ "-fx-background-color: #ffffcc;");
+				+ "-fx-background-color: #fefbf7;"+"-fx-text-fill:#627e89");
 		button.setMinSize(40, 30);
 		
 		
@@ -427,8 +453,11 @@ public class FlughafenView {
 	
 	public void setTextStyle(Label label) {
 		label.setTextAlignment(TextAlignment.CENTER);
-		label.setFont(fontBold);
-		label.setTextFill(Color.WHITE);		
+		label.setFont(fontBold);	
+		label.setStyle("-fx-border-color:  #66ffff; "+ "-fx-border-insets: -5; "
+				+ "-fx-border-radius: 5;" + "-fx-border-style: dotted;" + "-fx-border-width: 2;"+
+				"-fx-text-fill:#fefbf7"
+				);
 		
 	}
 	
