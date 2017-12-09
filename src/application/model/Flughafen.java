@@ -22,12 +22,13 @@ public class Flughafen {
 	 * Flughafen aktualisieren
 	 */ 
 	public void update() {
-		for (Plane plane: planesToRemove) {
+		// Ausgeflogene Flugzeuge löschen
+		for (Plane plane: this.planesToRemove) {
 			plane.setNextNode(null);
 			plane.setNextNode(null);
 			System.out.println("Remove plane");
 		}
-		planesToRemove = new ArrayList<Plane>();
+		this.planesToRemove.clear();
 		
 		// Generatoren ausführen
 		for(Generator g:this.generators) {
@@ -117,6 +118,9 @@ public class Flughafen {
 		}
 	}
 	
+	/**
+	 * @return Maximale Anzahl der Flugzeuge
+	 */
 	public int getMaxplanes() {
 		return this.maxplanes;
 	}
@@ -124,7 +128,10 @@ public class Flughafen {
 	public Collection<Plane> getPlanes() {
 		return this.planes;
 	}
-		
+	
+	/**
+	 * @return Flugzeug-Generatoren
+	 */
 	public List<Generator> getGenerators() {
 		return this.generators;
 	}
@@ -136,6 +143,9 @@ public class Flughafen {
 		return this.nodes.get(name);
 	}
 	
+	/**
+	 * @return Aktuelle Zeit des Flughafens
+	 */
 	public static int getTime() {
 		return time;
 	}
@@ -143,6 +153,9 @@ public class Flughafen {
 		time++;
 	}
 	
+	/**
+	 * @return Anzahl der auf dem Flughafen befindlichen Flugzeuges
+	 */
 	public int getActivePlanes() {
 		return this.activePlanes;
 	}
