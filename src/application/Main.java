@@ -1,5 +1,7 @@
 package application;
 
+import java.util.regex.Pattern;
+
 import application.model.*;
 import javafx.application.Application;
 import javafx.scene.control.Alert;
@@ -14,18 +16,8 @@ public class Main extends Application {
   public void start(Stage primaryStage) throws Exception {
     Flughafen model;
     
-    try {
-    	model = JSONImport.createFlughafen("application/json/small.json");
-    	
-    }
-    catch(Exception e) {
-    	Alert alertWindow = new Alert(Alert.AlertType.ERROR,
-                e.getMessage(),
-                ButtonType.OK);
-    	alertWindow.setHeaderText("Fehler, bitte Überprüfen Sie ihre JSON-Dartei");
-    	Image img = new Image("/application/source/Images/ber.jpg");
-    	alertWindow.setGraphic(new ImageView(img));
-    	alertWindow.show();
+    model = JSONImport.createFlughafen("application/json/small.json");
+    if (model == null) {
     	return;
     }
     
