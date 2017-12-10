@@ -180,15 +180,15 @@ public class FlughafenView {
 			break;
 		}
 		case CONCRETE: {
-			setStyle.apply(3.3).apply(Color.LIGHTSLATEGRAY).apply(Color.LIGHTSLATEGRAY).accept(false);
+			setStyle.apply(1.8).apply(Color.rgb(106, 120, 135)).apply(Color.rgb(106, 120, 135,0.5)).accept(false);
 			break;
 		}
 		case HANGAR: {
-			setStyle.apply(2.8).apply(Color.MEDIUMAQUAMARINE).apply(Color.MEDIUMAQUAMARINE).accept(false);
+			setStyle.apply(2.8).apply(Color.rgb(75, 163, 133)).apply(Color.rgb(75, 163, 133,0.7)).accept(false);
 			break;
 		}
 		case RUNWAY: {
-			setStyle.apply(4.4).apply(Color.rgb(232, 150, 118)).apply(Color.rgb(232, 150, 118)).accept(false);
+			setStyle.apply(4.4).apply(Color.rgb(232, 150, 118)).apply(Color.rgb(232, 150, 118,0.6)).accept(false);
 			
 			break;
 		}
@@ -201,7 +201,7 @@ public class FlughafenView {
 		for (Node children : node.getTo()) {
 			gc.strokeLine(x, y, (children.getX() * zoomFactor) + offsetX, (children.getY() * zoomFactor) + offsetY);
 		}
-		this.gc.fillOval(x - radius, y - radius, radius * 2, radius * 2);
+		this.gc.fillOval(x - radius, y - radius, radius * 1.2, radius * 0.9);
 	}
 	private boolean registerOrDeletePlane(Plane plane) {
 		ViewPlane viewPlane;
@@ -399,7 +399,7 @@ public class FlughafenView {
 		label.setFont(fontBold);	
 		label.setStyle( "-fx-border-insets: -1.5; "
 				+ "-fx-border-radius: 5;" +"-fx-border-width: 1 2 3 4; -fx-border-color:  transparent darkgray darkred  darkgray;"+ "-fx-border-style: dotted;" + "-fx-border-width: 1;"
-				+ "-fx-background-color: #627e89;;"+"-fx-text-fill:#fcbaa1;");
+				+ "-fx-background-color: #627e89;;"+"-fx-text-fill:#e89676;");
 		
 		label.setMinSize(60, 40);
 		
