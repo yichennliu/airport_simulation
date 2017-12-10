@@ -304,21 +304,21 @@ public class FlughafenView {
 		
 		switch (kind) {
 			case AIR: {
-				imgV.setEffect(new DropShadow(3,3,20, Color.GRAY));
+				imgV.setEffect(new DropShadow(7,10,10, new Color(0,0,0,0.5)));
 				
 				break;
 			}
 			case  RUNWAY: {
-				imgV.setEffect(new DropShadow(1,1,10, Color.SANDYBROWN));
+				imgV.setEffect(new DropShadow(5,2,2, new Color(0,0,0,0.5)));
 				
 				break;
 			}
 			case  CONCRETE: {
-				imgV.setEffect(new DropShadow(1,1,10, Color.TRANSPARENT));
+				imgV.setEffect(null);
 				break;
 			}
 			case  HANGAR: {
-				imgV.setEffect(new DropShadow(1,1,10, Color.TRANSPARENT));
+				imgV.setEffect(null);
 				break;
 			}
 		}
