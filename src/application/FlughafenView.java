@@ -8,6 +8,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.animation.Interpolator;
 import javafx.animation.PathTransition;
 import javafx.animation.PathTransition.OrientationType;
 import javafx.beans.property.StringProperty;
@@ -150,6 +151,14 @@ public class FlughafenView {
 			}
 		}
 	}
+	
+	private void drawPlane(Plane plane) {
+		if(registerOrDeletePlane(plane)) {
+			buttonHbox.toFront();
+			movePlane(plane);
+		}
+		
+	}
 
 	/*
 	 * drawNodes() zeichnet rekursiv (damit die unten liegenden Nodes zuerst
@@ -221,28 +230,34 @@ public class FlughafenView {
 
 	}
 
-	private void drawPlane(Plane plane) { 
-		buttonHbox.toFront();
-		
-		if (plane.getNextNode() == null && plane.getLastNode() == null) {
-			ViewPlane vp = this.planes.get(plane);
-			if (vp != null)
-				this.root.getChildren().remove(vp.getImageview());
-			this.planes.remove(plane);
-			return;
-		}
+	private boolean registerOrDeletePlane(Plane plane) {
 		ViewPlane viewPlane;
-		if (!this.planes.containsKey(plane)) {
+		
+		// loescht ein Flugzeug, das NExtNode und LastNode == null hat.
+		if (plane.getNextNode() == null && plane.getLastNode() == null) { 
+			viewPlane = this.planes.get(plane);
+			if (viewPlane != null)
+				this.root.getChildren().remove(viewPlane.getImageview());
+			this.planes.remove(plane);
+			return false;
+		}
+		
+		// fügt ein Flugzeug hinzu, falls es noch nicht inder View registriert wurde
+		if (!this.planes.containsKey(plane)) {  
 			viewPlane = new ViewPlane();
 			this.planes.put(plane, viewPlane);
 			root.getChildren().add(viewPlane.getImageview());
-		} else
-			viewPlane = planes.get(plane);
+		} 
+		return true;
+	}
+	
+	private void movePlane(Plane plane) { 
+		
+		ViewPlane viewPlane = planes.get(plane);
+		
+        Path path = viewPlane.getPath();
 		ImageView imgV = viewPlane.getImageview();
 		double planeSize = viewPlane.getType().getSize();
-		
-	
-
 		Node nextNode = plane.getNextNode();
         Node lastNode = plane.getLastNode();
 
@@ -251,18 +266,25 @@ public class FlughafenView {
             double y1 = lastNode.getY();
             double x2 = nextNode.getX();
             double y2 = nextNode.getY();
-            Path path = viewPlane.getPath();
+            
             if(x1==x2 && y1==y2){
-            	imgV.setX(x1*zoomFactor+offsetX); // noch mit offset und so weiter
-            	imgV.setY(y1*zoomFactor+offsetY);
+            	imgV.setFitWidth(planeSize * this.zoomFactor);
+        		imgV.setFitHeight(planeSize * this.zoomFactor);
+            	imgV.setX((x1*zoomFactor+offsetX)-imgV.getFitHeight()/2); 
+            	imgV.setY((y1*zoomFactor+offsetY)-imgV.getFitWidth()/2);
             	return;
             }
-            MoveTo moveTo = new MoveTo(x1,y1);
-            LineTo lineTo = new LineTo(x2,y2);
-            path.setTranslateX((x1*this.zoomFactor+offsetX));
-            path.setTranslateY((y1*this.zoomFactor+offsetY));
+            MoveTo moveTo = new MoveTo(0,0);
+            LineTo lineTo = new LineTo(x2-x1,y2-y1);
+
             path.setScaleX(this.zoomFactor);
             path.setScaleY(this.zoomFactor);
+            
+            double pathLengthY = (y2-y1)*this.zoomFactor;
+            double pathLengthX = (x2-x1)*this.zoomFactor;
+            
+            path.setTranslateX((x1*this.zoomFactor+offsetX)+pathLengthX/2);
+            path.setTranslateY((y1*this.zoomFactor+offsetY)+pathLengthY/2);
             
             path.getElements().clear();
             
@@ -270,6 +292,7 @@ public class FlughafenView {
             path.getElements().add(lineTo);
             
             PathTransition pt = new PathTransition();
+            pt.setInterpolator(Interpolator.LINEAR);
             pt.setNode(imgV);
             pt.setPath(path);
             pt.setCycleCount(1);
@@ -278,36 +301,40 @@ public class FlughafenView {
             pt.play();
             
         }
-        
-        Kind kind = nextNode.getKind();
-        
-        switch (kind) {
-		case AIR: {
-			imgV.setEffect(new DropShadow(3,3,20, Color.GRAY));
-			
-			break;
-		}
-		case  RUNWAY: {
-			imgV.setEffect(new DropShadow(1,1,10, Color.SANDYBROWN));
-			
-			break;
-		}
-		case  CONCRETE: {
-			imgV.setEffect(new DropShadow(1,1,10, Color.TRANSPARENT));
-			break;
-		}
-		case  HANGAR: {
-			imgV.setEffect(new DropShadow(1,1,10, Color.TRANSPARENT));
-			break;
-		}
-		
-		}
-        
-        
+        setShadow(plane);
 		imgV.setFitWidth(planeSize * this.zoomFactor);
 		imgV.setFitHeight(planeSize * this.zoomFactor);
 
 	}
+        
+	private void setShadow(Plane plane) {
+		ViewPlane vp = this.planes.get(plane);
+		Node nextNode = plane.getNextNode();
+		Kind kind = nextNode.getKind();
+		ImageView imgV = vp.getImageview();
+		
+		switch (kind) {
+			case AIR: {
+				imgV.setEffect(new DropShadow(3,3,20, Color.GRAY));
+				
+				break;
+			}
+			case  RUNWAY: {
+				imgV.setEffect(new DropShadow(1,1,10, Color.SANDYBROWN));
+				
+				break;
+			}
+			case  CONCRETE: {
+				imgV.setEffect(new DropShadow(1,1,10, Color.TRANSPARENT));
+				break;
+			}
+			case  HANGAR: {
+				imgV.setEffect(new DropShadow(1,1,10, Color.TRANSPARENT));
+				break;
+			}
+		}
+	}
+
 
 	private void setInitialZoomAndOffset(Collection<Node> nodes) { // setzt den initialen Faktor und Verschiebung,
 		// sodass alles auf das canvas passt;
@@ -393,25 +420,6 @@ public class FlughafenView {
 
 	public static double getOffsetY() {
 		return offsetY;
-	}
-
-	private Path getPathFromPlane(Plane plane) {
-		Path resultPath = new Path();
-		Node lastNode = plane.getLastNode();
-		Node nextNode = plane.getNextNode();
-		if (lastNode == null) {
-			lastNode = this.model.getNode(plane.getWaypoints().get(0).toString());
-			nextNode = this.model.getNode("air6");
-		}
-		ViewPlane viewPlane = new ViewPlane();
-		double planeSize = viewPlane.getType().getSize();
-		MoveTo line = new MoveTo(lastNode.getX() * zoomFactor + offsetX - planeSize / 2,
-				lastNode.getY() * zoomFactor + offsetY - planeSize / 2);
-		LineTo line2 = new LineTo(nextNode.getX() * zoomFactor + offsetX - planeSize / 2,
-				nextNode.getY() * zoomFactor + offsetY - planeSize / 2);
-		resultPath.getElements().add(line);
-		resultPath.getElements().add(line2);
-		return resultPath;
 	}
 
 	public Button getZoomOutButton() {
