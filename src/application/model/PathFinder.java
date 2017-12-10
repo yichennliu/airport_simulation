@@ -82,7 +82,7 @@ public class PathFinder {
 		Targettype currentTargettype = currentNode.getTargettype();
 		int count = 0;
 		
-		if(currentTargettype != null && currentTargettype.equals(waypoint)) {	//Prüfen ob Ziel erreicht wurde
+		if(currentTargettype != null && currentTargettype.equals(waypoint) && (!currentNode.hasReservationAfter(currentTime))) {	//Prüfen ob Ziel erreicht wurde
 			savePath(current, null, plane);
 			boolean hasNextTarget = true;
 			if(!currentNode.getTargettype().equals(Targettype.WAIT)) { 	// falls der jetzige Node kein wait-Knoten ist.
@@ -120,7 +120,7 @@ public class PathFinder {
 						
 						// falls das Kind (nicht (der gesuchte Waypoint ist && dabei geblockt ist)) (es ist also entweder nicht 
 						// der gesuchte Waypoint, oder, wenn es einer ist, darf er nicht geblockt sein)
-						if(!(childTType!=null && childTType.equals(waypoint) && child.isBlocked())) {
+						if(!(childTType!=null && childTType.equals(waypoint) && child.isBlocked() )) {
 							Breadcrumb 	newBreadcrumb = new Breadcrumb(Status.SPOTTED ,current ,child ,currentTime+1);
 
 							linkedBreadcrumbs.put(child, newBreadcrumb);

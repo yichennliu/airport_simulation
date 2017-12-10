@@ -2,7 +2,9 @@ package application.model;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Node {
 
@@ -126,6 +128,20 @@ public class Node {
 		if(this.blockedBy!=null)
 			return (this.blockedBy.fst()<=time);
 		else return false;
+	}
+	
+	public boolean hasReservationAfter(Integer time) {
+		System.out.println("Aufgerufen");
+		Set<Map.Entry<Integer,Tuple<Plane,Boolean>>> set= this.reserved.entrySet();
+		
+		for(Map.Entry<Integer,Tuple<Plane,Boolean>> entry: set) {
+			System.out.println("Node "+ this.getName() + " Überprüfe Zeit " + time+ " mit Key "+entry.getKey());
+			if (entry.getKey()>=time) {
+				System.out.println("Nach oder bei "+time+" ist eine Reservierung: " + entry.getKey());
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public boolean isBlocked() {
