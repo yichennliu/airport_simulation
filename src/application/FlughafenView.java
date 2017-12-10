@@ -96,7 +96,7 @@ public class FlughafenView {
 	public void reset(Flughafen model) {
 		// alle ImageViews der Planes aus der View loeschen
 		for (ViewPlane vp : this.planes.values()) {
-			this.root.getChildren().remove(vp.getImageview());
+			root.getChildren().remove(vp.getImageview());
 		}
 		// Planes-Hashmap resetten
 		this.planes = new HashMap<Plane, ViewPlane>();
@@ -211,7 +211,7 @@ public class FlughafenView {
 		if (plane.getNextNode() == null && plane.getLastNode() == null) { 
 			viewPlane = this.planes.get(plane);
 			if (viewPlane != null)
-				this.root.getChildren().remove(viewPlane.getImageview());
+				root.getChildren().remove(viewPlane.getImageview());
 			this.planes.remove(plane);
 			return false;
 		}

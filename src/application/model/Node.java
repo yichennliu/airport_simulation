@@ -2,8 +2,8 @@ package application.model;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class Node {
@@ -102,7 +102,7 @@ public class Node {
 	 * @param blockingTime Zeit, ab der der Node blockiert werden soll
 	 */
 	public void setBlockedBy(Plane plane,Integer blockingTime) {
-		this.blockedBy = new Tuple(blockingTime,plane);
+		this.blockedBy = new Tuple<Integer,Plane>(blockingTime,plane);
 	}
 	
 	/**
@@ -131,13 +131,10 @@ public class Node {
 	}
 	
 	public boolean hasReservationAfter(Integer time) {
-		System.out.println("Aufgerufen");
-		Set<Map.Entry<Integer,Tuple<Plane,Boolean>>> set= this.reserved.entrySet();
+		Set<Entry<Integer,Tuple<Plane,Boolean>>> set= this.reserved.entrySet();
 		
-		for(Map.Entry<Integer,Tuple<Plane,Boolean>> entry: set) {
-			System.out.println("Node "+ this.getName() + " Überprüfe Zeit " + time+ " mit Key "+entry.getKey());
+		for(Entry<Integer,Tuple<Plane,Boolean>> entry: set) {
 			if (entry.getKey()>=time) {
-				System.out.println("Nach oder bei "+time+" ist eine Reservierung: " + entry.getKey());
 				return true;
 			}
 		}

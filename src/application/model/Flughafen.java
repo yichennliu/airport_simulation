@@ -85,9 +85,6 @@ public class Flughafen {
 		if (plane != null) { 
 			plane.setNextNode(node);
 			
-			Node lastNode = plane.getLastNode();
-			String lastNodeName = (lastNode==null)? "N.A" : lastNode.getName();
-			
 			// falls an einem Ausflug-Knoten angekommen
 			if(node.getTargettype()!=null && node.getTargettype().equals(plane.getLastTarget())) {
 				this.planesToRemove.add(plane);
