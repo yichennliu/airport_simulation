@@ -1,6 +1,9 @@
 package application.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public class Flughafen {
 	private int maxplanes;
@@ -26,7 +29,6 @@ public class Flughafen {
 		for (Plane plane: this.planesToRemove) {
 			plane.setNextNode(null);
 			plane.setNextNode(null);
-			System.out.println("Remove plane");
 		}
 		this.planesToRemove.clear();
 		
@@ -81,8 +83,10 @@ public class Flughafen {
 	private void updateNode(Node node) {
 		Plane plane = node.getPlane(); // gibt entweder ein Flugzeug zurück oder null (ein Flugzeug, das gerade blockiert oder gerade angekommen ist)
 		if (plane != null) { 
-			System.out.println("Plane auf Node " + node.getName());
 			plane.setNextNode(node);
+			
+			Node lastNode = plane.getLastNode();
+			String lastNodeName = (lastNode==null)? "N.A" : lastNode.getName();
 			
 			// falls an einem Ausflug-Knoten angekommen
 			if(node.getTargettype()!=null && node.getTargettype().equals(plane.getLastTarget())) {

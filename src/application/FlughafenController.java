@@ -1,41 +1,24 @@
 package application;
-
 import java.io.File;
-import java.io.IOException;
-
-import org.json.JSONException;
-
-import application.model.*;
+import application.model.Flughafen;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 public class FlughafenController {
 	private FlughafenView view;
 	private Flughafen model;
 	private double translateArray[] = new double[4]; // [mousePressStartX, mousePressStartY, oldOffsetX, oldOffsetY] (für das Verschieben benötigt)
 	private FileChooser fileChooser = new FileChooser();
-
-//	
 	public FlughafenController(Flughafen model, FlughafenView view) {
 		this.model = model;
 		this.view = view;
@@ -58,7 +41,7 @@ public class FlughafenController {
 			FlughafenView.setOffsetY(FlughafenView.getOffsetY()-translateArray[3]+yOffset);
 			translateArray[2] = xOffset; // die neue Verschiebung (relativ zum Startpunkt des DragEvents) wird gespeichert
 			translateArray[3] = yOffset;
-			this.view.update(false); 
+			this.view.update(false,true); 
 			
 		});
 		
@@ -68,7 +51,7 @@ public class FlughafenController {
 		
 		canvas.addEventHandler(ScrollEvent.SCROLL, e->{
 			view.zoomTo(e.getDeltaY(), e.getX(), e.getY(),3.0);
-			view.update(false); 	
+			view.update(false,true); 	
 			view.updateLabel();
 		});
 		
@@ -81,29 +64,21 @@ public class FlughafenController {
 		});
 		
 		
-
 		this.view.getZoomOutButton().addEventHandler(MouseEvent.MOUSE_PRESSED, event ->{
 			this.view.zoomOut(this.model.getNodes());
 			this.view.updateLabel();
 			
 			
 		});
-
 		
-		this.view.getNameButton().setOnAction((ActionEvent event)-> {
-			
+		this.view.getInfoButton().setOnAction((ActionEvent event)-> {
 			ToggleButton source = (ToggleButton) event.getSource();
-			 if (source.isSelected()) {
-				 view.showNames(true);
-			 } 
-			 else {
-				view.showNames(false);	   
-			}  
+			view.showNodeInfo(source.isSelected());
 		});
 		
 		EventHandler<ActionEvent> loop = e -> {
 			this.model.update();
-			this.view.update(true);
+			this.view.update(!view.isShowNodeInfo(),false);
 			Flughafen.tick();
 		};
 		
@@ -118,7 +93,7 @@ public class FlughafenController {
 		         new ExtensionFilter("Alle Dateien","*.*")
 		 );
 		
-		this.view.update(false);	
+		this.view.update(false,false);	
 		
 		
 		
@@ -128,35 +103,26 @@ public class FlughafenController {
 	            	view.getBgRect().setFill(view.getColorPicker().getValue()); // muss in controler
 	            }
 	        });
-
 	
 	this.view.getfileChooserButton().addEventHandler(MouseEvent.MOUSE_PRESSED, event ->{
 		openFile();
 	});
-
-
 	}
-
 	private void openFile() {
-	Flughafen newFlughafen;
-	Stage fileOpenStage = new Stage();
-	File selectedFile =  fileChooser.showOpenDialog(fileOpenStage);
-	if(selectedFile!=null) {
-		String path = selectedFile.getPath();
-	    
-	    newFlughafen = JSONImport.createFlughafen(path);
-	    if (newFlughafen == null) {
-	    	return;
-	    }
-	    
-	    this.fileChooser.setInitialDirectory(selectedFile.getParentFile());
-		this.model = newFlughafen;
-	    this.view.reset(this.model);
+		Flughafen newFlughafen;
+		Stage fileOpenStage = new Stage();
+		File selectedFile =  fileChooser.showOpenDialog(fileOpenStage);
+		if(selectedFile!=null) {
+			String path = selectedFile.getPath();
+		    
+		    newFlughafen = JSONImport.createFlughafen(path);
+		    if (newFlughafen == null) {
+		    	return;
+		    }
+		    
+		    this.fileChooser.setInitialDirectory(selectedFile.getParentFile());
+			this.model = newFlughafen;
+		    this.view.reset(this.model);
+		}
 	}
-
 }
-
-
-}
-
-

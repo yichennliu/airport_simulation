@@ -1,6 +1,8 @@
 package application.model;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Node {
 
@@ -99,7 +101,6 @@ public class Node {
 	 */
 	public void setBlockedBy(Plane plane,Integer blockingTime) {
 		this.blockedBy = new Tuple(blockingTime,plane);
-		System.out.println(this.name +" blockiert");
 	}
 	
 	/**
@@ -107,7 +108,6 @@ public class Node {
 	 */
 	public void unblock() {
 		this.blockedBy = null;
-		System.out.println(this.name +": Blockierung aufgehoben");
 	}
 	
 	/**
@@ -145,10 +145,8 @@ public class Node {
 	 * @param time Time to check for
 	 * @return true if a plane can land on this node on the given time, false otherwise
 	 */
-	public boolean isFree(int time, Plane plane) {
-		boolean blocked = (this.isBlockedAfter(time)) ? (plane!=this.getBlockedBy().snd()) : false; 
-	
-		if (this.getReserved().get(time) != null || blocked) {
+	public boolean isFree(int time) {
+		if (this.getReserved().get(time) != null || this.isBlockedAfter(time)) {
 			return false;
 		} else {
 			for (Node conflictNode: this.getConflicts()) {
