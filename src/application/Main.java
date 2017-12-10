@@ -10,7 +10,7 @@ public class Main extends Application {
   public void start(Stage primaryStage) throws Exception {
     Flughafen model;
     
-    model = JSONImport.createFlughafen("application/json/small.json");
+    model = JSONImport.createFlughafen("application/json/big.json");
     if (model == null) {
     	return;
     }
