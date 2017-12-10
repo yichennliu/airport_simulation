@@ -100,7 +100,7 @@ public class Flughafen {
 						// Flugzeug noch nicht am Endziel, nächsten waypoint suchen
 						boolean success = PathFinder.search(this.getNodes(), plane, Flughafen.getTime(), node, plane.getCurrentTarget());
 						if (success) {
-							// Flugzeug kann weiterfliegen, Blockierung aufheben, Wartezeit zurücksetzen
+							// Flugzeug kann weiterfliegen, Blockierung aufheben, Wartezeit zurücksetzen.
 							plane.resetWaitingDuration();
 							node.unblock();
 						} else if(node.getTargettype()!=Targettype.WAIT) { // nur einen Wait-Knoten suchen, wenn das Flugzeug nicht schon auf einem steht
