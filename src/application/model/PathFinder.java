@@ -82,7 +82,8 @@ public class PathFinder {
 		Targettype currentTargettype = currentNode.getTargettype();
 		int count = 0;
 		
-		if(currentTargettype != null && currentTargettype.equals(waypoint) && (!currentNode.hasReservationAfter(currentTime))) {	//Prüfen ob Ziel erreicht wurde
+		if(currentTargettype != null && currentTargettype.equals(waypoint) && 
+				(!currentNode.hasReservationAfter(currentTime) || currentTargettype.equals(plane.getLastTarget()))) {	//Prüfen ob Ziel erreicht wurde
 			savePath(current, null, plane);
 			boolean hasNextTarget = true;
 			if(!currentNode.getTargettype().equals(Targettype.WAIT)) { 	// falls der jetzige Node kein wait-Knoten ist.
