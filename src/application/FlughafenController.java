@@ -22,7 +22,6 @@ public class FlughafenController {
 	private double translateArray[] = new double[4]; // [mousePressStartX, mousePressStartY, oldOffsetX, oldOffsetY] (für das Verschieben benötigt)
 	private FileChooser fileChooser = new FileChooser();
 
-//	
 	public FlughafenController(Flughafen model, FlughafenView view) {
 		this.model = model;
 		this.view = view;
@@ -125,23 +124,22 @@ public class FlughafenController {
 	}
 
 	private void openFile() {
-	Flughafen newFlughafen;
-	Stage fileOpenStage = new Stage();
-	File selectedFile =  fileChooser.showOpenDialog(fileOpenStage);
-	if(selectedFile!=null) {
-		String path = selectedFile.getPath();
-	    
-	    newFlughafen = JSONImport.createFlughafen(path);
-	    if (newFlughafen == null) {
-	    	return;
-	    }
-	    
-	    this.fileChooser.setInitialDirectory(selectedFile.getParentFile());
-		this.model = newFlughafen;
-	    this.view.reset(this.model);
+		Flughafen newFlughafen;
+		Stage fileOpenStage = new Stage();
+		File selectedFile =  fileChooser.showOpenDialog(fileOpenStage);
+		if(selectedFile!=null) {
+			String path = selectedFile.getPath();
+		    
+		    newFlughafen = JSONImport.createFlughafen(path);
+		    if (newFlughafen == null) {
+		    	return;
+		    }
+		    
+		    this.fileChooser.setInitialDirectory(selectedFile.getParentFile());
+			this.model = newFlughafen;
+		    this.view.reset(this.model);
+		}
 	}
-
-}
 
 
 }

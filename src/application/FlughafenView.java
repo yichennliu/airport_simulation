@@ -294,12 +294,12 @@ public class FlughafenView {
 		
 		switch (kind) {
 			case AIR: {
-				imgV.setEffect(new DropShadow(7,10,10, new Color(0,0,0,0.5)));
+				imgV.setEffect(new DropShadow(7,12,12, new Color(0,0,0,0.5)));
 				
 				break;
 			}
 			case  RUNWAY: {
-				imgV.setEffect(new DropShadow(5,2,2, new Color(0,0,0,0.5)));
+				imgV.setEffect(new DropShadow(5,4,4, new Color(0,0,0,0.5)));
 				
 				break;
 			}

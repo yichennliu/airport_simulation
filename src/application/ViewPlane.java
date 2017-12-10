@@ -7,10 +7,11 @@ public class ViewPlane {
 	private DynamicPathTransition pathTransition;
 	private PlaneType type; 
 	
-public ViewPlane() {
-	this.type = PlaneType.getRandomType();
-	this.imageview = this.type.getImageView();
-}
+	public ViewPlane() {
+		this.type = PlaneType.getRandomType();
+		this.imageview = this.type.getImageView();
+	}
+	
 	public ImageView getImageview() {
 		return imageview;
 	}
