@@ -101,7 +101,6 @@ public class Node {
 	 */
 	public void setBlockedBy(Plane plane,Integer blockingTime) {
 		this.blockedBy = new Tuple(blockingTime,plane);
-		System.out.println(this.name +" blockiert");
 	}
 	
 	/**
@@ -109,7 +108,6 @@ public class Node {
 	 */
 	public void unblock() {
 		this.blockedBy = null;
-		System.out.println(this.name +": Blockierung aufgehoben");
 	}
 	
 	/**
