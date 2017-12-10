@@ -29,7 +29,7 @@ public class PathFinder {
 		
 		for (Node node: nodes) {
 			//Wenn ein TargetType vorhanden && dieser dem ersten Waypoint des Planes entspricht && dieser Node nicht belegt ist
-			if (node.getTargettype() != null && node.getTargettype().equals(plane.getWaypoints().get(0)) && node.isFree(starttime,plane)) {
+			if (node.getTargettype() != null && node.getTargettype().equals(plane.getWaypoints().get(0)) && node.isFree(starttime)) {
 				Breadcrumb newBreadcrumb = new Breadcrumb(Status.UNKNOWN, null, node, starttime);
 				startNodes.add(newBreadcrumb);	
 				startLinkedBreadcrumbs.put(node, newBreadcrumb);	
@@ -112,8 +112,8 @@ public class PathFinder {
 			for(Node child: toList) {
 				Breadcrumb childBreadcrumb = linkedBreadcrumbs.get(child);
 				if((childBreadcrumb==null || (childBreadcrumb!=null && childBreadcrumb.getPointsAt() == currentNode)) && 					// wurde noch nicht entdeckt
-						(child.isFree(currentTime+1, plane) &&	// ist frei
-						child.isFree(currentTime+2, plane))) 
+						(child.isFree(currentTime+1) &&	// ist frei
+						child.isFree(currentTime+2))) 
 				{ 
 					
 						Targettype childTType = child.getTargettype();
@@ -132,7 +132,7 @@ public class PathFinder {
 			current.setStatus(Status.DONE);
 			Kind nodeKind = currentNode.getKind();
 			if(nodeKind == Kind.CONCRETE || nodeKind == Kind.HANGAR) {
-				if(currentNode.isFree(currentTime+1,plane) && currentNode.isFree(currentTime+2,plane)) {
+				if(currentNode.isFree(currentTime+1) && currentNode.isFree(currentTime+2)) {
 					Breadcrumb 	newBreadcrumb = new Breadcrumb(Status.SPOTTED ,current ,currentNode ,currentTime+1);
 					linkedBreadcrumbs.put(currentNode,newBreadcrumb);
 					deq.addLast(newBreadcrumb);
