@@ -58,7 +58,7 @@ public class FlughafenController {
 			FlughafenView.setOffsetY(FlughafenView.getOffsetY()-translateArray[3]+yOffset);
 			translateArray[2] = xOffset; // die neue Verschiebung (relativ zum Startpunkt des DragEvents) wird gespeichert
 			translateArray[3] = yOffset;
-			this.view.update(false); 
+			this.view.update(false,true); 
 			
 		});
 		
@@ -68,7 +68,7 @@ public class FlughafenController {
 		
 		canvas.addEventHandler(ScrollEvent.SCROLL, e->{
 			view.zoomTo(e.getDeltaY(), e.getX(), e.getY(),3.0);
-			view.update(false); 	
+			view.update(false,true); 	
 			view.updateLabel();
 		});
 		
@@ -103,7 +103,7 @@ public class FlughafenController {
 		
 		EventHandler<ActionEvent> loop = e -> {
 			this.model.update();
-			this.view.update(true);
+			this.view.update(true,false);
 			Flughafen.tick();
 		};
 		
@@ -118,7 +118,7 @@ public class FlughafenController {
 		         new ExtensionFilter("Alle Dateien","*.*")
 		 );
 		
-		this.view.update(false);	
+		this.view.update(false,false);	
 		
 		
 		

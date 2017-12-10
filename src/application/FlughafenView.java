@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -53,7 +54,7 @@ public class FlughafenView {
 	private static Group root;
 	private Canvas canvas;
 	private GraphicsContext gc;
-	private 	Rectangle backGroundRectangle ;
+	private Rectangle backGroundRectangle ;
 	private HBox buttonHbox;
 	private Label showMaxplanes = new Label();
 	private Button zoomButton;
@@ -117,7 +118,7 @@ public class FlughafenView {
 		this.model = model;
 		// alles neu zeichnen
 		this.setInitialZoomAndOffset(this.model.getNodes());
-		this.update(false);
+		this.update(false,false);
 	}
 
 	public Stage getStage() {
@@ -128,10 +129,15 @@ public class FlughafenView {
 		return this.canvas;
 	}
 
-	public void update(boolean onlyPlanes) {
+	public void update(boolean onlyPlanes, boolean onlyTransitions) {
 		if (!onlyPlanes)
 			drawCanvas();
-		drawPlanes();
+		if(onlyTransitions) {
+			updateTransitions();
+		}
+		else {
+			drawPlanes();
+		}
 		setActivePlanes();
 	}
 
@@ -156,8 +162,7 @@ public class FlughafenView {
 		if(registerOrDeletePlane(plane)) {
 			buttonHbox.toFront();
 			movePlane(plane);
-		}
-		
+		}	
 	}
 
 	/*
@@ -171,7 +176,6 @@ public class FlughafenView {
 			drawNodes(nodes);
 			drawNode(node);
 		}
-
 	}
 
 	private void drawNode(Node node) {
@@ -245,66 +249,51 @@ public class FlughafenView {
 		// fügt ein Flugzeug hinzu, falls es noch nicht inder View registriert wurde
 		if (!this.planes.containsKey(plane)) {  
 			viewPlane = new ViewPlane();
+			ImageView imgV = viewPlane.getImageview();
+			DynamicPathTransition dPT = new DynamicPathTransition(imgV,null,null,this.offsetX,this.offsetY,this.zoomFactor);
+			dPT.setInterpolator(Interpolator.LINEAR);
+			dPT.setCycleCount(1);
+			dPT.setDuration(Duration.seconds(1));
+			viewPlane.setDynamicPathTransition(dPT);
 			this.planes.put(plane, viewPlane);
-			root.getChildren().add(viewPlane.getImageview());
+			root.getChildren().add(imgV);
 		} 
 		return true;
+	}
+	
+	private void updateTransitions() {
+		for(ViewPlane vp:this.planes.values()) {
+			DynamicPathTransition dPT = vp.getDynamicPathTransition();
+			dPT.updateZoomAndOffset(this.offsetX, this.offsetY, this.zoomFactor);
+			updateViewPlaneSize(vp);
+		}
 	}
 	
 	private void movePlane(Plane plane) { 
 		
 		ViewPlane viewPlane = planes.get(plane);
 		
-        Path path = viewPlane.getPath();
-		ImageView imgV = viewPlane.getImageview();
-		double planeSize = viewPlane.getType().getSize();
+		DynamicPathTransition pt = viewPlane.getDynamicPathTransition();
+		pt.updateZoomAndOffset(this.offsetX, this.offsetY, this.zoomFactor);
+		
+
 		Node nextNode = plane.getNextNode();
         Node lastNode = plane.getLastNode();
-
+        
+        pt.stop();
         if (lastNode!=null) {
-            double x1 = lastNode.getX();
-            double y1 = lastNode.getY();
-            double x2 = nextNode.getX();
-            double y2 = nextNode.getY();
-            
-            if(x1==x2 && y1==y2){
-            	imgV.setFitWidth(planeSize * this.zoomFactor);
-        		imgV.setFitHeight(planeSize * this.zoomFactor);
-            	imgV.setX((x1*zoomFactor+offsetX)-imgV.getFitHeight()/2); 
-            	imgV.setY((y1*zoomFactor+offsetY)-imgV.getFitWidth()/2);
-            	return;
-            }
-            MoveTo moveTo = new MoveTo(0,0);
-            LineTo lineTo = new LineTo(x2-x1,y2-y1);
-
-            path.setScaleX(this.zoomFactor);
-            path.setScaleY(this.zoomFactor);
-            
-            double pathLengthY = (y2-y1)*this.zoomFactor;
-            double pathLengthX = (x2-x1)*this.zoomFactor;
-            
-            path.setTranslateX((x1*this.zoomFactor+offsetX)+pathLengthX/2);
-            path.setTranslateY((y1*this.zoomFactor+offsetY)+pathLengthY/2);
-            
-            path.getElements().clear();
-            
-            path.getElements().add(moveTo);
-            path.getElements().add(lineTo);
-            
-            PathTransition pt = new PathTransition();
-            pt.setInterpolator(Interpolator.LINEAR);
-            pt.setNode(imgV);
-            pt.setPath(path);
-            pt.setCycleCount(1);
-            pt.setOrientation(OrientationType.ORTHOGONAL_TO_TANGENT);
-            pt.setDuration(Duration.seconds(1));
-            pt.play();
-            
+        	 pt.setStartEndNodes(lastNode,nextNode);
+             pt.play();
         }
         setShadow(plane);
+        updateViewPlaneSize(viewPlane);
+	}
+	
+	private void updateViewPlaneSize(ViewPlane vp) {
+		double planeSize = vp.getType().getSize();
+		ImageView imgV = vp.getImageview();
 		imgV.setFitWidth(planeSize * this.zoomFactor);
 		imgV.setFitHeight(planeSize * this.zoomFactor);
-
 	}
         
 	private void setShadow(Plane plane) {
@@ -334,7 +323,6 @@ public class FlughafenView {
 			}
 		}
 	}
-
 
 	private void setInitialZoomAndOffset(Collection<Node> nodes) { // setzt den initialen Faktor und Verschiebung,
 		// sodass alles auf das canvas passt;
@@ -432,7 +420,7 @@ public class FlughafenView {
 
 	public void zoomOut(Collection<Node> nodes) {
 		setInitialZoomAndOffset(nodes);
-		update(false);
+		update(false,true);
 	}
 
 	public void setHboxStyle() {
@@ -456,8 +444,6 @@ public class FlughafenView {
 		
 		
 	}
-
-	
 	
 	public void setTextStyle(Label label) {
 		label.setTextAlignment(TextAlignment.CENTER);
@@ -500,7 +486,6 @@ public class FlughafenView {
 
 	}
 	
-	
 	public void setActivePlanes() {
 		int showActivePlanes= model.getActivePlanes();
 		int maxPlanes= model.getMaxplanes();
@@ -511,8 +496,7 @@ public class FlughafenView {
 	public Label getActivePlanesLabel() {
 		return this.showMaxplanes;
 	}
-	
-	
+		
 	public void createBgRect() {
 		this. backGroundRectangle = new Rectangle(width,height + heightButtonplatz);
 		backGroundRectangle.setFill(Color.ANTIQUEWHITE);
@@ -523,7 +507,6 @@ public class FlughafenView {
 	public Rectangle getBgRect() {
 		return backGroundRectangle;}
 	
-	
 	public void setColorPikcer() {
 		colorPicker.setValue(Color.ANTIQUEWHITE);
 	}
@@ -531,7 +514,4 @@ public class FlughafenView {
 	public ColorPicker getColorPicker() {
 		return this.colorPicker;
 	}
-	
-
-
 }
