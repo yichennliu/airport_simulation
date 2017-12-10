@@ -29,7 +29,6 @@ public class Flughafen {
 		for (Plane plane: this.planesToRemove) {
 			plane.setNextNode(null);
 			plane.setNextNode(null);
-			System.out.println("Remove plane");
 		}
 		this.planesToRemove.clear();
 		
