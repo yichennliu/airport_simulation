@@ -54,9 +54,9 @@ public class FlughafenView {
 	private HBox buttonHbox;
 	private Label showMaxplanes = new Label();
 	private Button zoomButton;
-	private ToggleButton nameButton = new ToggleButton("Show Node names");
-	public 	final StringProperty btnText = nameButton.textProperty();
-	boolean nameshown = false;
+	private ToggleButton infoButton = new ToggleButton("Show Node Info");
+	public 	final StringProperty btnText = infoButton.textProperty();
+	private boolean showNodeInfo = false;
 	private Font fontSmall = Font.font("Droid Sans", FontWeight.EXTRA_LIGHT, 10);
 	private Font fontBold = Font.font("Droid Sans", FontWeight.EXTRA_BOLD, 18);
 	private Button fileChooserButton;
@@ -82,12 +82,12 @@ public class FlughafenView {
 		Image buttonImage = new Image("/application/source/Images/zoomout.png");
 		this.zoomButton.setGraphic(new ImageView(buttonImage));
 		setButtonStyle(zoomButton);
-		setButtonStyle(nameButton);
+		setButtonStyle(infoButton);
 		setButtonStyle(fileChooserButton);
 		createZoomLabel();
 		setActivePlanes();
 		root.getChildren().addAll(canvas);
-		buttonHbox.getChildren().addAll(showMaxplanes,zoomButton, nameButton,fileChooserButton,colorToolbar);
+		buttonHbox.getChildren().addAll(showMaxplanes,zoomButton, infoButton,fileChooserButton,colorToolbar);
 		root.getChildren().addAll(buttonHbox);
 		colorToolbar.getItems().addAll(colorPicker);
 		this.scene = new Scene(root);
@@ -211,9 +211,9 @@ public class FlughafenView {
 			break;
 		}
 		}
-		if (nameshown) {
+		if (showNodeInfo) {
 			gc.setFont(fontSmall);
-			this.gc.fillText(node.getName(), x - 40, y+10);
+			this.gc.fillText(node.getName()+"\n"+(node.isFree(Flughafen.getTime()) ? "frei" : "belegt"), x - 40, y+10);
 			
 		}
 		for (Node children : node.getTo()) {
@@ -404,8 +404,8 @@ public class FlughafenView {
 		return this.zoomButton;
 	}
 
-	public ToggleButton getNameButton() {
-		return this.nameButton;
+	public ToggleButton getInfoButton() {
+		return this.infoButton;
 	}
 
 	public void zoomOut(Collection<Node> nodes) {
@@ -445,17 +445,21 @@ public class FlughafenView {
 		
 	}
 	
-	public void showNames(boolean show) {
-		nameshown = show;
+	public void showNodeInfo(boolean show) {
+		showNodeInfo = show;
 
 		if (show) {
-			this.btnText.set("Hide Node names");
+			this.btnText.set("Hide Node Info");
 		}
 
 		else {
-			this.btnText.set("Show Node names");
+			this.btnText.set("Show Node Info");
 		}
 		this.drawCanvas();
+	}
+	
+	public boolean isShowNodeInfo() {
+		return this.showNodeInfo;
 	}
 
 	public void createZoomLabel() {

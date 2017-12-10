@@ -76,20 +76,14 @@ public class FlughafenController {
 		});
 
 		
-		this.view.getNameButton().setOnAction((ActionEvent event)-> {
-			
+		this.view.getInfoButton().setOnAction((ActionEvent event)-> {
 			ToggleButton source = (ToggleButton) event.getSource();
-			 if (source.isSelected()) {
-				 view.showNames(true);
-			 } 
-			 else {
-				view.showNames(false);	   
-			}  
+			view.showNodeInfo(source.isSelected());
 		});
 		
 		EventHandler<ActionEvent> loop = e -> {
 			this.model.update();
-			this.view.update(true,false);
+			this.view.update(!view.isShowNodeInfo(),false);
 			Flughafen.tick();
 		};
 		
