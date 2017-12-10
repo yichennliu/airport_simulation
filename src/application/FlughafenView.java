@@ -35,6 +35,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
 public class FlughafenView {
 	private static int width = 850;
 	private static int height = 600;
@@ -60,8 +61,8 @@ public class FlughafenView {
 	private Button fileChooserButton;
 	private ToolBar colorToolbar = new ToolBar();
 	private final ColorPicker colorPicker ;
-	private Label zoomLabel;
 	Map<Plane, ViewPlane> planes = new HashMap<Plane, ViewPlane>();
+	
 	public FlughafenView(Flughafen model, Stage stage) {
 		this.model = model;
 		this.stage = stage;
@@ -75,7 +76,7 @@ public class FlughafenView {
 		createBgRect();
 		fileChooserButton = new Button("Open File");
 		this.setInitialZoomAndOffset(model.getNodes());
-		this.zoomButton = new Button("buttonlabel" + zoomFactor);
+		this.zoomButton = new Button();
 		Image buttonImage = new Image("/application/source/Images/zoomout.png");
 		this.zoomButton.setGraphic(new ImageView(buttonImage));
 		setButtonStyle(zoomButton);
@@ -420,15 +421,13 @@ public class FlughafenView {
 		return this.showNodeInfo;
 	}
 	public void createZoomLabel() {
-		this.zoomLabel = new Label();
+		Label zoomLabel = new Label();
 		updateLabel();
 	}
 	public void updateLabel() {
 		this.zoomButton.setText("Zoom-Factor : " + Math.round(zoomFactor * 100 / 100));
 	}
-	public Label getZoomLabel() {
-		return this.zoomLabel;
-	}
+
 	public Button getfileChooserButton() {
 		return fileChooserButton;
 	}
