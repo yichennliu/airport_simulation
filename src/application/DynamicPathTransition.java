@@ -34,6 +34,7 @@ public class DynamicPathTransition extends javafx.animation.Transition {
 		    if(angle < 0){
 		        angle += 360;
 		    }
+		    
 		   this.node.setRotate(angle);
 	}
 	
