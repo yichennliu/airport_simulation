@@ -52,7 +52,7 @@ public class FlughafenController {
 		canvas.addEventHandler(ScrollEvent.SCROLL, e->{
 			view.zoomTo(e.getDeltaY(), e.getX(), e.getY(),3.0);
 			view.update(false,true); 	
-			view.updateLabel();
+			view.updateZoomLabel();
 		});
 		
 		stage.widthProperty().addListener((observableValue, oldWidth, newWidth) -> { // bei Skalierung des Fensters skaliert das Canvas mit
@@ -66,7 +66,7 @@ public class FlughafenController {
 		
 		this.view.getZoomOutButton().addEventHandler(MouseEvent.MOUSE_PRESSED, event ->{
 			this.view.zoomOut(this.model.getNodes());
-			this.view.updateLabel();
+			this.view.updateZoomLabel();
 			
 			
 		});

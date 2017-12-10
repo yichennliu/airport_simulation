@@ -77,12 +77,12 @@ public class FlughafenView {
 		fileChooserButton = new Button("Open File");
 		this.setInitialZoomAndOffset(model.getNodes());
 		this.zoomButton = new Button();
+		updateZoomLabel();
 		Image buttonImage = new Image("/application/source/Images/zoomout.png");
 		this.zoomButton.setGraphic(new ImageView(buttonImage));
 		setButtonStyle(zoomButton);
 		setButtonStyle(infoButton);
 		setButtonStyle(fileChooserButton);
-		createZoomLabel();
 		setActivePlanes();
 		root.getChildren().addAll(canvas);
 		buttonHbox.getChildren().addAll(showMaxplanes,zoomButton, infoButton,fileChooserButton,colorToolbar);
@@ -419,11 +419,8 @@ public class FlughafenView {
 	public boolean isShowNodeInfo() {
 		return this.showNodeInfo;
 	}
-	public void createZoomLabel() {
-		Label zoomLabel = new Label();
-		updateLabel();
-	}
-	public void updateLabel() {
+	
+	public void updateZoomLabel() {
 		this.zoomButton.setText("Zoom-Factor : " + Math.round(zoomFactor * 100 / 100));
 	}
 
