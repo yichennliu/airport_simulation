@@ -1,13 +1,7 @@
 package application;
 
-import java.util.regex.Pattern;
-
-import application.model.*;
+import application.model.Flughafen;
 import javafx.application.Application;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class Main extends Application {
