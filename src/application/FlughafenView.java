@@ -391,7 +391,6 @@ public class FlughafenView {
 		button.setMinSize(50, 36);
 		
 		
-		
 	}
 	
 	public void setTextStyle(Label label) {
