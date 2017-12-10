@@ -1,21 +1,21 @@
 package application;
 
-import application.model.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import application.model.Flughafen;
+import application.model.Kind;
 import application.model.Node;
-import javafx.scene.shape.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-import javafx.util.Duration;
+import application.model.Plane;
 import javafx.animation.Interpolator;
-import javafx.animation.PathTransition;
-import javafx.animation.PathTransition.OrientationType;
 import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -27,18 +27,14 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class FlughafenView {
 
@@ -66,9 +62,6 @@ public class FlughafenView {
 	private Button fileChooserButton;
 	private ToolBar colorToolbar = new ToolBar();
 	private final ColorPicker colorPicker ;
-
-	
-   
 	private Label zoomLabel;
 	Map<Plane, ViewPlane> planes = new HashMap<Plane, ViewPlane>();
 
@@ -83,9 +76,7 @@ public class FlughafenView {
 		this.colorPicker= new ColorPicker();
 		setColorPikcer();
 		createBgRect();
-		
-
-		 fileChooserButton = new Button("Open File");
+		fileChooserButton = new Button("Open File");
 		this.setInitialZoomAndOffset(model.getNodes());
 		this.zoomButton = new Button("buttonlabel" + this.zoomFactor);
 		Image buttonImage = new Image("/application/source/Images/zoomout.png");
@@ -95,7 +86,6 @@ public class FlughafenView {
 		setButtonStyle(fileChooserButton);
 		createZoomLabel();
 		setActivePlanes();
-		
 		root.getChildren().addAll(canvas);
 		buttonHbox.getChildren().addAll(showMaxplanes,zoomButton, nameButton,fileChooserButton,colorToolbar);
 		root.getChildren().addAll(buttonHbox);

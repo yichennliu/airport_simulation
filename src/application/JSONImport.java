@@ -1,12 +1,22 @@
 package application;
 
-import java.io.*;
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
-
-import org.json.*;
-
-import application.model.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+import application.model.Flughafen;
+import application.model.Generator;
+import application.model.Kind;
+import application.model.Node;
+import application.model.Plane;
+import application.model.Targettype;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;

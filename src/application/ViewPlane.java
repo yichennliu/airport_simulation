@@ -1,9 +1,6 @@
 package application;
 
-import application.model.Plane;
-import javafx.animation.PathTransition;
 import javafx.scene.image.ImageView;
-import javafx.scene.shape.Path;
 
 public class ViewPlane {
 	private ImageView imageview;
