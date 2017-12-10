@@ -257,10 +257,9 @@ public class FlughafenView {
             	imgV.setY(y1*zoomFactor+offsetY);
             	return;
             }
-            MoveTo moveTo = new MoveTo(x1,y1);
-            LineTo lineTo = new LineTo(x2,y2);
-            path.setTranslateX((x1*this.zoomFactor+offsetX));
-            path.setTranslateY((y1*this.zoomFactor+offsetY));
+            MoveTo moveTo = new MoveTo(0,0);
+            LineTo lineTo = new LineTo(x2-x1,y2-y1);
+
             path.setScaleX(this.zoomFactor);
             path.setScaleY(this.zoomFactor);
             
