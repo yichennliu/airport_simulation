@@ -1,9 +1,7 @@
 package application;
 import application.model.Node;
-import javafx.animation.Transition;
-import javafx.scene.shape.Path;
-import javafx.util.Duration;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 
 public class DynamicPathTransition extends javafx.animation.Transition {
 	private Node start;

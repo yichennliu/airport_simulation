@@ -78,7 +78,7 @@ public class FlughafenView {
 		createBgRect();
 		fileChooserButton = new Button("Open File");
 		this.setInitialZoomAndOffset(model.getNodes());
-		this.zoomButton = new Button("buttonlabel" + this.zoomFactor);
+		this.zoomButton = new Button("buttonlabel" + zoomFactor);
 		Image buttonImage = new Image("/application/source/Images/zoomout.png");
 		this.zoomButton.setGraphic(new ImageView(buttonImage));
 		setButtonStyle(zoomButton);
@@ -240,7 +240,7 @@ public class FlughafenView {
 		if (!this.planes.containsKey(plane)) {  
 			viewPlane = new ViewPlane();
 			ImageView imgV = viewPlane.getImageview();
-			DynamicPathTransition dPT = new DynamicPathTransition(imgV,null,null,this.offsetX,this.offsetY,this.zoomFactor);
+			DynamicPathTransition dPT = new DynamicPathTransition(imgV,null,null,offsetX,offsetY,zoomFactor);
 			dPT.setInterpolator(Interpolator.LINEAR);
 			dPT.setCycleCount(1);
 			dPT.setDuration(Duration.seconds(1));
@@ -254,7 +254,7 @@ public class FlughafenView {
 	private void updateTransitions() {
 		for(ViewPlane vp:this.planes.values()) {
 			DynamicPathTransition dPT = vp.getDynamicPathTransition();
-			dPT.updateZoomAndOffset(this.offsetX, this.offsetY, this.zoomFactor);
+			dPT.updateZoomAndOffset(offsetX, offsetY, zoomFactor);
 			updateViewPlaneSize(vp);
 		}
 	}
@@ -264,7 +264,7 @@ public class FlughafenView {
 		ViewPlane viewPlane = planes.get(plane);
 		
 		DynamicPathTransition pt = viewPlane.getDynamicPathTransition();
-		pt.updateZoomAndOffset(this.offsetX, this.offsetY, this.zoomFactor);
+		pt.updateZoomAndOffset(offsetX, offsetY, zoomFactor);
 		
 
 		Node nextNode = plane.getNextNode();
@@ -282,8 +282,8 @@ public class FlughafenView {
 	private void updateViewPlaneSize(ViewPlane vp) {
 		double planeSize = vp.getType().getSize();
 		ImageView imgV = vp.getImageview();
-		imgV.setFitWidth(planeSize * this.zoomFactor);
-		imgV.setFitHeight(planeSize * this.zoomFactor);
+		imgV.setFitWidth(planeSize * zoomFactor);
+		imgV.setFitHeight(planeSize * zoomFactor);
 	}
         
 	private void setShadow(Plane plane) {
