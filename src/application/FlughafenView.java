@@ -35,6 +35,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
 public class FlughafenView {
 	private static int width = 850;
 	private static int height = 600;
@@ -60,8 +61,8 @@ public class FlughafenView {
 	private Button fileChooserButton;
 	private ToolBar colorToolbar = new ToolBar();
 	private final ColorPicker colorPicker ;
-	private Label zoomLabel;
 	Map<Plane, ViewPlane> planes = new HashMap<Plane, ViewPlane>();
+	
 	public FlughafenView(Flughafen model, Stage stage) {
 		this.model = model;
 		this.stage = stage;
@@ -75,13 +76,13 @@ public class FlughafenView {
 		createBgRect();
 		fileChooserButton = new Button("Open File");
 		this.setInitialZoomAndOffset(model.getNodes());
-		this.zoomButton = new Button("buttonlabel" + zoomFactor);
+		this.zoomButton = new Button();
+		updateZoomLabel();
 		Image buttonImage = new Image("/application/source/Images/zoomout.png");
 		this.zoomButton.setGraphic(new ImageView(buttonImage));
 		setButtonStyle(zoomButton);
 		setButtonStyle(infoButton);
 		setButtonStyle(fileChooserButton);
-		createZoomLabel();
 		setActivePlanes();
 		root.getChildren().addAll(canvas);
 		buttonHbox.getChildren().addAll(showMaxplanes,zoomButton, infoButton,fileChooserButton,colorToolbar);
@@ -180,15 +181,15 @@ public class FlughafenView {
 			break;
 		}
 		case CONCRETE: {
-			setStyle.apply(1.8).apply(Color.rgb(106, 120, 135)).apply(Color.rgb(106, 120, 135,0.5)).accept(false);
+			setStyle.apply(3.3).apply(Color.LIGHTSLATEGRAY).apply(Color.LIGHTSLATEGRAY).accept(false);
 			break;
 		}
 		case HANGAR: {
-			setStyle.apply(2.8).apply(Color.rgb(75, 163, 133)).apply(Color.rgb(75, 163, 133,0.7)).accept(false);
+			setStyle.apply(2.8).apply(Color.MEDIUMAQUAMARINE).apply(Color.MEDIUMAQUAMARINE).accept(false);
 			break;
 		}
 		case RUNWAY: {
-			setStyle.apply(4.4).apply(Color.rgb(232, 150, 118)).apply(Color.rgb(232, 150, 118,0.6)).accept(false);
+			setStyle.apply(4.4).apply(Color.rgb(232, 150, 118)).apply(Color.rgb(232, 150, 118)).accept(false);
 			
 			break;
 		}
@@ -201,7 +202,7 @@ public class FlughafenView {
 		for (Node children : node.getTo()) {
 			gc.strokeLine(x, y, (children.getX() * zoomFactor) + offsetX, (children.getY() * zoomFactor) + offsetY);
 		}
-		this.gc.fillOval(x - radius, y - radius, radius * 1.2, radius * 0.9);
+		this.gc.fillOval(x - radius, y - radius, radius * 2, radius * 2);
 	}
 	private boolean registerOrDeletePlane(Plane plane) {
 		ViewPlane viewPlane;
@@ -272,12 +273,12 @@ public class FlughafenView {
 		
 		switch (kind) {
 			case AIR: {
-				imgV.setEffect(new DropShadow(3,3,20, Color.rgb(120, 143, 165)));
+				imgV.setEffect(new DropShadow(3,3,20, Color.rgb(0, 0, 0,0.5)));
 				
 				break;
 			}
 			case  RUNWAY: {
-				imgV.setEffect(new DropShadow(2,1,6, Color.rgb(232, 150, 118,0.8)));
+				imgV.setEffect(new DropShadow(2,1,6, Color.rgb(0, 0, 0,0.5)));
 				
 				break;
 			}
@@ -390,7 +391,6 @@ public class FlughafenView {
 		button.setMinSize(50, 36);
 		
 		
-		
 	}
 	
 	public void setTextStyle(Label label) {
@@ -399,7 +399,7 @@ public class FlughafenView {
 		label.setFont(fontBold);	
 		label.setStyle( "-fx-border-insets: -1.5; "
 				+ "-fx-border-radius: 5;" +"-fx-border-width: 1 2 3 4; -fx-border-color:  transparent darkgray darkred  darkgray;"+ "-fx-border-style: dotted;" + "-fx-border-width: 1;"
-				+ "-fx-background-color: #627e89;;"+"-fx-text-fill:#e89676;");
+				+ "-fx-background-color: #627e89;;"+"-fx-text-fill:#fcbaa1;");
 		
 		label.setMinSize(60, 40);
 		
@@ -419,16 +419,11 @@ public class FlughafenView {
 	public boolean isShowNodeInfo() {
 		return this.showNodeInfo;
 	}
-	public void createZoomLabel() {
-		this.zoomLabel = new Label();
-		updateLabel();
-	}
-	public void updateLabel() {
+	
+	public void updateZoomLabel() {
 		this.zoomButton.setText("Zoom-Factor : " + Math.round(zoomFactor * 100 / 100));
 	}
-	public Label getZoomLabel() {
-		return this.zoomLabel;
-	}
+
 	public Button getfileChooserButton() {
 		return fileChooserButton;
 	}
